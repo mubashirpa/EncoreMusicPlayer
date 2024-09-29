@@ -12,6 +12,7 @@
         android:orientation="horizontal">
         <!-- Media -->
         <ImageView
+            android:id="@+id/media"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:contentDescription="@string/media"
@@ -19,13 +20,14 @@
             app:srcCompat="@drawable/ic_launcher_background" />
         <!-- Title -->
         <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:ellipsize="marquee"
             android:maxLines="1"
             android:text="@string/title"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
             android:textColor="?attr/colorOnSurface" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

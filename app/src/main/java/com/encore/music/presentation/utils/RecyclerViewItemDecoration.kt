@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
+private const val NO_SPACING = 0
+
 class AdaptiveSpacingItemDecoration(
     private var size: Int,
     private val edgeEnabled: Boolean = false,
@@ -176,13 +178,86 @@ class AdaptiveSpacingItemDecoration(
             }
         }
     }
+}
 
-    companion object {
-        private const val NO_SPACING = 0
+data class PaddingValues(
+    val start: Int,
+    val top: Int,
+    val end: Int,
+    val bottom: Int,
+)
+
+class HorizontalItemDecoration(
+    private var contentPadding: PaddingValues,
+    private var horizontalSpacing: Int,
+) : ItemDecoration() {
+    init {
+        contentPadding =
+            contentPadding.copy(
+                start = contentPadding.start.toDp(),
+                top = contentPadding.top.toDp(),
+                end = contentPadding.end.toDp(),
+                bottom = contentPadding.bottom.toDp(),
+            )
+        horizontalSpacing = horizontalSpacing.toDp()
     }
 
-    private fun Int.toDp(): Int {
-        val density = Resources.getSystem().displayMetrics.density
-        return ((this * density) + 0.5f).toInt()
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
+        val position = parent.getChildAdapterPosition(view)
+        val itemCount = state.itemCount
+        val isFirstPosition = position == 0
+        val isLastPosition = position == (itemCount - 1)
+
+        with(outRect) {
+            left = if (isFirstPosition) contentPadding.start else horizontalSpacing
+            top = contentPadding.top
+            right = if (isLastPosition) contentPadding.end else NO_SPACING
+            bottom = contentPadding.bottom
+        }
     }
+}
+
+class VerticalItemDecoration(
+    private var contentPadding: PaddingValues,
+    private var verticalSpacing: Int,
+) : ItemDecoration() {
+    init {
+        contentPadding =
+            contentPadding.copy(
+                start = contentPadding.start.toDp(),
+                top = contentPadding.top.toDp(),
+                end = contentPadding.end.toDp(),
+                bottom = contentPadding.bottom.toDp(),
+            )
+        verticalSpacing = verticalSpacing.toDp()
+    }
+
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
+        val position = parent.getChildAdapterPosition(view)
+        val itemCount = state.itemCount
+        val isFirstPosition = position == 0
+        val isLastPosition = position == (itemCount - 1)
+
+        with(outRect) {
+            left = contentPadding.start
+            top = if (isFirstPosition) contentPadding.top else verticalSpacing
+            right = contentPadding.end
+            bottom = if (isLastPosition) contentPadding.bottom else NO_SPACING
+        }
+    }
+}
+
+private fun Int.toDp(): Int {
+    val density = Resources.getSystem().displayMetrics.density
+    return ((this * density) + 0.5f).toInt()
 }
