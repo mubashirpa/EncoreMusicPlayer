@@ -1,8 +1,5 @@
-package com.encore.music.domain.model.playlists
+package com.encore.music.domain.model.spotify.playlists
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Playlist(
     val description: String? = null,
     val id: String = "",
