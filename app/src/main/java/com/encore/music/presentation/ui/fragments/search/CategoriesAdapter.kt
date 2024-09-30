@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemCategoriesBinding
-import com.encore.music.domain.model.categories.Category
+import com.encore.music.domain.model.spotify.categories.Category
 
 class CategoriesAdapter(
     private val items: List<Category>,

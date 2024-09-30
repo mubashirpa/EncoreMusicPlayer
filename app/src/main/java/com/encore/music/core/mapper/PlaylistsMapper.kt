@@ -1,7 +1,7 @@
 package com.encore.music.core.mapper
 
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
-import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.spotify.playlists.Playlist
 
 fun PlaylistsDto.toPlaylists(): List<Playlist> =
     items.map {

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemTopTracksBinding
-import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.spotify.playlists.Playlist
 
 class TopTracksAdapter(
     private val items: List<Playlist>,
