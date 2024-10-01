@@ -45,9 +45,9 @@ class TracksAdapter : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
                 placeholder(R.drawable.bg_placeholder)
             }
             headlineText.text = items[position].name
-            supportingText.text = items[position].name
+            supportingText.text = items[position].name // TODO("Replace with artists")
 
-            menuButton.setOnClickListener { /*TODO()*/ }
+            menuButton.setOnClickListener { /*TODO*/ }
         }
     }
 

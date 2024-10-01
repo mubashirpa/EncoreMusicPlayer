@@ -130,9 +130,6 @@ class LibraryAdapter(
             is LibraryListItem.TracksItem -> 2
         }
 
-    fun insertItemAndNotify() {
-    }
-
     fun notifyArtistsDataChange(list: List<Artist>) {
         artistsAdapter.items = list
     }

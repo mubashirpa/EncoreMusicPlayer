@@ -41,6 +41,8 @@ class LibraryViewModel : ViewModel() {
     private fun getUserArtists() {
         viewModelScope.launch {
             delay(3000)
+            // TODO("Emit success only if list is not empty")
+            _uiState.emit(LibraryUiState.Success)
             _artists.update {
                 listOf(
                     Artist(
@@ -57,13 +59,14 @@ class LibraryViewModel : ViewModel() {
                     ),
                 )
             }
-            _uiState.emit(LibraryUiState.Success)
         }
     }
 
     private fun getUserPlaylists() {
         viewModelScope.launch {
             delay(2000)
+            // TODO("Emit success only if list is not empty")
+            _uiState.emit(LibraryUiState.Success)
             _playlists.update {
                 listOf(
                     Playlist(
@@ -78,13 +81,14 @@ class LibraryViewModel : ViewModel() {
                     ),
                 )
             }
-            _uiState.emit(LibraryUiState.Success)
         }
     }
 
     private fun getUserTracks() {
         viewModelScope.launch {
             delay(1000)
+            // TODO("Emit success only if list is not empty")
+            _uiState.emit(LibraryUiState.Success)
             _tracks.update {
                 listOf(
                     Track(
@@ -105,7 +109,6 @@ class LibraryViewModel : ViewModel() {
                     ),
                 )
             }
-            _uiState.emit(LibraryUiState.Success)
         }
     }
 }
