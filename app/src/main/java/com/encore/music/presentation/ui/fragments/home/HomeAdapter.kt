@@ -16,9 +16,11 @@ import com.encore.music.presentation.utils.PaddingValues
 class HomeAdapter(
     private val context: Context,
     var items: MutableList<HomeListItem>,
+    private val onTrackClicked: (Track) -> Unit,
+    private val onPlaylistClicked: (Playlist) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    val topTracksAdapter by lazy { TopTracksAdapter() }
-    val playlistsAdapter by lazy { PlaylistsAdapter() }
+    val topTracksAdapter by lazy { TopTracksAdapter(onTrackClicked) }
+    val playlistsAdapter by lazy { PlaylistsAdapter(onPlaylistClicked) }
 
     inner class TopTracksViewHolder(
         private val binding: LayoutHomeTopTracksBinding,
@@ -39,23 +41,25 @@ class HomeAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.PlaylistsItem) {
             playlistsAdapter.items = item.playlists
-            binding.title.text = item.title
-            binding.recyclerView.apply {
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        HorizontalItemDecoration(
-                            contentPadding =
-                                PaddingValues(
-                                    start = 16,
-                                    top = 0,
-                                    end = 16,
-                                    bottom = 0,
-                                ),
-                            horizontalSpacing = 10,
-                        ),
-                    )
+            binding.run {
+                title.text = item.title
+                recyclerView.apply {
+                    if (itemDecorationCount == 0) {
+                        addItemDecoration(
+                            HorizontalItemDecoration(
+                                contentPadding =
+                                    PaddingValues(
+                                        start = 16,
+                                        top = 0,
+                                        end = 16,
+                                        bottom = 0,
+                                    ),
+                                horizontalSpacing = 10,
+                            ),
+                        )
+                    }
+                    adapter = playlistsAdapter
                 }
-                adapter = playlistsAdapter
             }
         }
     }

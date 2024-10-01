@@ -10,7 +10,9 @@ import com.encore.music.R
 import com.encore.music.databinding.ListItemArtistsBinding
 import com.encore.music.domain.model.spotify.artists.Artist
 
-class ArtistsAdapter : RecyclerView.Adapter<ArtistsAdapter.ViewHolder>() {
+class ArtistsAdapter(
+    private val onArtistClicked: (Artist) -> Unit,
+) : RecyclerView.Adapter<ArtistsAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Artist> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Artist>
         get() = differ.currentList
@@ -41,6 +43,10 @@ class ArtistsAdapter : RecyclerView.Adapter<ArtistsAdapter.ViewHolder>() {
                 placeholder(R.drawable.bg_placeholder)
             }
             title.text = items[position].name
+
+            root.setOnClickListener {
+                onArtistClicked(items[position])
+            }
         }
     }
 

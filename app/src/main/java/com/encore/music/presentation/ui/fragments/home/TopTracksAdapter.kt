@@ -10,7 +10,9 @@ import com.encore.music.R
 import com.encore.music.databinding.ListItemTopTracksBinding
 import com.encore.music.domain.model.spotify.tracks.Track
 
-class TopTracksAdapter : RecyclerView.Adapter<TopTracksAdapter.ViewHolder>() {
+class TopTracksAdapter(
+    private val onTrackClicked: (Track) -> Unit,
+) : RecyclerView.Adapter<TopTracksAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Track> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Track>
         get() = differ.currentList
@@ -41,6 +43,10 @@ class TopTracksAdapter : RecyclerView.Adapter<TopTracksAdapter.ViewHolder>() {
                 placeholder(R.drawable.bg_placeholder)
             }
             title.text = items[position].name
+
+            root.setOnClickListener {
+                onTrackClicked(items[position])
+            }
         }
     }
 

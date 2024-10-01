@@ -17,10 +17,13 @@ import com.encore.music.presentation.utils.PaddingValues
 class LibraryAdapter(
     private val context: Context,
     var items: MutableList<LibraryListItem>,
+    private val onArtistClicked: (Artist) -> Unit,
+    private val onPlaylistClicked: (Playlist) -> Unit,
+    private val onTrackClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val artistsAdapter by lazy { ArtistsAdapter() }
-    private val playlistsAdapter by lazy { PlaylistsAdapter() }
-    private val tracksAdapter by lazy { TracksAdapter() }
+    private val artistsAdapter by lazy { ArtistsAdapter(onArtistClicked) }
+    private val playlistsAdapter by lazy { PlaylistsAdapter(onPlaylistClicked) }
+    private val tracksAdapter by lazy { TracksAdapter(onTrackClicked) }
     private val horizontalItemDecoration =
         HorizontalItemDecoration(
             contentPadding =
@@ -38,10 +41,12 @@ class LibraryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryListItem.ArtistsItem) {
             artistsAdapter.items = item.artists
-            binding.title.text = item.title
-            binding.recyclerView.apply {
-                if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
-                adapter = artistsAdapter
+            binding.run {
+                title.text = item.title
+                recyclerView.apply {
+                    if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
+                    adapter = artistsAdapter
+                }
             }
         }
     }
@@ -51,10 +56,12 @@ class LibraryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryListItem.PlaylistsItem) {
             playlistsAdapter.items = item.playlists
-            binding.title.text = item.title
-            binding.recyclerView.apply {
-                if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
-                adapter = playlistsAdapter
+            binding.run {
+                title.text = item.title
+                recyclerView.apply {
+                    if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
+                    adapter = playlistsAdapter
+                }
             }
         }
     }
@@ -64,9 +71,11 @@ class LibraryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: LibraryListItem.TracksItem) {
             tracksAdapter.items = item.tracks
-            binding.title.text = item.title
-            binding.recyclerView.apply {
-                adapter = tracksAdapter
+            binding.run {
+                title.text = item.title
+                recyclerView.apply {
+                    adapter = tracksAdapter
+                }
             }
         }
     }

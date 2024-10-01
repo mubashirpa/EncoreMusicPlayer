@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentLibraryBinding
+import com.encore.music.presentation.navigation.Screen
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
@@ -27,6 +29,11 @@ class LibraryFragment : Fragment() {
         LibraryAdapter(
             context = requireContext(),
             items = mutableListOf(),
+            onArtistClicked = { /*TODO*/ },
+            onPlaylistClicked = { playlist ->
+                findNavController().navigate(Screen.Playlist(playlist.id))
+            },
+            onTrackClicked = { /*TODO*/ },
         )
     }
 

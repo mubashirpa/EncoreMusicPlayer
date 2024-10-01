@@ -10,7 +10,9 @@ import com.encore.music.R
 import com.encore.music.databinding.ListItemTracksDetailedBinding
 import com.encore.music.domain.model.spotify.tracks.Track
 
-class TracksAdapter : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
+class TracksAdapter(
+    private val onTrackClicked: (Track) -> Unit,
+) : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Track> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Track>
         get() = differ.currentList
@@ -48,6 +50,10 @@ class TracksAdapter : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
             supportingText.text = items[position].name // TODO("Replace with artists")
 
             menuButton.setOnClickListener { /*TODO*/ }
+
+            root.setOnClickListener {
+                onTrackClicked(items[position])
+            }
         }
     }
 

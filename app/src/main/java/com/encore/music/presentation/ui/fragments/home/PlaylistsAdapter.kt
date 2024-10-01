@@ -11,7 +11,9 @@ import com.encore.music.R
 import com.encore.music.databinding.ListItemPlaylistsBinding
 import com.encore.music.domain.model.spotify.playlists.Playlist
 
-class PlaylistsAdapter : RecyclerView.Adapter<PlaylistsAdapter.ViewHolder>() {
+class PlaylistsAdapter(
+    private val onPlaylistClicked: (Playlist) -> Unit,
+) : RecyclerView.Adapter<PlaylistsAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Playlist> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Playlist>
         get() = differ.currentList
@@ -44,6 +46,10 @@ class PlaylistsAdapter : RecyclerView.Adapter<PlaylistsAdapter.ViewHolder>() {
             title.maxLines = 2
             title.text = items[position].name
             subtitle.visibility = GONE
+
+            root.setOnClickListener {
+                onPlaylistClicked(items[position])
+            }
         }
     }
 

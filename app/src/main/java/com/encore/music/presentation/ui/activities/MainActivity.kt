@@ -18,6 +18,7 @@ import com.encore.music.presentation.navigation.Screen
 import com.encore.music.presentation.ui.fragments.home.HomeFragment
 import com.encore.music.presentation.ui.fragments.library.LibraryFragment
 import com.encore.music.presentation.ui.fragments.onboarding.OnboardingFragment
+import com.encore.music.presentation.ui.fragments.playlist.PlaylistFragment
 import com.encore.music.presentation.ui.fragments.resetPassword.ResetPasswordFragment
 import com.encore.music.presentation.ui.fragments.search.SearchFragment
 import com.encore.music.presentation.ui.fragments.signIn.SignInFragment
@@ -46,28 +47,31 @@ class MainActivity : AppCompatActivity() {
             ) {
                 navigation<Graph.Onboarding>(startDestination = Screen.Onboarding) {
                     fragment<OnboardingFragment, Screen.Onboarding> {
-                        label = "Onboarding"
+                        label = getString(R.string.label_onboarding_screen)
                     }
                     fragment<SignInFragment, Screen.SignIn> {
-                        label = "Sign In"
+                        label = getString(R.string.label_sign_in_screen)
                     }
                     fragment<SignUpFragment, Screen.SignUp> {
-                        label = "Sign Up"
+                        label = getString(R.string.label_sign_up_screen)
                     }
                     fragment<ResetPasswordFragment, Screen.ResetPassword> {
-                        label = "Reset Password"
+                        label = getString(R.string.label_reset_password_screen)
                     }
                 }
                 navigation<Graph.Main>(startDestination = Screen.Home) {
                     fragment<HomeFragment, Screen.Home> {
-                        label = "Home"
+                        label = getString(R.string.label_home_screen)
                     }
                     fragment<SearchFragment, Screen.Search> {
-                        label = "Search"
+                        label = getString(R.string.label_search_screen)
                     }
                     fragment<LibraryFragment, Screen.Library> {
-                        label = "Library"
+                        label = getString(R.string.label_library_screen)
                     }
+                }
+                fragment<PlaylistFragment, Screen.Playlist> {
+                    label = getString(R.string.label_playlist_screen)
                 }
             }
 

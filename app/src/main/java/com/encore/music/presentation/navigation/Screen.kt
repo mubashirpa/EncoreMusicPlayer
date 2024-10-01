@@ -25,4 +25,14 @@ sealed class Screen {
 
     @Serializable
     data object Library : Screen()
+
+    @Serializable
+    data class Playlist(
+        val id: String,
+    ) : Screen()
+
+    @Serializable
+    data class Artist(
+        val id: String,
+    ) : Screen()
 }
