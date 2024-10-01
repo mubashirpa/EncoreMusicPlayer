@@ -46,6 +46,18 @@
     <string name="title_search_screen">Let\'s search</string>
     <string name="title_library_screen">Your library</string>
 
+    <!-- Screen labels -->
+    <string name="label_onboarding_screen">Onboarding</string>
+    <string name="label_sign_in_screen">Sign In</string>
+    <string name="label_sign_up_screen">Sign Up</string>
+    <string name="label_reset_password_screen">Reset Password</string>
+    <string name="label_home_screen">Home</string>
+    <string name="label_search_screen">Search</string>
+    <string name="label_library_screen">Library</string>
+    <string name="label_playlist_screen">Playlist</string>
+    <string name="label_artist_screen">Artist</string>
+    <string name="label_player_screen">Player</string>
+
     <!-- Success -->
     <string name="success_send_password_reset_email">We sent an email to %1$s with a link to get back into your account.</string>
 
