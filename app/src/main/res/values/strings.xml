@@ -77,4 +77,8 @@
     <string name="error_invalid_email">Please enter a valid email.</string>
     <string name="error_invalid_password">Use a mix of letters and numbers that you can remember.</string>
     <string name="error_invalid_repeated_password">You must enter the same password twice in order to confirm it.</string>
+    <string name="save_playlist">Save playlist</string>
+    <string name="more">More</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="play">Play</string>
 </resources>
