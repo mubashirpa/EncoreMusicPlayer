@@ -38,9 +38,13 @@
     <string name="trending">Trending</string>
     <string name="top_charts_title_case">Top Charts</string>
     <string name="new_releases_title_case">New Releases</string>
+    <string name="what_will_you_listen_to">What will you listen to?</string>
+    <string name="browse_all_title_case">Browse All</string>
 
     <!-- Screen titles -->
+    <string name="title_home_screen">Go listen!</string>
     <string name="title_search_screen">Let\'s search</string>
+    <string name="title_library_screen">Your library</string>
 
     <!-- Success -->
     <string name="success_send_password_reset_email">We sent an email to %1$s with a link to get back into your account.</string>
