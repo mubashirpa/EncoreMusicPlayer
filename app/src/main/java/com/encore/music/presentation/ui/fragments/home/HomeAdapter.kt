@@ -1,48 +1,60 @@
 package com.encore.music.presentation.ui.fragments.home
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.encore.music.R
 import com.encore.music.databinding.LayoutHomePlaylistsBinding
 import com.encore.music.databinding.LayoutHomeTopTracksBinding
+import com.encore.music.domain.model.spotify.playlists.Playlist
+import com.encore.music.domain.model.spotify.tracks.Track
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.HorizontalItemDecoration
 import com.encore.music.presentation.utils.PaddingValues
 
 class HomeAdapter(
-    private val items: List<HomeListItem>,
+    private val context: Context,
+    var items: MutableList<HomeListItem>,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    class TopTracksViewHolder(
+    val topTracksAdapter by lazy { TopTracksAdapter() }
+    val playlistsAdapter by lazy { PlaylistsAdapter() }
+
+    inner class TopTracksViewHolder(
         private val binding: LayoutHomeTopTracksBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.TopTracksItem) {
-            val topTracksAdapter = TopTracksAdapter(item.tracks)
+            topTracksAdapter.items = item.tracks
             binding.recyclerView.apply {
-                addItemDecoration(AdaptiveSpacingItemDecoration(10, false))
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(AdaptiveSpacingItemDecoration(10, false))
+                }
                 adapter = topTracksAdapter
             }
         }
     }
 
-    class PlaylistsViewHolder(
+    inner class PlaylistsViewHolder(
         private val binding: LayoutHomePlaylistsBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.PlaylistsItem) {
-            val playlistsAdapter = PlaylistsAdapter(item.playlists)
+            playlistsAdapter.items = item.playlists
             binding.title.text = item.title
             binding.recyclerView.apply {
-                addItemDecoration(
-                    HorizontalItemDecoration(
-                        contentPadding =
-                            PaddingValues(
-                                start = 16,
-                                top = 0,
-                                end = 16,
-                                bottom = 0,
-                            ),
-                        horizontalSpacing = 10,
-                    ),
-                )
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(
+                        HorizontalItemDecoration(
+                            contentPadding =
+                                PaddingValues(
+                                    start = 16,
+                                    top = 0,
+                                    end = 16,
+                                    bottom = 0,
+                                ),
+                            horizontalSpacing = 10,
+                        ),
+                    )
+                }
                 adapter = playlistsAdapter
             }
         }
@@ -73,7 +85,7 @@ class HomeAdapter(
                 PlaylistsViewHolder(binding)
             }
 
-            else -> throw IllegalArgumentException("Invalid view type")
+            else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
     override fun getItemCount(): Int = items.count()
@@ -93,4 +105,12 @@ class HomeAdapter(
             is HomeListItem.TopTracksItem -> 0
             is HomeListItem.PlaylistsItem -> 1
         }
+
+    fun notifyTopTracksDataChange(list: List<Track>) {
+        topTracksAdapter.items = list
+    }
+
+    fun notifyPlaylistsDataChange(list: List<Playlist>) {
+        playlistsAdapter.items = list
+    }
 }

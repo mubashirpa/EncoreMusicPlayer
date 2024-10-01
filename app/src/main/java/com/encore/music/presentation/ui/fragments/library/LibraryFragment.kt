@@ -22,10 +22,9 @@ class LibraryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: LibraryViewModel by viewModel()
-    private val context by lazy { requireContext() }
     private val libraryAdapter by lazy {
         LibraryAdapter(
-            context = context,
+            context = requireContext(),
             items = mutableListOf(),
         )
     }
@@ -52,6 +51,22 @@ class LibraryFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.recyclerView.apply {
+            addItemDecoration(
+                VerticalItemDecoration(
+                    contentPadding =
+                        PaddingValues(
+                            start = 0,
+                            top = 12,
+                            end = 0,
+                            bottom = 12,
+                        ),
+                    verticalSpacing = 16,
+                ),
+            )
+            adapter = libraryAdapter
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val libraryItems = libraryAdapter.items
@@ -66,7 +81,7 @@ class LibraryFragment : Fragment() {
                                 libraryItems.add(
                                     0,
                                     LibraryListItem.ArtistsItem(
-                                        title = context.getString(R.string.artists),
+                                        title = getString(R.string.artists),
                                         artists = artists,
                                     ),
                                 )
@@ -90,7 +105,7 @@ class LibraryFragment : Fragment() {
                                 libraryItems.add(
                                     index,
                                     LibraryListItem.PlaylistsItem(
-                                        title = context.getString(R.string.playlists),
+                                        title = getString(R.string.playlists),
                                         playlists = playlists,
                                     ),
                                 )
@@ -109,7 +124,7 @@ class LibraryFragment : Fragment() {
                             } else {
                                 libraryItems.add(
                                     LibraryListItem.TracksItem(
-                                        title = context.getString(R.string.songs),
+                                        title = getString(R.string.songs),
                                         tracks = tracks,
                                     ),
                                 )
@@ -129,21 +144,6 @@ class LibraryFragment : Fragment() {
 
                         LibraryUiState.Success -> {
                             binding.progressCircular.visibility = View.GONE
-                            binding.recyclerView.apply {
-                                addItemDecoration(
-                                    VerticalItemDecoration(
-                                        contentPadding =
-                                            PaddingValues(
-                                                start = 0,
-                                                top = 12,
-                                                end = 0,
-                                                bottom = 12,
-                                            ),
-                                        verticalSpacing = 16,
-                                    ),
-                                )
-                                adapter = libraryAdapter
-                            }
                         }
 
                         LibraryUiState.Empty -> TODO()

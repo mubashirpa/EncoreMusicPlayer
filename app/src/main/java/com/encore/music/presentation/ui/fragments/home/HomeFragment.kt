@@ -22,6 +22,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
 
     private val viewModel: HomeViewModel by viewModel()
+    private val homeAdapter by lazy {
+        HomeAdapter(
+            context = requireContext(),
+            items = mutableListOf(),
+        )
+    }
+    private var popularItem: HomeListItem.PlaylistsItem? = null
+    private var trendingItem: HomeListItem.PlaylistsItem? = null
+    private var topChartsItem: HomeListItem.PlaylistsItem? = null
+    private var newReleasesItem: HomeListItem.PlaylistsItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,45 +55,111 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.recyclerView.apply {
+            addItemDecoration(
+                VerticalItemDecoration(
+                    contentPadding =
+                        PaddingValues(
+                            start = 0,
+                            top = 12,
+                            end = 0,
+                            bottom = 12,
+                        ),
+                    verticalSpacing = 16,
+                ),
+            )
+            adapter = homeAdapter
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val homeItems = homeAdapter.items
+
+                launch {
+                    viewModel.popularPlaylists.collect { popular ->
+                        if (popular.isNotEmpty()) {
+                            if (popularItem == null) {
+                                popularItem =
+                                    HomeListItem.PlaylistsItem(
+                                        title = getString(R.string.popular),
+                                        playlists = popular,
+                                    )
+                                homeItems.add(popularItem!!)
+                                homeAdapter.notifyItemInserted(homeItems.size - 1)
+                            } else {
+                                homeAdapter.notifyPlaylistsDataChange(popular)
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.trendingPlaylists.collect { trending ->
+                        if (trending.isNotEmpty()) {
+                            if (trendingItem == null) {
+                                trendingItem =
+                                    HomeListItem.PlaylistsItem(
+                                        title = getString(R.string.trending),
+                                        playlists = trending,
+                                    )
+                                homeItems.add(trendingItem!!)
+                                homeAdapter.notifyItemInserted(homeItems.size - 1)
+                            } else {
+                                homeAdapter.notifyPlaylistsDataChange(trending)
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.topChartsPlaylists.collect { topCharts ->
+                        if (topCharts.isNotEmpty()) {
+                            if (topChartsItem == null) {
+                                topChartsItem =
+                                    HomeListItem.PlaylistsItem(
+                                        title = getString(R.string.top_charts_title_case),
+                                        playlists = topCharts,
+                                    )
+                                homeItems.add(topChartsItem!!)
+                                homeAdapter.notifyItemInserted(homeItems.size - 1)
+                            } else {
+                                homeAdapter.notifyPlaylistsDataChange(topCharts)
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    viewModel.newReleasesPlaylists.collect { newReleases ->
+                        if (newReleases.isNotEmpty()) {
+                            if (newReleasesItem == null) {
+                                newReleasesItem =
+                                    HomeListItem.PlaylistsItem(
+                                        title = getString(R.string.new_releases_title_case),
+                                        playlists = newReleases,
+                                    )
+                                homeItems.add(newReleasesItem!!)
+                                homeAdapter.notifyItemInserted(homeItems.size - 1)
+                            } else {
+                                homeAdapter.notifyPlaylistsDataChange(newReleases)
+                            }
+                        }
+                    }
+                }
+
                 viewModel.uiState.collect { uiState ->
-                    val homeAdapter =
-                        HomeAdapter(
-                            listOf(
-                                HomeListItem.TopTracksItem(uiState.popularPlaylists.take(6)),
-                                HomeListItem.PlaylistsItem(
-                                    title = "Popular",
-                                    playlists = uiState.popularPlaylists,
-                                ),
-                                HomeListItem.PlaylistsItem(
-                                    title = "Trending",
-                                    playlists = uiState.popularPlaylists,
-                                ),
-                                HomeListItem.PlaylistsItem(
-                                    title = "Top Charts",
-                                    playlists = uiState.popularPlaylists,
-                                ),
-                                HomeListItem.PlaylistsItem(
-                                    title = "New Releases",
-                                    playlists = uiState.popularPlaylists,
-                                ),
-                            ),
-                        )
-                    binding.recyclerView.apply {
-                        addItemDecoration(
-                            VerticalItemDecoration(
-                                contentPadding =
-                                    PaddingValues(
-                                        start = 0,
-                                        top = 12,
-                                        end = 0,
-                                        bottom = 12,
-                                    ),
-                                verticalSpacing = 12,
-                            ),
-                        )
-                        adapter = homeAdapter
+                    when (uiState) {
+                        HomeUiState.Empty -> {}
+
+                        HomeUiState.Error -> TODO()
+
+                        HomeUiState.Loading -> {
+                            binding.progressCircular.visibility = View.VISIBLE
+                        }
+
+                        HomeUiState.Success -> {
+                            binding.progressCircular.visibility = View.GONE
+                        }
                     }
                 }
             }

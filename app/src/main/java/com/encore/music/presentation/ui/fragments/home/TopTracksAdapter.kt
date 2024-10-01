@@ -2,15 +2,20 @@ package com.encore.music.presentation.ui.fragments.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemTopTracksBinding
-import com.encore.music.domain.model.spotify.playlists.Playlist
+import com.encore.music.domain.model.spotify.tracks.Track
 
-class TopTracksAdapter(
-    private val items: List<Playlist>,
-) : RecyclerView.Adapter<TopTracksAdapter.ViewHolder>() {
+class TopTracksAdapter : RecyclerView.Adapter<TopTracksAdapter.ViewHolder>() {
+    private val differ: AsyncListDiffer<Track> = AsyncListDiffer(this, DIFF_CALLBACK)
+    var items: List<Track>
+        get() = differ.currentList
+        set(value) = differ.submitList(value)
+
     class ViewHolder(
         val binding: ListItemTopTracksBinding,
     ) : RecyclerView.ViewHolder(binding.root)
@@ -37,5 +42,20 @@ class TopTracksAdapter(
             }
             title.text = items[position].name
         }
+    }
+
+    companion object {
+        val DIFF_CALLBACK =
+            object : DiffUtil.ItemCallback<Track>() {
+                override fun areItemsTheSame(
+                    oldItem: Track,
+                    newItem: Track,
+                ): Boolean = oldItem.id == newItem.id
+
+                override fun areContentsTheSame(
+                    oldItem: Track,
+                    newItem: Track,
+                ): Boolean = oldItem == newItem
+            }
     }
 }

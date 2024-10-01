@@ -1,7 +1,11 @@
 package com.encore.music.presentation.ui.fragments.home
 
-import com.encore.music.domain.model.spotify.playlists.Playlist
+sealed class HomeUiState {
+    data object Error : HomeUiState()
 
-data class HomeUiState(
-    val popularPlaylists: List<Playlist> = emptyList(),
-)
+    data object Loading : HomeUiState()
+
+    data object Success : HomeUiState()
+
+    data object Empty : HomeUiState()
+}
