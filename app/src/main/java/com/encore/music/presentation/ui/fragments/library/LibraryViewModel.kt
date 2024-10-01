@@ -27,7 +27,12 @@ class LibraryViewModel : ViewModel() {
     private val _tracks = MutableStateFlow(emptyList<Track>())
     val tracks: StateFlow<List<Track>> = _tracks.asStateFlow()
 
+    val loading = MutableList<Boolean?>(3) { null }
+
     init {
+        viewModelScope.launch {
+            _uiState.emit(LibraryUiState.Loading)
+        }
         getUserArtists()
         getUserPlaylists()
         getUserTracks()
@@ -35,7 +40,7 @@ class LibraryViewModel : ViewModel() {
 
     private fun getUserArtists() {
         viewModelScope.launch {
-            delay(2000)
+            delay(3000)
             _artists.update {
                 listOf(
                     Artist(
@@ -52,12 +57,13 @@ class LibraryViewModel : ViewModel() {
                     ),
                 )
             }
+            _uiState.emit(LibraryUiState.Success)
         }
     }
 
     private fun getUserPlaylists() {
         viewModelScope.launch {
-            delay(2500)
+            delay(2000)
             _playlists.update {
                 listOf(
                     Playlist(
@@ -72,6 +78,7 @@ class LibraryViewModel : ViewModel() {
                     ),
                 )
             }
+            _uiState.emit(LibraryUiState.Success)
         }
     }
 
@@ -98,6 +105,7 @@ class LibraryViewModel : ViewModel() {
                     ),
                 )
             }
+            _uiState.emit(LibraryUiState.Success)
         }
     }
 }

@@ -21,6 +21,12 @@ class LibraryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: LibraryViewModel by viewModel()
+    private val libraryAdapter by lazy {
+        LibraryAdapter(
+            context = requireContext(),
+            items = mutableListOf(),
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,17 +50,6 @@ class LibraryFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val libraryAdapter =
-            LibraryAdapter(
-                context = requireContext(),
-                items =
-                    mutableListOf(
-                        LibraryListItem.ArtistsItem("Artists", viewModel.artists.value),
-                        LibraryListItem.PlaylistsItem("Playlists", viewModel.playlists.value),
-                        LibraryListItem.TracksItem("Songs", viewModel.tracks.value),
-                    ),
-            )
-
         binding.recyclerView.apply {
             addItemDecoration(
                 VerticalItemDecoration(
@@ -73,32 +68,84 @@ class LibraryFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val libraryItems = libraryAdapter.items
+
                 launch {
-                    viewModel.artists.collect {
-                        libraryAdapter.notifyArtistsDataChange(it)
+                    viewModel.artists.collect { artists ->
+                        if (artists.isNotEmpty()) {
+                            val firstItem = libraryItems.firstOrNull()
+                            if (firstItem is LibraryListItem.ArtistsItem) {
+                                libraryAdapter.notifyArtistsDataChange(artists)
+                            } else {
+                                libraryItems.add(
+                                    0,
+                                    LibraryListItem.ArtistsItem(
+                                        title = "Artists",
+                                        artists = artists,
+                                    ),
+                                )
+                                libraryAdapter.notifyItemInserted(0)
+                            }
+                        }
                     }
                 }
 
                 launch {
-                    viewModel.playlists.collect {
-                        libraryAdapter.notifyPlaylistsDataChange(it)
+                    viewModel.playlists.collect { playlists ->
+                        if (playlists.isNotEmpty()) {
+                            val secondItem = libraryItems.getOrNull(1)
+                            if (secondItem is LibraryListItem.PlaylistsItem) {
+                                libraryAdapter.notifyPlaylistsDataChange(playlists)
+                            } else {
+                                val trackIndex =
+                                    libraryItems.indexOfFirst { it is LibraryListItem.TracksItem }
+                                val index =
+                                    if (trackIndex == -1) libraryItems.size else trackIndex
+                                libraryItems.add(
+                                    index,
+                                    LibraryListItem.PlaylistsItem(
+                                        title = "Playlists",
+                                        playlists = playlists,
+                                    ),
+                                )
+                                libraryAdapter.notifyItemInserted(index)
+                            }
+                        }
                     }
                 }
 
                 launch {
-                    viewModel.tracks.collect {
-                        libraryAdapter.notifyTracksDataChange(it)
+                    viewModel.tracks.collect { tracks ->
+                        if (tracks.isNotEmpty()) {
+                            val thirdItem = libraryItems.getOrNull(2)
+                            if (thirdItem is LibraryListItem.TracksItem) {
+                                libraryAdapter.notifyTracksDataChange(tracks)
+                            } else {
+                                libraryItems.add(
+                                    LibraryListItem.TracksItem(
+                                        title = "Songs",
+                                        tracks = tracks,
+                                    ),
+                                )
+                                libraryAdapter.notifyItemInserted(libraryItems.size - 1)
+                            }
+                        }
                     }
                 }
 
                 viewModel.uiState.collect { uiState ->
                     when (uiState) {
-                        LibraryUiState.Error -> {
-                        }
+                        LibraryUiState.Error -> TODO()
 
                         LibraryUiState.Loading -> {
                             binding.progressCircular.visibility = View.VISIBLE
                         }
+
+                        LibraryUiState.Success -> {
+                            binding.progressCircular.visibility = View.GONE
+                        }
+
+                        LibraryUiState.Empty -> TODO()
                     }
                 }
             }

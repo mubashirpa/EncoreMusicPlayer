@@ -16,11 +16,11 @@ import com.encore.music.presentation.utils.PaddingValues
 
 class LibraryAdapter(
     private val context: Context,
-    private var items: MutableList<LibraryListItem>,
+    var items: MutableList<LibraryListItem>,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val artistsAdapter = ArtistsAdapter()
-    private val playlistsAdapter = PlaylistsAdapter()
-    private val tracksAdapter = TracksAdapter()
+    private val artistsAdapter by lazy { ArtistsAdapter() }
+    private val playlistsAdapter by lazy { PlaylistsAdapter() }
+    private val tracksAdapter by lazy { TracksAdapter() }
     private val horizontalItemDecoration =
         HorizontalItemDecoration(
             contentPadding =
@@ -129,6 +129,9 @@ class LibraryAdapter(
             is LibraryListItem.PlaylistsItem -> 1
             is LibraryListItem.TracksItem -> 2
         }
+
+    fun insertItemAndNotify() {
+    }
 
     fun notifyArtistsDataChange(list: List<Artist>) {
         artistsAdapter.items = list
