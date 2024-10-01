@@ -10,10 +10,10 @@
         android:id="@+id/media"
         android:layout_width="120dp"
         android:layout_height="120dp"
+        android:background="@drawable/bg_placeholder"
         android:contentDescription="@string/media"
         android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium" />
 
     <!-- Title -->
     <TextView

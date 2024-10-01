@@ -1,6 +1,5 @@
 package com.encore.music.presentation.ui.fragments.signIn
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.encore.music.core.Result
@@ -168,7 +167,6 @@ class SignInViewModel(
     private fun getLoginPreferences() {
         viewModelScope.launch {
             getLoginPreferencesUseCase().collectLatest { preferences ->
-                Log.d("TAG", "getLoginPreferences: $preferences")
                 _uiState.update { currentState ->
                     currentState.copy(
                         email = preferences.email,

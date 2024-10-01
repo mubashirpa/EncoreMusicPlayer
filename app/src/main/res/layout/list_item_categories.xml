@@ -14,13 +14,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Media -->
         <ImageView
             android:id="@+id/media"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/bg_placeholder"
+            android:contentDescription="@string/media"
             android:foreground="@drawable/bg_list_item_categories"
             android:scaleType="centerCrop" />
 
+        <!-- Title -->
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"

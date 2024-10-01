@@ -58,11 +58,9 @@ class SignInFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val email = viewModel.uiState.value.email
                 val password = viewModel.uiState.value.password
-                val remember = viewModel.uiState.value.remember
 
                 binding.emailField.editText?.setText(email)
                 binding.passwordField.editText?.setText(password)
-                binding.rememberSwitch.isChecked = remember
 
                 launch {
                     viewModel.uiState
@@ -97,6 +95,7 @@ class SignInFragment : Fragment() {
                 viewModel.uiState.collect { uiState ->
                     binding.emailField.error = uiState.emailError?.asString(requireContext())
                     binding.passwordField.error = uiState.passwordError?.asString(requireContext())
+                    binding.rememberSwitch.isChecked = uiState.remember
 
                     uiState.userMessage?.let { message ->
                         Snackbar
