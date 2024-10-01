@@ -82,7 +82,6 @@ dependencies {
     implementation(libs.bundles.media3)
     implementation(libs.bundles.firebase)
 
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.android)
     implementation(libs.coil)
     implementation(libs.datastore.preferences)
