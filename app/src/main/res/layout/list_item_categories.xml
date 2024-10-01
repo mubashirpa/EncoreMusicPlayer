@@ -18,8 +18,8 @@
             android:id="@+id/media"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:foreground="@drawable/bg_list_item_categories"/>
+            android:foreground="@drawable/bg_list_item_categories"
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/title"
@@ -28,7 +28,7 @@
             android:layout_gravity="bottom"
             android:maxLines="1"
             android:padding="8dp"
-            android:text="Hello"
+            android:text="@string/title"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textColor="@android:color/white" />
     </com.google.android.material.card.MaterialCardView>

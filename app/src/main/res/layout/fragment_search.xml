@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|snap"
+            app:navigationIcon="@drawable/baseline_account_circle_24"
             app:title="@string/title_search_screen" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,7 +34,7 @@
                 android:id="@+id/search_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="What will you listen to?" />
+                android:hint="@string/what_will_you_listen_to" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -51,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="16dp"
-                    android:text="Browse all"
+                    android:text="@string/browse_all_title_case"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
                 <androidx.recyclerview.widget.RecyclerView

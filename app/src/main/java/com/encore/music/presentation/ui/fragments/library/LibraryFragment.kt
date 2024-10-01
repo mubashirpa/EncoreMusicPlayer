@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.encore.music.R
 import com.encore.music.databinding.FragmentLibraryBinding
+import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 import kotlinx.coroutines.launch
@@ -50,6 +51,20 @@ class LibraryFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        ImageUtils.loadProfile(
+            context = requireContext(),
+            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+            onStart = { placeholder ->
+                binding.topAppBar.navigationIcon = placeholder
+            },
+            onSuccess = { result ->
+                binding.topAppBar.navigationIcon = result
+            },
+            onError = { error ->
+                binding.topAppBar.navigationIcon = error
+            },
+        )
 
         binding.recyclerView.apply {
             addItemDecoration(

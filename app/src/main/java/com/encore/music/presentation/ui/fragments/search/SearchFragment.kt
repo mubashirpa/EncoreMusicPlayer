@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.encore.music.databinding.FragmentSearchBinding
 import com.encore.music.domain.model.spotify.categories.Category
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
+import com.encore.music.presentation.utils.ImageUtils
 
 class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
@@ -36,6 +37,20 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        ImageUtils.loadProfile(
+            context = requireContext(),
+            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+            onStart = { placeholder ->
+                binding.topAppBar.navigationIcon = placeholder
+            },
+            onSuccess = { result ->
+                binding.topAppBar.navigationIcon = result
+            },
+            onError = { error ->
+                binding.topAppBar.navigationIcon = error
+            },
+        )
 
         val categories: MutableList<Category> = mutableListOf()
         repeat(20) {
