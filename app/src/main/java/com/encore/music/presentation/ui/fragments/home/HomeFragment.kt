@@ -27,6 +27,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         HomeAdapter(
             context = requireContext(),
             items = mutableListOf(),
+            onTrackClicked = { /*TODO*/ },
+            onPlaylistClicked = { /*TODO*/ },
         )
     }
     private var popularItem: HomeListItem.PlaylistsItem? = null
