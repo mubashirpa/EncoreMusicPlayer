@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.encore.music.databinding.FragmentPlaylistBinding
 import com.encore.music.domain.model.spotify.playlists.Playlist
 import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.presentation.utils.PaddingValues
+import com.encore.music.presentation.utils.VerticalItemDecoration
 
 class PlaylistFragment : Fragment() {
     private var _binding: FragmentPlaylistBinding? = null
@@ -43,8 +47,31 @@ class PlaylistFragment : Fragment() {
                     ),
                 ),
             )
-        val adapter = PlaylistAdapter(requireContext(), items)
-        binding.recyclerView.adapter = adapter
+        val playlistAdapter = PlaylistAdapter(requireContext(), items)
+
+        binding.recyclerView.apply {
+            ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(
+                        VerticalItemDecoration(
+                            contentPadding =
+                                PaddingValues(
+                                    start = insets.left,
+                                    top = insets.top,
+                                    end = insets.right,
+                                    bottom = insets.bottom,
+                                    convertToDp = false,
+                                ),
+                            verticalSpacing = 0,
+                        ),
+                    )
+                }
+                WindowInsetsCompat.CONSUMED
+            }
+
+            adapter = playlistAdapter
+        }
     }
 
     override fun onDestroyView() {

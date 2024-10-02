@@ -29,7 +29,9 @@ class LibraryFragment : Fragment() {
         LibraryAdapter(
             context = requireContext(),
             items = mutableListOf(),
-            onArtistClicked = { /*TODO*/ },
+            onArtistClicked = { artist ->
+                findNavController().navigate(Screen.Artist(artist.id))
+            },
             onPlaylistClicked = { playlist ->
                 findNavController().navigate(Screen.Playlist(playlist.id))
             },

@@ -15,6 +15,7 @@ import com.encore.music.R
 import com.encore.music.databinding.ActivityMainBinding
 import com.encore.music.presentation.navigation.Graph
 import com.encore.music.presentation.navigation.Screen
+import com.encore.music.presentation.ui.fragments.artist.ArtistFragment
 import com.encore.music.presentation.ui.fragments.home.HomeFragment
 import com.encore.music.presentation.ui.fragments.library.LibraryFragment
 import com.encore.music.presentation.ui.fragments.onboarding.OnboardingFragment
@@ -72,6 +73,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 fragment<PlaylistFragment, Screen.Playlist> {
                     label = getString(R.string.label_playlist_screen)
+                }
+                fragment<ArtistFragment, Screen.Artist> {
+                    label = getString(R.string.label_artist_screen)
                 }
             }
 

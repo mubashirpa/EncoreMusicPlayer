@@ -16,7 +16,7 @@ class AdaptiveSpacingItemDecoration(
     private val edgeEnabled: Boolean = false,
 ) : ItemDecoration() {
     init {
-        size = size.toDp()
+        size = size.dpToPx()
     }
 
     override fun getItemOffsets(
@@ -185,6 +185,7 @@ data class PaddingValues(
     val top: Int,
     val end: Int,
     val bottom: Int,
+    val convertToDp: Boolean = true,
 )
 
 class HorizontalItemDecoration(
@@ -192,14 +193,16 @@ class HorizontalItemDecoration(
     private var horizontalSpacing: Int,
 ) : ItemDecoration() {
     init {
-        contentPadding =
-            contentPadding.copy(
-                start = contentPadding.start.toDp(),
-                top = contentPadding.top.toDp(),
-                end = contentPadding.end.toDp(),
-                bottom = contentPadding.bottom.toDp(),
-            )
-        horizontalSpacing = horizontalSpacing.toDp()
+        if (contentPadding.convertToDp) {
+            contentPadding =
+                contentPadding.copy(
+                    start = contentPadding.start.dpToPx(),
+                    top = contentPadding.top.dpToPx(),
+                    end = contentPadding.end.dpToPx(),
+                    bottom = contentPadding.bottom.dpToPx(),
+                )
+        }
+        horizontalSpacing = horizontalSpacing.dpToPx()
     }
 
     override fun getItemOffsets(
@@ -227,14 +230,16 @@ class VerticalItemDecoration(
     private var verticalSpacing: Int,
 ) : ItemDecoration() {
     init {
-        contentPadding =
-            contentPadding.copy(
-                start = contentPadding.start.toDp(),
-                top = contentPadding.top.toDp(),
-                end = contentPadding.end.toDp(),
-                bottom = contentPadding.bottom.toDp(),
-            )
-        verticalSpacing = verticalSpacing.toDp()
+        if (contentPadding.convertToDp) {
+            contentPadding =
+                contentPadding.copy(
+                    start = contentPadding.start.dpToPx(),
+                    top = contentPadding.top.dpToPx(),
+                    end = contentPadding.end.dpToPx(),
+                    bottom = contentPadding.bottom.dpToPx(),
+                )
+        }
+        verticalSpacing = verticalSpacing.dpToPx()
     }
 
     override fun getItemOffsets(
@@ -257,7 +262,7 @@ class VerticalItemDecoration(
     }
 }
 
-private fun Int.toDp(): Int {
+private fun Int.dpToPx(): Int {
     val density = Resources.getSystem().displayMetrics.density
     return ((this * density) + 0.5f).toInt()
 }
