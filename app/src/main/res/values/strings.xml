@@ -40,6 +40,13 @@
     <string name="new_releases_title_case">New Releases</string>
     <string name="what_will_you_listen_to">What will you listen to?</string>
     <string name="browse_all_title_case">Browse All</string>
+    <string name="save_playlist">Save playlist</string>
+    <string name="more">More</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="play">Play</string>
+    <string name="artist">Artist</string>
+    <string name="follow_artist">Follow artist</string>
+    <string name="popular_songs_title_case">Popular Songs</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
@@ -89,8 +96,4 @@
     <string name="error_invalid_email">Please enter a valid email.</string>
     <string name="error_invalid_password">Use a mix of letters and numbers that you can remember.</string>
     <string name="error_invalid_repeated_password">You must enter the same password twice in order to confirm it.</string>
-    <string name="save_playlist">Save playlist</string>
-    <string name="more">More</string>
-    <string name="shuffle">Shuffle</string>
-    <string name="play">Play</string>
 </resources>
