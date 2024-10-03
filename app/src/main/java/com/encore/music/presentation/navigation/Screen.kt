@@ -40,4 +40,7 @@ sealed class Screen {
     data class Player(
         val id: String,
     ) : Screen()
+
+    @Serializable
+    data object Profile : Screen()
 }

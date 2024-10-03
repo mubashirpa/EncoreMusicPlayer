@@ -17,6 +17,7 @@ import com.encore.music.presentation.ui.fragments.library.LibraryFragment
 import com.encore.music.presentation.ui.fragments.onboarding.OnboardingFragment
 import com.encore.music.presentation.ui.fragments.player.PlayerFragment
 import com.encore.music.presentation.ui.fragments.playlist.PlaylistFragment
+import com.encore.music.presentation.ui.fragments.profile.ProfileFragment
 import com.encore.music.presentation.ui.fragments.resetPassword.ResetPasswordFragment
 import com.encore.music.presentation.ui.fragments.search.SearchFragment
 import com.encore.music.presentation.ui.fragments.signIn.SignInFragment
@@ -66,6 +67,9 @@ fun AppCompatActivity.findNavController(
             }
             fragment<PlayerFragment, Screen.Player> {
                 label = getString(R.string.label_player_screen)
+            }
+            fragment<ProfileFragment, Screen.Profile> {
+                label = getString(R.string.label_profile_screen)
             }
         }
 
@@ -203,4 +207,8 @@ fun NavController.navigateToPlayer(trackId: String) {
     navigate(route = Screen.Player(id = trackId)) {
         launchSingleTop = true
     }
+}
+
+fun NavController.navigateToProfile() {
+    navigate(Screen.Profile)
 }

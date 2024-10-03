@@ -15,6 +15,7 @@ import com.encore.music.R
 import com.encore.music.databinding.FragmentHomeBinding
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
+import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
@@ -188,6 +189,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     }
                 }
             }
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            navController.navigateToProfile()
         }
     }
 

@@ -52,11 +52,14 @@
     <string name="restart">Restart</string>
     <string name="timer_zero">0:00</string>
     <string name="onboarding">Onboarding</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
     <string name="title_search_screen">Let\'s search</string>
     <string name="title_library_screen">Your library</string>
+    <string name="title_profile_screen">Profile</string>
 
     <!-- Screen labels -->
     <string name="label_onboarding_screen">Onboarding</string>
@@ -69,6 +72,7 @@
     <string name="label_playlist_screen">Playlist</string>
     <string name="label_artist_screen">Artist</string>
     <string name="label_player_screen">Player</string>
+    <string name="label_profile_screen">Profile</string>
 
     <!-- Success -->
     <string name="success_send_password_reset_email">We sent an email to %1$s with a link to get back into your account.</string>
