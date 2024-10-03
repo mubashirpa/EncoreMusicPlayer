@@ -11,13 +11,15 @@ import androidx.navigation.fragment.findNavController
 import com.encore.music.databinding.FragmentArtistBinding
 import com.encore.music.domain.model.spotify.artists.Artist
 import com.encore.music.domain.model.spotify.tracks.Track
-import com.encore.music.presentation.navigation.Screen
+import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 
 class ArtistFragment : Fragment() {
     private var _binding: FragmentArtistBinding? = null
     private val binding get() = _binding!!
+
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,10 +86,10 @@ class ArtistFragment : Fragment() {
                 context = requireContext(),
                 items = items,
                 onTrackClicked = { track ->
-                    findNavController().navigate(Screen.Player(track.id))
+                    navController.navigateToPlayer(track.id)
                 },
                 onNavigateUp = {
-                    findNavController().navigateUp()
+                    navController.navigateUp()
                 },
             )
 

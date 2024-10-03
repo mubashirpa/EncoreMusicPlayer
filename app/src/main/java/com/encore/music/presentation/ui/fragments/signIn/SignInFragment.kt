@@ -14,8 +14,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.core.utils.GoogleAuthUtils
 import com.encore.music.databinding.FragmentSignInBinding
-import com.encore.music.presentation.navigation.Graph
-import com.encore.music.presentation.navigation.Screen
+import com.encore.music.presentation.navigation.navigateToMain
+import com.encore.music.presentation.navigation.navigateToResetPassword
+import com.encore.music.presentation.navigation.navigateToSignUp
 import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -31,6 +32,7 @@ class SignInFragment : Fragment() {
     private val viewModel: SignInViewModel by viewModel()
     private val googleAuthUtils by lazy { GoogleAuthUtils(requireContext()) }
     private val progressDialog by lazy { ProgressDialogFragment() }
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,10 +86,7 @@ class SignInFragment : Fragment() {
                         .distinctUntilChanged()
                         .collect { success ->
                             if (success) {
-                                findNavController().run {
-                                    popBackStack(Graph.Onboarding, true)
-                                    navigate(Graph.Main)
-                                }
+                                navController.navigateToMain()
                             }
                         }
                 }
@@ -142,12 +141,11 @@ class SignInFragment : Fragment() {
         }
 
         binding.forgotPassword.setOnClickListener {
-            findNavController().navigate(
-                Screen.ResetPassword(
-                    binding.emailField.editText!!
-                        .text
-                        .toString(),
-                ),
+            navController.navigateToResetPassword(
+                binding.emailField.editText
+                    ?.text
+                    ?.toString()
+                    .orEmpty(),
             )
         }
 
@@ -170,10 +168,7 @@ class SignInFragment : Fragment() {
         }
 
         binding.signUp.setOnClickListener {
-            findNavController().navigate(Screen.SignUp) {
-                popUpTo(Screen.SignIn) { inclusive = true }
-                launchSingleTop = true
-            }
+            navController.navigateToSignUp()
         }
     }
 

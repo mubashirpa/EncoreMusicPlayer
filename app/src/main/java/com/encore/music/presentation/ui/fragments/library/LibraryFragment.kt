@@ -13,7 +13,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentLibraryBinding
-import com.encore.music.presentation.navigation.Screen
+import com.encore.music.presentation.navigation.navigateToArtist
+import com.encore.music.presentation.navigation.navigateToPlayer
+import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
@@ -25,17 +27,20 @@ class LibraryFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: LibraryViewModel by viewModel()
+    private val navController by lazy { findNavController() }
     private val libraryAdapter by lazy {
         LibraryAdapter(
             context = requireContext(),
             items = mutableListOf(),
             onArtistClicked = { artist ->
-                findNavController().navigate(Screen.Artist(artist.id))
+                navController.navigateToArtist(artist.id)
             },
             onPlaylistClicked = { playlist ->
-                findNavController().navigate(Screen.Playlist(playlist.id))
+                navController.navigateToPlaylist(playlist.id)
             },
-            onTrackClicked = { /*TODO*/ },
+            onTrackClicked = { track ->
+                navController.navigateToPlayer(track.id)
+            },
         )
     }
 

@@ -14,8 +14,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.core.utils.GoogleAuthUtils
 import com.encore.music.databinding.FragmentSignUpBinding
-import com.encore.music.presentation.navigation.Graph
-import com.encore.music.presentation.navigation.Screen
+import com.encore.music.presentation.navigation.navigateToMain
+import com.encore.music.presentation.navigation.navigateToSignIn
 import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -31,6 +31,7 @@ class SignUpFragment : Fragment() {
     private val viewModel: SignUpViewModel by viewModel()
     private val googleAuthUtils by lazy { GoogleAuthUtils(requireContext()) }
     private val progressDialog by lazy { ProgressDialogFragment() }
+    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,10 +87,7 @@ class SignUpFragment : Fragment() {
                         .distinctUntilChanged()
                         .collect { success ->
                             if (success) {
-                                findNavController().run {
-                                    popBackStack(Graph.Onboarding, true)
-                                    navigate(Graph.Main)
-                                }
+                                navController.navigateToMain()
                             }
                         }
                 }
@@ -164,10 +162,7 @@ class SignUpFragment : Fragment() {
         }
 
         binding.signIn.setOnClickListener {
-            findNavController().navigate(Screen.SignIn) {
-                popUpTo(Screen.SignUp) { inclusive = true }
-                launchSingleTop = true
-            }
+            navController.navigateToSignIn()
         }
     }
 

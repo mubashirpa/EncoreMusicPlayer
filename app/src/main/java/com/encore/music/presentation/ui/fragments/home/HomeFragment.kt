@@ -10,8 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentHomeBinding
+import com.encore.music.presentation.navigation.navigateToPlayer
+import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
@@ -23,12 +26,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
 
     private val viewModel: HomeViewModel by viewModel()
+    private val navController by lazy { findNavController() }
     private val homeAdapter by lazy {
         HomeAdapter(
             context = requireContext(),
             items = mutableListOf(),
-            onTrackClicked = { /*TODO*/ },
-            onPlaylistClicked = { /*TODO*/ },
+            onTrackClicked = { track ->
+                navController.navigateToPlayer(track.id)
+            },
+            onPlaylistClicked = { playlist ->
+                navController.navigateToPlaylist(playlist.id)
+            },
         )
     }
     private var popularItem: HomeListItem.PlaylistsItem? = null

@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.encore.music.core.Constants
 import com.encore.music.databinding.FragmentOnboardingBinding
-import com.encore.music.presentation.navigation.Screen
+import com.encore.music.presentation.navigation.navigateToSignIn
 import java.io.IOException
 import java.io.InputStream
 
@@ -48,14 +48,15 @@ class OnboardingFragment : Fragment() {
         }
 
         binding.getStartedButton.setOnClickListener {
-            findNavController().navigate(Screen.SignIn)
+            findNavController().navigateToSignIn()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !isDarkMode
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
+            !isDarkMode
         _binding = null
     }
 }
