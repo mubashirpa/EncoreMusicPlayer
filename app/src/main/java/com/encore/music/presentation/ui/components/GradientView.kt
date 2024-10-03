@@ -1,4 +1,4 @@
-package com.encore.music.presentation.ui
+package com.encore.music.presentation.ui.components
 
 import android.content.Context
 import android.graphics.Canvas
