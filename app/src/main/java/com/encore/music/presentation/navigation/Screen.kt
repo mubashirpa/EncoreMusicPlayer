@@ -35,4 +35,9 @@ sealed class Screen {
     data class Artist(
         val id: String,
     ) : Screen()
+
+    @Serializable
+    data class Player(
+        val id: String,
+    ) : Screen()
 }

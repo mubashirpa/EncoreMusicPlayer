@@ -8,36 +8,49 @@ import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.LayoutArtistHeaderBinding
 import com.encore.music.databinding.ListItemTracksDetailedBinding
+import com.encore.music.domain.model.spotify.tracks.Track
 
 class ArtistAdapter(
     private val context: Context,
     var items: MutableList<ArtistListItem>,
+    private val onTrackClicked: (Track) -> Unit,
+    private val onNavigateUp: () -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    class HeaderViewHolder(
+    inner class HeaderViewHolder(
         private val binding: LayoutArtistHeaderBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ArtistListItem.HeaderItem) {
-            binding.media.load(item.artist.imageUrl) {
-                crossfade(true)
-                placeholder(R.drawable.bg_placeholder)
+            binding.apply {
+                media.load(item.artist.imageUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.bg_placeholder)
+                }
+                title.text = item.artist.name
+                subtitle.text = item.artist.name // TODO
+
+                topAppBar.setNavigationOnClickListener {
+                    onNavigateUp()
+                }
             }
-            binding.title.text = item.artist.name
-            binding.subtitle.text = item.artist.name // TODO
         }
     }
 
-    class TracksViewHolder(
+    inner class TracksViewHolder(
         private val binding: ListItemTracksDetailedBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ArtistListItem.TracksItem) {
-            binding.leadingImage.load(item.track.imageUrl) {
-                crossfade(true)
-                placeholder(R.drawable.bg_placeholder)
-            }
-            binding.headlineText.text = item.track.name
-            binding.supportingText.text = item.track.name // TODO("Replace with artists")
+            binding.apply {
+                leadingImage.load(item.track.imageUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.bg_placeholder)
+                }
+                headlineText.text = item.track.name
+                supportingText.text = item.track.name // TODO("Replace with artists")
 
-            binding.menuButton.setOnClickListener { /*TODO*/ }
+                root.setOnClickListener {
+                    onTrackClicked(item.track)
+                }
+            }
         }
     }
 

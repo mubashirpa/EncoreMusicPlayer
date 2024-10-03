@@ -19,6 +19,7 @@ import com.encore.music.presentation.ui.fragments.artist.ArtistFragment
 import com.encore.music.presentation.ui.fragments.home.HomeFragment
 import com.encore.music.presentation.ui.fragments.library.LibraryFragment
 import com.encore.music.presentation.ui.fragments.onboarding.OnboardingFragment
+import com.encore.music.presentation.ui.fragments.player.PlayerFragment
 import com.encore.music.presentation.ui.fragments.playlist.PlaylistFragment
 import com.encore.music.presentation.ui.fragments.resetPassword.ResetPasswordFragment
 import com.encore.music.presentation.ui.fragments.search.SearchFragment
@@ -76,6 +77,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 fragment<ArtistFragment, Screen.Artist> {
                     label = getString(R.string.label_artist_screen)
+                }
+                fragment<PlayerFragment, Screen.Player> {
+                    label = getString(R.string.label_player_screen)
                 }
             }
 

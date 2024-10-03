@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.encore.music.databinding.FragmentPlaylistBinding
 import com.encore.music.domain.model.spotify.playlists.Playlist
 import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.presentation.navigation.Screen
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 
@@ -47,7 +49,17 @@ class PlaylistFragment : Fragment() {
                     ),
                 ),
             )
-        val playlistAdapter = PlaylistAdapter(requireContext(), items)
+        val playlistAdapter =
+            PlaylistAdapter(
+                context = requireContext(),
+                items = items,
+                onTrackClicked = { track ->
+                    findNavController().navigate(Screen.Player(track.id))
+                },
+                onNavigateUp = {
+                    findNavController().navigateUp()
+                },
+            )
 
         binding.recyclerView.apply {
             ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->

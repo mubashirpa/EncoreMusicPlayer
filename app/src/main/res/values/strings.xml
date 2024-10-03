@@ -47,6 +47,11 @@
     <string name="artist">Artist</string>
     <string name="follow_artist">Follow artist</string>
     <string name="popular_songs_title_case">Popular Songs</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="restart">Restart</string>
+    <string name="timer_zero">0:00</string>
+    <string name="onboarding">Onboarding</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
