@@ -85,4 +85,5 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.coil)
     implementation(libs.datastore.preferences)
+    implementation(libs.palette)
 }
