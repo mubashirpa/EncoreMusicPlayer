@@ -9,7 +9,7 @@ import com.encore.music.domain.repository.EncoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class GetFeaturedPlaylistsUseCase(
+class GetCategoryPlaylistsUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val encoreRepository: EncoreRepository,
 ) {

@@ -19,13 +19,11 @@ class HomeAdapter(
     private val onTrackClicked: (Track) -> Unit,
     private val onPlaylistClicked: (Playlist) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    val topTracksAdapter by lazy { TopTracksAdapter(onTrackClicked) }
-    val playlistsAdapter by lazy { PlaylistsAdapter(onPlaylistClicked) }
-
     inner class TopTracksViewHolder(
         private val binding: LayoutHomeTopTracksBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.TopTracksItem) {
+            val topTracksAdapter = TopTracksAdapter(onTrackClicked)
             topTracksAdapter.items = item.tracks
             binding.recyclerView.apply {
                 if (itemDecorationCount == 0) {
@@ -40,6 +38,7 @@ class HomeAdapter(
         private val binding: LayoutHomePlaylistsBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.PlaylistsItem) {
+            val playlistsAdapter = PlaylistsAdapter(onPlaylistClicked)
             playlistsAdapter.items = item.playlists
             binding.run {
                 title.text = item.title
@@ -109,12 +108,4 @@ class HomeAdapter(
             is HomeListItem.TopTracksItem -> 0
             is HomeListItem.PlaylistsItem -> 1
         }
-
-    fun notifyTopTracksDataChange(list: List<Track>) {
-        topTracksAdapter.items = list
-    }
-
-    fun notifyPlaylistsDataChange(list: List<Playlist>) {
-        playlistsAdapter.items = list
-    }
 }

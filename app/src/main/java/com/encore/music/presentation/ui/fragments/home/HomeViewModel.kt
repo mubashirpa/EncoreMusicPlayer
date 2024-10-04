@@ -2,9 +2,12 @@ package com.encore.music.presentation.ui.fragments.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.encore.music.domain.model.spotify.playlists.Playlist
+import com.encore.music.core.Result
+import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.spotify.tracks.Track
-import com.encore.music.domain.usecase.playlists.GetFeaturedPlaylistsUseCase
+import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
+import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,7 +18,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val getFeaturedPlaylistsUseCase: GetFeaturedPlaylistsUseCase,
+    private val getHomePlaylistsUseCase: GetHomePlaylistsUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
 ) : ViewModel() {
     private val _uiState = MutableSharedFlow<HomeUiState>()
     val uiState: SharedFlow<HomeUiState> = _uiState
@@ -23,30 +27,63 @@ class HomeViewModel(
     private val _topTracks = MutableStateFlow(emptyList<Track>())
     val topTracks: StateFlow<List<Track>> = _topTracks.asStateFlow()
 
-    private val _popularPlaylists = MutableStateFlow(emptyList<Playlist>())
-    val popularPlaylists: StateFlow<List<Playlist>> = _popularPlaylists.asStateFlow()
-
-    private val _trendingPlaylists = MutableStateFlow(emptyList<Playlist>())
-    val trendingPlaylists: StateFlow<List<Playlist>> = _trendingPlaylists.asStateFlow()
-
-    private val _topChartsPlaylists = MutableStateFlow(emptyList<Playlist>())
-    val topChartsPlaylists: StateFlow<List<Playlist>> = _topChartsPlaylists.asStateFlow()
-
-    private val _newReleasesPlaylists = MutableStateFlow(emptyList<Playlist>())
-    val newReleasesPlaylists: StateFlow<List<Playlist>> = _newReleasesPlaylists.asStateFlow()
+    private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
 
     init {
+        getCurrentUser()
+        getTopTracks()
+        getHomePlaylists()
+    }
+
+    private fun getCurrentUser() {
         viewModelScope.launch {
-            _uiState.emit(HomeUiState.Loading)
+            getCurrentUserUseCase().collect {
+                _currentUser.value = it
+            }
         }
-        getFeaturedPlaylistsUseCase("token")
-            .onEach {
-                // TODO("Emit success only if list is not empty")
-                _uiState.emit(HomeUiState.Success)
-                _popularPlaylists.value = it
-                _trendingPlaylists.value = it
-                _topChartsPlaylists.value = it
-                _newReleasesPlaylists.value = it
+    }
+
+    private fun getTopTracks() {
+        // TODO: Get top tracks from Room Database
+        viewModelScope.launch {
+            delay(1000)
+            _topTracks.value =
+                List(6) {
+                    Track(
+                        id = "$it",
+                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        name = "Track $it",
+                    )
+                }
+        }
+    }
+
+    private fun getHomePlaylists() {
+        getHomePlaylistsUseCase()
+            .onEach { result ->
+                when (result) {
+                    is Result.Empty -> {
+                        _uiState.emit(HomeUiState.Empty)
+                    }
+
+                    is Result.Error -> {
+                        _uiState.emit(HomeUiState.Error(result.message!!))
+                    }
+
+                    is Result.Loading -> {
+                        _uiState.emit(HomeUiState.Loading)
+                    }
+
+                    is Result.Success -> {
+                        val playlist = result.data.orEmpty()
+                        if (playlist.isEmpty()) {
+                            _uiState.emit(HomeUiState.Empty)
+                        } else {
+                            _uiState.emit(HomeUiState.Success(playlist))
+                        }
+                    }
+                }
             }.launchIn(viewModelScope)
     }
 }

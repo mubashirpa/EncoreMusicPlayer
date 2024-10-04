@@ -17,6 +17,7 @@ import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -24,8 +25,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: HomeViewModel by viewModel()
     private val navController by lazy { findNavController() }
+    private val viewModel: HomeViewModel by viewModel()
     private val homeAdapter by lazy {
         HomeAdapter(
             context = requireContext(),
@@ -38,10 +39,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             },
         )
     }
-    private var popularItem: HomeListItem.PlaylistsItem? = null
-    private var trendingItem: HomeListItem.PlaylistsItem? = null
-    private var topChartsItem: HomeListItem.PlaylistsItem? = null
-    private var newReleasesItem: HomeListItem.PlaylistsItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,20 +54,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-
-        ImageUtils.loadProfile(
-            context = requireContext(),
-            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-            onStart = { placeholder ->
-                binding.topAppBar.navigationIcon = placeholder
-            },
-            onSuccess = { result ->
-                binding.topAppBar.navigationIcon = result
-            },
-            onError = { error ->
-                binding.topAppBar.navigationIcon = error
-            },
-        )
 
         binding.recyclerView.apply {
             addItemDecoration(
@@ -90,92 +73,75 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val homeItems = homeAdapter.items
-
                 launch {
-                    viewModel.popularPlaylists.collect { popular ->
-                        if (popular.isNotEmpty()) {
-                            if (popularItem == null) {
-                                popularItem =
-                                    HomeListItem.PlaylistsItem(
-                                        title = getString(R.string.popular),
-                                        playlists = popular,
-                                    )
-                                homeItems.add(popularItem!!)
-                                homeAdapter.notifyItemInserted(homeItems.size - 1)
-                            } else {
-                                homeAdapter.notifyPlaylistsDataChange(popular)
-                            }
+                    viewModel.currentUser.collect {
+                        if (it != null) {
+                            ImageUtils.loadProfile(
+                                context = requireContext(),
+                                url = it.photoUrl,
+                                onStart = { placeholder ->
+                                    binding.topAppBar.navigationIcon = placeholder
+                                },
+                                onSuccess = { result ->
+                                    binding.topAppBar.navigationIcon = result
+                                },
+                                onError = { error ->
+                                    binding.topAppBar.navigationIcon = error
+                                },
+                            )
                         }
                     }
                 }
 
                 launch {
-                    viewModel.trendingPlaylists.collect { trending ->
-                        if (trending.isNotEmpty()) {
-                            if (trendingItem == null) {
-                                trendingItem =
-                                    HomeListItem.PlaylistsItem(
-                                        title = getString(R.string.trending),
-                                        playlists = trending,
-                                    )
-                                homeItems.add(trendingItem!!)
-                                homeAdapter.notifyItemInserted(homeItems.size - 1)
-                            } else {
-                                homeAdapter.notifyPlaylistsDataChange(trending)
-                            }
+                    viewModel.topTracks.collect { tracks ->
+                        if (tracks.isNotEmpty() && homeAdapter.items.firstOrNull() !is HomeListItem.TopTracksItem) {
+                            homeAdapter.items.add(0, HomeListItem.TopTracksItem(tracks))
+                            homeAdapter.notifyItemInserted(0)
                         }
                     }
                 }
 
                 launch {
-                    viewModel.topChartsPlaylists.collect { topCharts ->
-                        if (topCharts.isNotEmpty()) {
-                            if (topChartsItem == null) {
-                                topChartsItem =
-                                    HomeListItem.PlaylistsItem(
-                                        title = getString(R.string.top_charts_title_case),
-                                        playlists = topCharts,
-                                    )
-                                homeItems.add(topChartsItem!!)
-                                homeAdapter.notifyItemInserted(homeItems.size - 1)
-                            } else {
-                                homeAdapter.notifyPlaylistsDataChange(topCharts)
+                    viewModel.uiState.collect { uiState ->
+                        when (uiState) {
+                            is HomeUiState.Error -> {
+                                binding.progressCircular.visibility = View.GONE
+                                binding.recyclerView.visibility = View.GONE
+                                // TODO: Show error screen
+                                Snackbar
+                                    .make(
+                                        requireContext(),
+                                        binding.root,
+                                        uiState.message.asString(requireContext()),
+                                        Snackbar.LENGTH_SHORT,
+                                    ).show()
                             }
-                        }
-                    }
-                }
 
-                launch {
-                    viewModel.newReleasesPlaylists.collect { newReleases ->
-                        if (newReleases.isNotEmpty()) {
-                            if (newReleasesItem == null) {
-                                newReleasesItem =
-                                    HomeListItem.PlaylistsItem(
-                                        title = getString(R.string.new_releases_title_case),
-                                        playlists = newReleases,
-                                    )
-                                homeItems.add(newReleasesItem!!)
-                                homeAdapter.notifyItemInserted(homeItems.size - 1)
-                            } else {
-                                homeAdapter.notifyPlaylistsDataChange(newReleases)
+                            is HomeUiState.Success -> {
+                                binding.progressCircular.visibility = View.GONE
+
+                                val positionStart = homeAdapter.items.size
+                                homeAdapter.items.addAll(
+                                    uiState.playlists
+                                        .map {
+                                            HomeListItem.PlaylistsItem(
+                                                title = it.title,
+                                                playlists = it.playlists,
+                                            )
+                                        }.toMutableList(),
+                                )
+                                homeAdapter.notifyItemRangeInserted(
+                                    positionStart,
+                                    uiState.playlists.size,
+                                )
                             }
-                        }
-                    }
-                }
 
-                viewModel.uiState.collect { uiState ->
-                    when (uiState) {
-                        HomeUiState.Empty -> {}
+                            HomeUiState.Empty -> {}
 
-                        HomeUiState.Error -> TODO()
-
-                        HomeUiState.Loading -> {
-                            binding.progressCircular.visibility = View.VISIBLE
-                        }
-
-                        HomeUiState.Success -> {
-                            binding.progressCircular.visibility = View.GONE
+                            HomeUiState.Loading -> {
+                                binding.progressCircular.visibility = View.VISIBLE
+                            }
                         }
                     }
                 }
