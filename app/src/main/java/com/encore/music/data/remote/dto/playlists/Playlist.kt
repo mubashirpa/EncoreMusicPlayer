@@ -1,6 +1,6 @@
 package com.encore.music.data.remote.dto.playlists
 
-import com.encore.music.data.remote.dto.tracks.TracksDto
+import com.encore.music.data.remote.dto.tracks.Track
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,5 +10,5 @@ data class Playlist(
     val image: String? = null,
     val name: String? = null,
     val owner: String? = null,
-    val tracks: TracksDto? = null,
+    val tracks: List<Track>? = null,
 )

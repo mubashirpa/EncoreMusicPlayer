@@ -11,5 +11,5 @@ fun Artist.toArtistDomainModel(): ArtistDomainModel =
         id = id,
         image = image,
         name = name,
-        tracks = tracks?.items?.map { it.toTrackDomainModel() },
+        tracks = tracks?.map { it.toTrackDomainModel() },
     )

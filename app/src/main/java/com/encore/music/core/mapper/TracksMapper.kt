@@ -8,7 +8,7 @@ fun TracksDto.toTrackList(): List<TrackDomainModel> = items?.map { it.toTrackDom
 
 fun Track.toTrackDomainModel(): TrackDomainModel =
     TrackDomainModel(
-        artists = artists?.items?.map { it.toArtistDomainModel() },
+        artists = artists?.map { it.toArtistDomainModel() },
         id = id,
         image = image,
         name = name,

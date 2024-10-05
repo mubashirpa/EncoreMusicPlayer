@@ -13,5 +13,5 @@ fun Playlist.toPlaylistDomainModel(): PlaylistDomainModel =
         image = image,
         name = name,
         owner = owner,
-        tracks = tracks?.items?.map { it.toTrackDomainModel() },
+        tracks = tracks?.map { it.toTrackDomainModel() },
     )

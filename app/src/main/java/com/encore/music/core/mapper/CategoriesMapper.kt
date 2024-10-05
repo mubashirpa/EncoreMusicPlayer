@@ -11,5 +11,5 @@ fun Category.toCategoryDomainModel(): CategoryDomainModel =
         icon = icon,
         id = id,
         name = name,
-        playlists = playlists?.items?.map { it.toPlaylistDomainModel() },
+        playlists = playlists?.map { it.toPlaylistDomainModel() },
     )
