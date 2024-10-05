@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -16,8 +17,6 @@ import com.encore.music.presentation.navigation.navigateToMain
 import com.encore.music.presentation.navigation.navigateToSignIn
 import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.encore.music.R.string as Strings
@@ -46,59 +45,73 @@ class SignUpFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        val nameObserver =
+            Observer<String> { email ->
+                if (binding.nameField.editText
+                        ?.text
+                        .toString() != email
+                ) {
+                    binding.nameField.editText?.setText(email)
+                }
+            }
+        val emailObserver =
+            Observer<String> { email ->
+                if (binding.emailField.editText
+                        ?.text
+                        .toString() != email
+                ) {
+                    binding.emailField.editText?.setText(email)
+                }
+            }
+        val passwordObserver =
+            Observer<String> { password ->
+                if (binding.passwordField.editText
+                        ?.text
+                        .toString() != password
+                ) {
+                    binding.passwordField.editText?.setText(password)
+                }
+            }
+
+        viewModel.name.observe(viewLifecycleOwner, nameObserver)
+        viewModel.email.observe(viewLifecycleOwner, emailObserver)
+        viewModel.password.observe(viewLifecycleOwner, passwordObserver)
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val name = viewModel.uiState.value.name
-                val email = viewModel.uiState.value.email
-                val password = viewModel.uiState.value.password
+                viewModel.uiState.collect { uiState ->
+                    when (uiState) {
+                        is SignUpUiState.EmailError -> {
+                            binding.emailField.error = uiState.message?.asString(requireContext())
+                        }
 
-                binding.nameField.editText?.setText(name)
-                binding.emailField.editText?.setText(email)
-                binding.passwordField.editText?.setText(password)
+                        is SignUpUiState.NameError -> {
+                            binding.nameField.error = uiState.message?.asString(requireContext())
+                        }
 
-                launch {
-                    viewModel.uiState
-                        .map { it.openProgressDialog }
-                        .distinctUntilChanged()
-                        .collect { open ->
-                            if (open) {
+                        is SignUpUiState.PasswordError -> {
+                            binding.passwordField.error =
+                                uiState.message?.asString(requireContext())
+                        }
+
+                        is SignUpUiState.SignUpError -> {
+                            showMessage(uiState.message.asString(requireContext()))
+                            if (progressDialog.isAdded) progressDialog.dismiss()
+                        }
+
+                        SignUpUiState.SignUpLoading -> {
+                            if (!progressDialog.isAdded) {
                                 progressDialog.show(
                                     childFragmentManager,
                                     ProgressDialogFragment.TAG,
                                 )
-                            } else {
-                                if (progressDialog.isAdded) progressDialog.dismiss()
                             }
                         }
-                }
 
-                launch {
-                    viewModel.uiState
-                        .map { it.isUserLoggedIn }
-                        .distinctUntilChanged()
-                        .collect { success ->
-                            if (success) {
-                                navController.navigateToMain()
-                            }
+                        SignUpUiState.SignUpSuccess -> {
+                            if (progressDialog.isAdded) progressDialog.dismiss()
+                            navController.navigateToMain()
                         }
-                }
-
-                viewModel.uiState.collect { uiState ->
-                    binding.nameField.error = uiState.nameError?.asString(requireContext())
-                    binding.emailField.error = uiState.emailError?.asString(requireContext())
-                    binding.passwordField.error = uiState.passwordError?.asString(requireContext())
-
-                    uiState.userMessage?.let { message ->
-                        Snackbar
-                            .make(
-                                binding.root,
-                                message.asString(requireContext()),
-                                Snackbar.LENGTH_LONG,
-                            ).show()
-
-                        // Once the message is displayed and
-                        // dismissed, notify the ViewModel.
-                        viewModel.onEvent(SignUpUiEvent.UserMessageShown)
                     }
                 }
             }
@@ -142,14 +155,14 @@ class SignUpFragment : Fragment() {
                         viewModel.onEvent(SignUpUiEvent.SignUpWithGoogle(token))
                     },
                     onSignInFailure = { message ->
-                        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                        showMessage(message)
                     },
                 )
             }
         }
 
         binding.facebookLoginButton.setOnClickListener {
-            Snackbar.make(binding.root, Strings.coming_soon, Snackbar.LENGTH_LONG).show()
+            showMessage(getString(Strings.coming_soon))
         }
 
         binding.signIn.setOnClickListener {
@@ -160,5 +173,9 @@ class SignUpFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }

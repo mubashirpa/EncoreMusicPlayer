@@ -1,5 +1,6 @@
 package com.encore.music.presentation.ui.fragments.signUp
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.encore.music.core.Result
@@ -8,12 +9,11 @@ import com.encore.music.domain.usecase.authentication.GoogleSignInUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SignUpViewModel(
     private val createUserUseCase: CreateUserUseCase,
@@ -22,35 +22,39 @@ class SignUpViewModel(
     private val validateEmail: ValidateEmail,
     private val validatePassword: ValidatePassword,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(SignUpUiState())
-    val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableSharedFlow<SignUpUiState>()
+    val uiState: SharedFlow<SignUpUiState> = _uiState
+
+    val name: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+    val email: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+    val password: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
 
     fun onEvent(event: SignUpUiEvent) {
         when (event) {
             is SignUpUiEvent.OnEmailValueChange -> {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        email = event.email,
-                        emailError = null,
-                    )
+                email.value = event.email
+                viewModelScope.launch {
+                    _uiState.emit(SignUpUiState.EmailError(null))
                 }
             }
 
             is SignUpUiEvent.OnNameValueChange -> {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        name = event.name,
-                        nameError = null,
-                    )
+                name.value = event.name
+                viewModelScope.launch {
+                    _uiState.emit(SignUpUiState.NameError(null))
                 }
             }
 
             is SignUpUiEvent.OnPasswordValueChange -> {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        password = event.password,
-                        passwordError = null,
-                    )
+                password.value = event.password
+                viewModelScope.launch {
+                    _uiState.emit(SignUpUiState.PasswordError(null))
                 }
             }
 
@@ -65,12 +69,6 @@ class SignUpViewModel(
             is SignUpUiEvent.SignUpWithGoogle -> {
                 signUpWithGoogle(event.token)
             }
-
-            SignUpUiEvent.UserMessageShown -> {
-                _uiState.update { currentState ->
-                    currentState.copy(userMessage = null)
-                }
-            }
         }
     }
 
@@ -83,12 +81,10 @@ class SignUpViewModel(
         val emailResult = validateEmail.execute(email)
         val passwordResult = validatePassword.execute(password)
 
-        _uiState.update { currentState ->
-            currentState.copy(
-                nameError = nameResult.error,
-                emailError = emailResult.error,
-                passwordError = passwordResult.error,
-            )
+        viewModelScope.launch {
+            _uiState.emit(SignUpUiState.NameError(nameResult.error))
+            _uiState.emit(SignUpUiState.EmailError(emailResult.error))
+            _uiState.emit(SignUpUiState.PasswordError(passwordResult.error))
         }
 
         val hasError =
@@ -106,27 +102,15 @@ class SignUpViewModel(
                     is Result.Empty -> {}
 
                     is Result.Error -> {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                openProgressDialog = false,
-                                userMessage = result.message,
-                            )
-                        }
+                        _uiState.emit(SignUpUiState.SignUpError(result.message!!))
                     }
 
                     is Result.Loading -> {
-                        _uiState.update { currentState ->
-                            currentState.copy(openProgressDialog = true)
-                        }
+                        _uiState.emit(SignUpUiState.SignUpLoading)
                     }
 
                     is Result.Success -> {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isUserLoggedIn = true,
-                                openProgressDialog = false,
-                            )
-                        }
+                        _uiState.emit(SignUpUiState.SignUpSuccess)
                     }
                 }
             }.launchIn(viewModelScope)
@@ -138,27 +122,15 @@ class SignUpViewModel(
                 is Result.Empty -> {}
 
                 is Result.Error -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            openProgressDialog = false,
-                            userMessage = result.message,
-                        )
-                    }
+                    _uiState.emit(SignUpUiState.SignUpError(result.message!!))
                 }
 
                 is Result.Loading -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(openProgressDialog = true)
-                    }
+                    _uiState.emit(SignUpUiState.SignUpLoading)
                 }
 
                 is Result.Success -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isUserLoggedIn = true,
-                            openProgressDialog = false,
-                        )
-                    }
+                    _uiState.emit(SignUpUiState.SignUpSuccess)
                 }
             }
         }

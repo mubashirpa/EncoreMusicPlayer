@@ -22,6 +22,4 @@ sealed class SignUpUiEvent {
     data class SignUpWithGoogle(
         val token: String,
     ) : SignUpUiEvent()
-
-    data object UserMessageShown : SignUpUiEvent()
 }
