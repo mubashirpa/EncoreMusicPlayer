@@ -2,8 +2,9 @@ package com.encore.music.data.repository
 
 import com.encore.music.core.Encore
 import com.encore.music.data.remote.dto.home.HomePlaylistDto
+import com.encore.music.data.remote.dto.playlists.Playlist
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
-import com.encore.music.domain.repository.EncoreRepository
+import com.encore.music.domain.repository.PlaylistsRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -11,22 +12,17 @@ import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.http.appendPathSegments
 
-class EncoreRepositoryImpl(
+class PlaylistsRepositoryImpl(
     private val httpClient: HttpClient,
-) : EncoreRepository {
-    override suspend fun getFeaturedPlaylists(
+) : PlaylistsRepository {
+    override suspend fun getPlaylist(
         accessToken: String,
-        locale: String?,
-        limit: Int,
-        offset: Int,
-    ): PlaylistsDto =
+        playlistId: String,
+    ): Playlist =
         httpClient
             .get(Encore.API_BASE_URL) {
                 url {
-                    appendPathSegments(Encore.ENDPOINT_FEATURED_PLAYLISTS)
-                    if (!locale.isNullOrEmpty()) parameters.append(Encore.Parameters.LOCALE, locale)
-                    parameters.append(Encore.Parameters.LIMIT, limit.toString())
-                    parameters.append(Encore.Parameters.OFFSET, offset.toString())
+                    appendPathSegments("playlists/$playlistId")
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.body()

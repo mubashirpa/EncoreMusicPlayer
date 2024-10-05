@@ -1,15 +1,14 @@
 package com.encore.music.domain.repository
 
 import com.encore.music.data.remote.dto.home.HomePlaylistDto
+import com.encore.music.data.remote.dto.playlists.Playlist
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
 
-interface EncoreRepository {
-    suspend fun getFeaturedPlaylists(
+interface PlaylistsRepository {
+    suspend fun getPlaylist(
         accessToken: String,
-        locale: String? = null,
-        limit: Int = 20,
-        offset: Int = 0,
-    ): PlaylistsDto
+        playlistId: String,
+    ): Playlist
 
     suspend fun getCategoryPlaylists(
         accessToken: String,
