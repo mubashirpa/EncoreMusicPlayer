@@ -8,6 +8,4 @@ sealed class ResetPasswordUiEvent {
     data class ResetPassword(
         val email: String,
     ) : ResetPasswordUiEvent()
-
-    data object UserMessageShown : ResetPasswordUiEvent()
 }

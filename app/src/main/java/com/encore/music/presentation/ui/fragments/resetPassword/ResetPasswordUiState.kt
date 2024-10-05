@@ -2,10 +2,16 @@ package com.encore.music.presentation.ui.fragments.resetPassword
 
 import com.encore.music.core.UiText
 
-data class ResetPasswordUiState(
-    val email: String = "",
-    val emailError: UiText? = null,
-    val isPasswordResetEmailSend: Boolean = false,
-    val openProgressDialog: Boolean = false,
-    val userMessage: UiText? = null,
-)
+sealed class ResetPasswordUiState {
+    data class EmailError(
+        val message: UiText?,
+    ) : ResetPasswordUiState()
+
+    data class ResetPasswordError(
+        val message: UiText,
+    ) : ResetPasswordUiState()
+
+    data object ResetPasswordLoading : ResetPasswordUiState()
+
+    data object ResetPasswordSuccess : ResetPasswordUiState()
+}

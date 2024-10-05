@@ -4,19 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.encore.music.core.Navigation
 import com.encore.music.databinding.FragmentResetPasswordBinding
 import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
+import com.encore.music.presentation.utils.setNavigationResult
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -25,6 +24,7 @@ class ResetPasswordFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ResetPasswordViewModel by viewModel()
+    private val navController by lazy { findNavController() }
     private val progressDialog by lazy { ProgressDialogFragment() }
 
     override fun onCreateView(
@@ -33,13 +33,6 @@ class ResetPasswordFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentResetPasswordBinding.inflate(inflater, container, false)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         return binding.root
     }
 
@@ -49,53 +42,49 @@ class ResetPasswordFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        val emailObserver =
+            Observer<String> { email ->
+                if (binding.emailField.editText
+                        ?.text
+                        .toString() != email
+                ) {
+                    binding.emailField.editText?.setText(email)
+                }
+            }
+        viewModel.email.observe(viewLifecycleOwner, emailObserver)
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val email = viewModel.uiState.value.email
+                viewModel.uiState.collect { uiState ->
+                    when (uiState) {
+                        is ResetPasswordUiState.EmailError -> {
+                            binding.emailField.error = uiState.message?.asString(requireContext())
+                        }
 
-                binding.emailField.editText?.setText(email)
+                        is ResetPasswordUiState.ResetPasswordError -> {
+                            showMessage(uiState.message.asString(requireContext()))
+                            if (progressDialog.isAdded) progressDialog.dismiss()
+                        }
 
-                launch {
-                    viewModel.uiState
-                        .map { it.openProgressDialog }
-                        .distinctUntilChanged()
-                        .collect { open ->
-                            if (open) {
+                        ResetPasswordUiState.ResetPasswordLoading -> {
+                            if (!progressDialog.isAdded) {
                                 progressDialog.show(
                                     childFragmentManager,
                                     ProgressDialogFragment.TAG,
                                 )
-                            } else {
-                                if (progressDialog.isAdded) progressDialog.dismiss()
                             }
                         }
-                }
 
-                launch {
-                    viewModel.uiState
-                        .map { it.isPasswordResetEmailSend }
-                        .distinctUntilChanged()
-                        .collect { success ->
-                            if (success) {
-                                findNavController().navigateUp()
-                            }
+                        ResetPasswordUiState.ResetPasswordSuccess -> {
+                            if (progressDialog.isAdded) progressDialog.dismiss()
+                            navController.setNavigationResult(
+                                Navigation.Args.RESET_PASSWORD_EMAIL,
+                                binding.emailField.editText
+                                    ?.text
+                                    .toString(),
+                            )
+                            navController.navigateUp()
                         }
-                }
-
-                viewModel.uiState.collect { uiState ->
-                    binding.emailField.error = uiState.emailError?.asString(requireContext())
-
-                    uiState.userMessage?.let { message ->
-                        Snackbar
-                            .make(
-                                binding.root,
-                                message.asString(requireContext()),
-                                Snackbar.LENGTH_LONG,
-                            ).show()
-
-                        // Once the message is displayed and
-                        // dismissed, notify the ViewModel.
-                        viewModel.onEvent(ResetPasswordUiEvent.UserMessageShown)
                     }
                 }
             }
@@ -119,5 +108,9 @@ class ResetPasswordFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }
