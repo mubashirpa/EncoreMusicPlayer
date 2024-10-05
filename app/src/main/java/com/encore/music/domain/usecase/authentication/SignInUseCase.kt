@@ -2,6 +2,7 @@ package com.encore.music.domain.usecase.authentication
 
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
+import com.encore.music.core.utils.AuthenticationUtils
 import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.preferences.LoginPreferences
 import com.encore.music.domain.repository.AuthenticationRepository
@@ -39,34 +40,9 @@ class SignInUseCase(
                     repository.signInWithEmailAndPassword(email, password)
                 emit(Result.Success(user))
             } catch (e: FirebaseAuthException) {
-                when (e.errorCode) {
-                    "ERROR_WRONG_PASSWORD" -> {
-                        emit(Result.Error(UiText.StringResource(Strings.auth_error_wrong_password)))
-                    }
-
-                    "ERROR_USER_NOT_FOUND" -> {
-                        emit(
-                            Result.Error(
-                                UiText.StringResource(
-                                    Strings.auth_error_user_not_found,
-                                    email,
-                                ),
-                            ),
-                        )
-                    }
-
-                    "ERROR_USER_DISABLED" -> {
-                        emit(Result.Error(UiText.StringResource(Strings.auth_error_user_disabled)))
-                    }
-
-                    "ERROR_TOO_MANY_REQUESTS" -> {
-                        emit(Result.Error(UiText.StringResource(Strings.auth_error_too_many_requests)))
-                    }
-
-                    else -> {
-                        emit(Result.Error(UiText.StringResource(Strings.auth_unknown_exception)))
-                    }
-                }
+                val errorMessage =
+                    AuthenticationUtils.authErrors[e.errorCode] ?: Strings.auth_unknown_exception
+                emit(Result.Error(UiText.StringResource(errorMessage)))
             } catch (e: FirebaseNetworkException) {
                 emit(Result.Error(UiText.StringResource(Strings.auth_network_exception)))
             } catch (e: Exception) {

@@ -82,13 +82,24 @@
     <string name="error_unknown">Something wrong happened. Please try again.</string>
 
     <!-- Authentication errors -->
-    <string name="auth_error_user_disabled">User with this email has been disabled.</string>
-    <string name="auth_error_user_not_found">We can\'t find an account with %1$s. try another email, or if you don\'t have an account, you can sign up.</string>
-    <string name="auth_invalid_credentials_exception">The given data doesn\'t match.</string>
-    <string name="auth_error_wrong_password">The password you entered is incorrect. Please try again.</string>
-    <string name="auth_error_email_already_in_use">This email is on another account. You can log into the account associated with that email.</string>
     <string name="auth_network_exception">An unknown network error has occurred.</string>
     <string name="auth_unknown_exception">An unknown error has occurred.</string>
+    <string name="auth_error_custom_token">The custom token format is incorrect. Please check the documentation.</string>
+    <string name="auth_error_custom_token_mismatch">The custom token corresponds to a different audience.</string>
+    <string name="auth_error_credential_malformed_or_expired">The supplied auth credential is malformed or has expired.</string>
+    <string name="auth_error_invalid_email">The email address is badly formatted.</string>
+    <string name="auth_error_wrong_password">The password is invalid or the user does not have a password.</string>
+    <string name="auth_error_user_mismatch">The supplied credentials do not correspond to the previously signed in user.</string>
+    <string name="auth_error_requires_recent_login">This operation is sensitive and requires recent authentication. Log in again before retrying this request.</string>
+    <string name="auth_error_accounts_exits_with_different_credential">An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.</string>
+    <string name="auth_error_email_already_in_use">The email address is already in use by another account.</string>
+    <string name="auth_error_credential_already_in_use">This credential is already associated with a different user account.</string>
+    <string name="auth_error_user_disabled">The user account has been disabled by an administrator.</string>
+    <string name="auth_error_user_not_found">There is no user record corresponding to this identifier. The user may have been deleted.</string>
+    <string name="auth_error_operation_not_allowed">This operation is not allowed. You must enable this service in the console.</string>
+    <string name="auth_error_password_is_weak">The given password is invalid.</string>
+    <string name="auth_error_user_token_expired">The user\'s credential is no longer valid. The user must sign in again</string>
+    <string name="auth_error_invalid_user_token">The user\'s credential is no longer valid. The user must sign in again.</string>
     <string name="auth_error_too_many_requests">Too many requests, please try again later.</string>
 
     <!-- Google authentication errors -->

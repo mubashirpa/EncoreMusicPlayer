@@ -10,7 +10,7 @@ sealed class SignInUiEvent {
     ) : SignInUiEvent()
 
     data class OnRememberSwitchCheckedChange(
-        val checked: Boolean,
+        val isChecked: Boolean,
     ) : SignInUiEvent()
 
     data class SignIn(
@@ -22,6 +22,4 @@ sealed class SignInUiEvent {
     data class SignInWithGoogle(
         val token: String,
     ) : SignInUiEvent()
-
-    data object UserMessageShown : SignInUiEvent()
 }

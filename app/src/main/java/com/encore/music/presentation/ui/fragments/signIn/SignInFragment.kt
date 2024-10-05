@@ -4,23 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.encore.music.core.Navigation
 import com.encore.music.core.utils.GoogleAuthUtils
 import com.encore.music.databinding.FragmentSignInBinding
 import com.encore.music.presentation.navigation.navigateToMain
 import com.encore.music.presentation.navigation.navigateToResetPassword
 import com.encore.music.presentation.navigation.navigateToSignUp
 import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
+import com.encore.music.presentation.utils.getNavigationResult
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.encore.music.R.string as Strings
@@ -40,13 +39,6 @@ class SignInFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         return binding.root
     }
 
@@ -56,57 +48,68 @@ class SignInFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController.getNavigationResult<String>(
+            viewLifecycleOwner,
+            Navigation.Args.RESET_PASSWORD_EMAIL,
+        ) { message ->
+            showMessage(message)
+        }
+
+        val emailObserver =
+            Observer<String> { email ->
+                if (binding.emailField.editText
+                        ?.text
+                        .toString() != email
+                ) {
+                    binding.emailField.editText?.setText(email)
+                }
+            }
+        val passwordObserver =
+            Observer<String> { password ->
+                if (binding.passwordField.editText
+                        ?.text
+                        .toString() != password
+                ) {
+                    binding.passwordField.editText?.setText(password)
+                }
+            }
+        val rememberObserver =
+            Observer<Boolean> { isChecked ->
+                if (binding.rememberSwitch.isChecked != isChecked) {
+                    binding.rememberSwitch.isChecked = isChecked
+                }
+            }
+
+        viewModel.email.observe(viewLifecycleOwner, emailObserver)
+        viewModel.password.observe(viewLifecycleOwner, passwordObserver)
+        viewModel.remember.observe(viewLifecycleOwner, rememberObserver)
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val email = viewModel.uiState.value.email
-                val password = viewModel.uiState.value.password
-
-                binding.emailField.editText?.setText(email)
-                binding.passwordField.editText?.setText(password)
-
-                launch {
-                    viewModel.uiState
-                        .map { it.openProgressDialog }
-                        .distinctUntilChanged()
-                        .collect { open ->
-                            if (open) {
-                                progressDialog.show(
-                                    childFragmentManager,
-                                    ProgressDialogFragment.TAG,
-                                )
-                            } else {
-                                if (progressDialog.isAdded) progressDialog.dismiss()
-                            }
-                        }
-                }
-
-                launch {
-                    viewModel.uiState
-                        .map { it.isUserLoggedIn }
-                        .distinctUntilChanged()
-                        .collect { success ->
-                            if (success) {
-                                navController.navigateToMain()
-                            }
-                        }
-                }
-
                 viewModel.uiState.collect { uiState ->
-                    binding.emailField.error = uiState.emailError?.asString(requireContext())
-                    binding.passwordField.error = uiState.passwordError?.asString(requireContext())
-                    binding.rememberSwitch.isChecked = uiState.remember
+                    when (uiState) {
+                        is SignInUiState.EmailError -> {
+                            binding.emailField.error = uiState.message?.asString(requireContext())
+                        }
 
-                    uiState.userMessage?.let { message ->
-                        Snackbar
-                            .make(
-                                binding.root,
-                                message.asString(requireContext()),
-                                Snackbar.LENGTH_LONG,
-                            ).show()
+                        is SignInUiState.PasswordError -> {
+                            binding.passwordField.error =
+                                uiState.message?.asString(requireContext())
+                        }
 
-                        // Once the message is displayed and
-                        // dismissed, notify the ViewModel.
-                        viewModel.onEvent(SignInUiEvent.UserMessageShown)
+                        is SignInUiState.SignInError -> {
+                            showMessage(uiState.message.asString(requireContext()))
+                            if (progressDialog.isAdded) progressDialog.dismiss()
+                        }
+
+                        SignInUiState.SignInLoading -> {
+                            progressDialog.show(childFragmentManager, ProgressDialogFragment.TAG)
+                        }
+
+                        SignInUiState.SignInSuccess -> {
+                            if (progressDialog.isAdded) progressDialog.dismiss()
+                            navController.navigateToMain()
+                        }
                     }
                 }
             }
@@ -128,12 +131,12 @@ class SignInFragment : Fragment() {
             viewModel.onEvent(
                 SignInUiEvent.SignIn(
                     email =
-                        binding.emailField.editText!!
-                            .text
+                        binding.emailField.editText
+                            ?.text
                             .toString(),
                     password =
-                        binding.passwordField.editText!!
-                            .text
+                        binding.passwordField.editText
+                            ?.text
                             .toString(),
                     remember = binding.rememberSwitch.isChecked,
                 ),
@@ -157,14 +160,14 @@ class SignInFragment : Fragment() {
                         viewModel.onEvent(SignInUiEvent.SignInWithGoogle(token))
                     },
                     onSignInFailure = { message ->
-                        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                        showMessage(message)
                     },
                 )
             }
         }
 
         binding.facebookLoginButton.setOnClickListener {
-            Snackbar.make(binding.root, Strings.coming_soon, Snackbar.LENGTH_LONG).show()
+            showMessage(getString(Strings.coming_soon))
         }
 
         binding.signUp.setOnClickListener {
@@ -175,5 +178,9 @@ class SignInFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }

@@ -27,3 +27,9 @@ object Encore {
         const val OFFSET = "offset"
     }
 }
+
+object Navigation {
+    object Args {
+        const val RESET_PASSWORD_EMAIL = "reset_password_email"
+    }
+}
