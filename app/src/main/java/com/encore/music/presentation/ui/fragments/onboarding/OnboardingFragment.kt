@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -20,6 +19,7 @@ class OnboardingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val window by lazy { requireActivity().window }
+    private var isLightStatusBars = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +36,10 @@ class OnboardingFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isLightStatusBars = isAppearanceLightStatusBars
+            isAppearanceLightStatusBars = false
+        }
 
         try {
             val inputStream: InputStream =
@@ -54,9 +57,8 @@ class OnboardingFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val isDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars =
-            !isDarkMode
+            isLightStatusBars
         _binding = null
     }
 }
