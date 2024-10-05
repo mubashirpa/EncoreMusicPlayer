@@ -13,7 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.core.Navigation
 import com.encore.music.databinding.FragmentResetPasswordBinding
-import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
+import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.encore.music.presentation.utils.setNavigationResult
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
