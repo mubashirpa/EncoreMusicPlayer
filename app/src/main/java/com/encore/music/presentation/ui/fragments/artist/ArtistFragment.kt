@@ -41,43 +41,43 @@ class ArtistFragment : Fragment() {
                 ArtistListItem.HeaderItem(
                     Artist(
                         name = "Artist Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 ArtistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 ArtistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 ArtistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 ArtistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 ArtistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 ArtistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
             )
@@ -86,7 +86,9 @@ class ArtistFragment : Fragment() {
                 context = requireContext(),
                 items = items,
                 onTrackClicked = { track ->
-                    navController.navigateToPlayer(track.id)
+                    track.id?.let { id ->
+                        navController.navigateToPlayer(id)
+                    }
                 },
                 onNavigateUp = {
                     navController.navigateUp()

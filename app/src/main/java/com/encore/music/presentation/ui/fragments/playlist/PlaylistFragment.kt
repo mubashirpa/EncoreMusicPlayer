@@ -41,13 +41,13 @@ class PlaylistFragment : Fragment() {
                 PlaylistListItem.HeaderItem(
                     Playlist(
                         name = "Playlist Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
                 PlaylistListItem.TracksItem(
                     Track(
                         name = "Track Name",
-                        imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
+                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                     ),
                 ),
             )
@@ -56,7 +56,9 @@ class PlaylistFragment : Fragment() {
                 context = requireContext(),
                 items = items,
                 onTrackClicked = { track ->
-                    navController.navigateToPlayer(track.id)
+                    track.id?.let { id ->
+                        navController.navigateToPlayer(id)
+                    }
                 },
                 onNavigateUp = {
                     navController.navigateUp()

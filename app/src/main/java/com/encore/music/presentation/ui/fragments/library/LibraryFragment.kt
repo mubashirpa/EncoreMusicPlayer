@@ -31,13 +31,19 @@ class LibraryFragment : Fragment() {
             context = requireContext(),
             items = mutableListOf(),
             onArtistClicked = { artist ->
-                navController.navigateToArtist(artist.id)
+                artist.id?.let { id ->
+                    navController.navigateToArtist(id)
+                }
             },
             onPlaylistClicked = { playlist ->
-                navController.navigateToPlaylist(playlist.id)
+                playlist.id?.let { id ->
+                    navController.navigateToPlaylist(id)
+                }
             },
             onTrackClicked = { track ->
-                navController.navigateToPlayer(track.id)
+                track.id?.let { id ->
+                    navController.navigateToPlayer(id)
+                }
             },
         )
     }

@@ -1,11 +1,11 @@
-package com.encore.music.data.remote.dto.playlists
+package com.encore.music.data.remote.dto.artists
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlaylistsDto(
+data class ArtistsDto(
     val limit: Int? = null,
     val offset: Int? = null,
     val total: Int? = null,
-    val items: List<Playlist>? = null,
+    val items: List<Artist>? = null,
 )

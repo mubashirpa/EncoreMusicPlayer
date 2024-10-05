@@ -6,5 +6,5 @@ import com.encore.music.domain.model.home.HomePlaylist
 fun HomePlaylistDto.toHomePlaylistModel(): HomePlaylist =
     HomePlaylist(
         title = title,
-        playlists = playlists.map { it.toPlaylistModel() },
+        playlists = playlists.map { it.toPlaylistDomainModel() },
     )

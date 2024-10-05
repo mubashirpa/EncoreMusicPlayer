@@ -9,7 +9,6 @@ import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemPlaylistsBinding
 import com.encore.music.domain.model.playlists.Playlist
-import com.encore.music.presentation.ui.fragments.library.ArtistsAdapter.Companion.DIFF_CALLBACK
 
 class PlaylistsAdapter(
     private val onPlaylistClicked: (Playlist) -> Unit,
@@ -39,12 +38,12 @@ class PlaylistsAdapter(
         position: Int,
     ) {
         holder.binding.run {
-            media.load(items[position].imageUrl) {
+            media.load(items[position].image) {
                 crossfade(true)
                 placeholder(R.drawable.bg_placeholder)
             }
             title.text = items[position].name
-            subtitle.text = items[position].ownerDisplayName
+            subtitle.text = items[position].owner
 
             root.setOnClickListener {
                 onPlaylistClicked(items[position])

@@ -42,7 +42,7 @@ class TracksAdapter(
         position: Int,
     ) {
         holder.binding.run {
-            leadingImage.load(items[position].imageUrl) {
+            leadingImage.load(items[position].image) {
                 crossfade(true)
                 placeholder(R.drawable.bg_placeholder)
             }

@@ -21,7 +21,7 @@ class PlaylistAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PlaylistListItem.HeaderItem) {
             binding.apply {
-                media.load(item.playlist.imageUrl) {
+                media.load(item.playlist.image) {
                     crossfade(true)
                     placeholder(R.drawable.bg_placeholder)
                 }
@@ -40,7 +40,7 @@ class PlaylistAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PlaylistListItem.TracksItem) {
             binding.apply {
-                leadingImage.load(item.track.imageUrl) {
+                leadingImage.load(item.track.image) {
                     crossfade(true)
                     placeholder(R.drawable.bg_placeholder)
                 }

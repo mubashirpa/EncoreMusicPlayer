@@ -1,10 +1,10 @@
 package com.encore.music.domain.model.categories
 
-import kotlinx.serialization.Serializable
+import com.encore.music.domain.model.playlists.Playlist
 
-@Serializable
 data class Category(
-    val id: String = "",
-    val imageUrl: String = "",
-    val name: String = "",
+    val icon: String? = null,
+    val id: String? = null,
+    val name: String? = null,
+    val playlists: List<Playlist>? = null,
 )

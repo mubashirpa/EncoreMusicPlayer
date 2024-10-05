@@ -32,10 +32,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             context = requireContext(),
             items = mutableListOf(),
             onTrackClicked = { track ->
-                navController.navigateToPlayer(track.id)
+                track.id?.let { id ->
+                    navController.navigateToPlayer(id)
+                }
             },
             onPlaylistClicked = { playlist ->
-                navController.navigateToPlaylist(playlist.id)
+                playlist.id?.let { id ->
+                    navController.navigateToPlaylist(id)
+                }
             },
         )
     }

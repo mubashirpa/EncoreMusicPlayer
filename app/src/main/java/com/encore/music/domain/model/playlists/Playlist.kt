@@ -1,11 +1,12 @@
 package com.encore.music.domain.model.playlists
 
+import com.encore.music.domain.model.tracks.Track
+
 data class Playlist(
     val description: String? = null,
-    val id: String = "",
-    val imageUrl: String = "",
-    val isPublic: Boolean? = null,
-    val name: String = "",
-    val ownerDisplayName: String? = null,
-    val tracks: Int = 0,
+    val id: String? = null,
+    val image: String? = null,
+    val name: String? = null,
+    val owner: String? = null,
+    val tracks: List<Track>? = null,
 )

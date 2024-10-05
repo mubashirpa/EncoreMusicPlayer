@@ -21,7 +21,7 @@ class ArtistAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ArtistListItem.HeaderItem) {
             binding.apply {
-                media.load(item.artist.imageUrl) {
+                media.load(item.artist.image) {
                     crossfade(true)
                     placeholder(R.drawable.bg_placeholder)
                 }
@@ -40,7 +40,7 @@ class ArtistAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ArtistListItem.TracksItem) {
             binding.apply {
-                leadingImage.load(item.track.imageUrl) {
+                leadingImage.load(item.track.image) {
                     crossfade(true)
                     placeholder(R.drawable.bg_placeholder)
                 }

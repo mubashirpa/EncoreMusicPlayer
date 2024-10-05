@@ -38,7 +38,7 @@ class TopTracksAdapter(
         position: Int,
     ) {
         holder.binding.run {
-            media.load(items[position].imageUrl) {
+            media.load(items[position].image) {
                 crossfade(true)
                 placeholder(R.drawable.bg_placeholder)
             }
