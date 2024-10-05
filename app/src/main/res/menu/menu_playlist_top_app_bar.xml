@@ -8,10 +8,4 @@
         android:icon="@drawable/baseline_favorite_border_24"
         android:title="@string/save_playlist"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/more"
-        android:contentDescription="@string/more"
-        android:title="@string/more"
-        app:showAsAction="never" />
 </menu>

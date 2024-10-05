@@ -54,6 +54,7 @@
     <string name="onboarding">Onboarding</string>
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
+    <string name="retry">Retry</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
