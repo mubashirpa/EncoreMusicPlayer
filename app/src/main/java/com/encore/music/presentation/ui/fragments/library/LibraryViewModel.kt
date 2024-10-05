@@ -71,11 +71,13 @@ class LibraryViewModel : ViewModel() {
                 listOf(
                     Playlist(
                         name = "Playlist 1",
+                        id = "37i9dQZF1DX0XUfTFmNBRM",
                         image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                         owner = "Spotify",
                     ),
                     Playlist(
                         name = "Playlist 2",
+                        id = "37i9dQZF1DWTt3gMo0DLxA",
                         image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
                         owner = "Spotify",
                     ),
