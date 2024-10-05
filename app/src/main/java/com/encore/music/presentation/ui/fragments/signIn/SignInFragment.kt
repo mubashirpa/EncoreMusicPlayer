@@ -17,7 +17,7 @@ import com.encore.music.databinding.FragmentSignInBinding
 import com.encore.music.presentation.navigation.navigateToMain
 import com.encore.music.presentation.navigation.navigateToResetPassword
 import com.encore.music.presentation.navigation.navigateToSignUp
-import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
+import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.encore.music.presentation.utils.getNavigationResult
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch

@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -16,7 +14,7 @@ import com.encore.music.core.utils.GoogleAuthUtils
 import com.encore.music.databinding.FragmentSignUpBinding
 import com.encore.music.presentation.navigation.navigateToMain
 import com.encore.music.presentation.navigation.navigateToSignIn
-import com.encore.music.presentation.ui.fragments.ProgressDialogFragment
+import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -29,9 +27,9 @@ class SignUpFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SignUpViewModel by viewModel()
+    private val navController by lazy { findNavController() }
     private val googleAuthUtils by lazy { GoogleAuthUtils(requireContext()) }
     private val progressDialog by lazy { ProgressDialogFragment() }
-    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,13 +37,6 @@ class SignUpFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         return binding.root
     }
 

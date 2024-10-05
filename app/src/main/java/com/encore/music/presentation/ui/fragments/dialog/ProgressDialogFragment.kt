@@ -1,4 +1,4 @@
-package com.encore.music.presentation.ui.fragments
+package com.encore.music.presentation.ui.fragments.dialog
 
 import android.app.Dialog
 import android.os.Bundle
