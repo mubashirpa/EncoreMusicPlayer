@@ -7,19 +7,21 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.encore.music.R
 import com.encore.music.databinding.FragmentPlaylistBinding
-import com.encore.music.domain.model.playlists.Playlist
-import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
 
     private val navController by lazy { findNavController() }
+    private val viewModel: PlaylistViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,21 +38,67 @@ class PlaylistFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val items =
-            mutableListOf(
-                PlaylistListItem.HeaderItem(
-                    Playlist(
-                        name = "Playlist Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                PlaylistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-            )
+        val uiStateObserver =
+            Observer<PlaylistUiState> { uiState ->
+                when (uiState) {
+                    is PlaylistUiState.Error -> {
+                        binding.progressCircular.visibility = View.GONE
+                        binding.errorView.apply {
+                            root.visibility = View.VISIBLE
+                            errorText.text = uiState.message.asString(requireContext())
+                            retryButton.visibility = View.VISIBLE
+                            retryButton.setOnClickListener {
+                                viewModel.onEvent(PlaylistUiEvent.OnRetry)
+                            }
+                        }
+                    }
+
+                    is PlaylistUiState.Success -> {
+                        binding.progressCircular.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+
+                        val items =
+                            buildList {
+                                add(PlaylistListItem.HeaderItem(uiState.playlist))
+                                uiState.playlist.tracks?.let { tracks ->
+                                    addAll(tracks.map { PlaylistListItem.TracksItem(it) })
+                                }
+                            }.toMutableList()
+                        initRecyclerView(items)
+                    }
+
+                    PlaylistUiState.Empty -> Unit
+
+                    PlaylistUiState.Loading -> {
+                        binding.errorView.root.visibility = View.GONE
+                        binding.progressCircular.visibility = View.VISIBLE
+                    }
+                }
+            }
+        viewModel.uiState.observe(viewLifecycleOwner, uiStateObserver)
+
+        binding.topAppBar.setNavigationOnClickListener {
+            navController.navigateUp()
+        }
+
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.favorite -> {
+                    viewModel.onEvent(PlaylistUiEvent.AddToPlaylist)
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun initRecyclerView(items: MutableList<PlaylistListItem>) {
         val playlistAdapter =
             PlaylistAdapter(
                 context = requireContext(),
@@ -60,21 +108,18 @@ class PlaylistFragment : Fragment() {
                         navController.navigateToPlayer(id)
                     }
                 },
-                onNavigateUp = {
-                    navController.navigateUp()
-                },
             )
-
         binding.recyclerView.apply {
             ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
-                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                val insets =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
                 if (itemDecorationCount == 0) {
                     addItemDecoration(
                         VerticalItemDecoration(
                             contentPadding =
                                 PaddingValues(
                                     start = insets.left,
-                                    top = insets.top,
+                                    top = 0,
                                     end = insets.right,
                                     bottom = insets.bottom,
                                     convertToDp = false,
@@ -85,13 +130,7 @@ class PlaylistFragment : Fragment() {
                 }
                 WindowInsetsCompat.CONSUMED
             }
-
             adapter = playlistAdapter
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

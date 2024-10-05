@@ -14,7 +14,6 @@ class PlaylistAdapter(
     private val context: Context,
     var items: MutableList<PlaylistListItem>,
     private val onTrackClicked: (Track) -> Unit,
-    private val onNavigateUp: () -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(
         private val binding: LayoutPlaylistHeaderBinding,
@@ -27,10 +26,6 @@ class PlaylistAdapter(
                 }
                 title.text = item.playlist.name
                 subtitle.text = item.playlist.description
-
-                topAppBar.setNavigationOnClickListener {
-                    onNavigateUp()
-                }
             }
         }
     }
@@ -45,7 +40,7 @@ class PlaylistAdapter(
                     placeholder(R.drawable.bg_placeholder)
                 }
                 headlineText.text = item.track.name
-                supportingText.text = item.track.name // TODO("Replace with artists")
+                supportingText.text = item.track.artists?.joinToString { it.name.orEmpty() }
 
                 root.setOnClickListener {
                     onTrackClicked(item.track)
