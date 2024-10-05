@@ -29,9 +29,9 @@ class SignInFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: SignInViewModel by viewModel()
+    private val navController by lazy { findNavController() }
     private val googleAuthUtils by lazy { GoogleAuthUtils(requireContext()) }
     private val progressDialog by lazy { ProgressDialogFragment() }
-    private val navController by lazy { findNavController() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,8 +51,8 @@ class SignInFragment : Fragment() {
         navController.getNavigationResult<String>(
             viewLifecycleOwner,
             Navigation.Args.RESET_PASSWORD_EMAIL,
-        ) { message ->
-            showMessage(message)
+        ) { email ->
+            showMessage(getString(Strings.success_send_password_reset_email, email))
         }
 
         val emailObserver =
@@ -103,7 +103,12 @@ class SignInFragment : Fragment() {
                         }
 
                         SignInUiState.SignInLoading -> {
-                            progressDialog.show(childFragmentManager, ProgressDialogFragment.TAG)
+                            if (!progressDialog.isAdded) {
+                                progressDialog.show(
+                                    childFragmentManager,
+                                    ProgressDialogFragment.TAG,
+                                )
+                            }
                         }
 
                         SignInUiState.SignInSuccess -> {
