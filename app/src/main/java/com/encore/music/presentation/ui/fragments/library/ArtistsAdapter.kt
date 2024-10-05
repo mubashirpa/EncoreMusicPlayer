@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemArtistsBinding
-import com.encore.music.domain.model.spotify.artists.Artist
+import com.encore.music.domain.model.artists.Artist
 
 class ArtistsAdapter(
     private val onArtistClicked: (Artist) -> Unit,

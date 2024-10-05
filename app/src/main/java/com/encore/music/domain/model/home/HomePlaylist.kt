@@ -1,6 +1,6 @@
 package com.encore.music.domain.model.home
 
-import com.encore.music.domain.model.spotify.playlists.Playlist
+import com.encore.music.domain.model.playlists.Playlist
 
 data class HomePlaylist(
     val title: String = "",

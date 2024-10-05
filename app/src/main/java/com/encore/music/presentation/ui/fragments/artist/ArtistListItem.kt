@@ -1,7 +1,7 @@
 package com.encore.music.presentation.ui.fragments.artist
 
-import com.encore.music.domain.model.spotify.artists.Artist
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.artists.Artist
+import com.encore.music.domain.model.tracks.Track
 
 sealed class ArtistListItem {
     data class HeaderItem(

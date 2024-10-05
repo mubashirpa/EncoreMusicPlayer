@@ -8,7 +8,7 @@ import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.LayoutPlaylistHeaderBinding
 import com.encore.music.databinding.ListItemTracksDetailedBinding
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.tracks.Track
 
 class PlaylistAdapter(
     private val context: Context,

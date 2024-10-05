@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemTracksDetailedBinding
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.tracks.Track
 
 class TracksAdapter(
     private val onTrackClicked: (Track) -> Unit,

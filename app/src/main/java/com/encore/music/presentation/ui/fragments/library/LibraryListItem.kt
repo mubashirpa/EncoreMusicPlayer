@@ -1,8 +1,8 @@
 package com.encore.music.presentation.ui.fragments.library
 
-import com.encore.music.domain.model.spotify.artists.Artist
-import com.encore.music.domain.model.spotify.playlists.Playlist
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.artists.Artist
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 
 sealed class LibraryListItem {
     data class ArtistsItem(

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemPlaylistsBinding
-import com.encore.music.domain.model.spotify.playlists.Playlist
+import com.encore.music.domain.model.playlists.Playlist
 
 class PlaylistsAdapter(
     private val onPlaylistClicked: (Playlist) -> Unit,

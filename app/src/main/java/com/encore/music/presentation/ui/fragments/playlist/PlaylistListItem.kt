@@ -1,7 +1,7 @@
 package com.encore.music.presentation.ui.fragments.playlist
 
-import com.encore.music.domain.model.spotify.playlists.Playlist
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 
 sealed class PlaylistListItem {
     data class HeaderItem(

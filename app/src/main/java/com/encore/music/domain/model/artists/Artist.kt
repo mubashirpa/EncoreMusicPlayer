@@ -1,6 +1,6 @@
-package com.encore.music.domain.model.spotify.tracks
+package com.encore.music.domain.model.artists
 
-data class Track(
+data class Artist(
     val id: String = "",
     val imageUrl: String = "",
     val name: String = "",

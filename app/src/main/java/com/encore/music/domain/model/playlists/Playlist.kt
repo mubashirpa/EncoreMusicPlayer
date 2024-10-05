@@ -1,4 +1,4 @@
-package com.encore.music.domain.model.spotify.playlists
+package com.encore.music.domain.model.playlists
 
 data class Playlist(
     val description: String? = null,

@@ -2,9 +2,9 @@ package com.encore.music.presentation.ui.fragments.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.encore.music.domain.model.spotify.artists.Artist
-import com.encore.music.domain.model.spotify.playlists.Playlist
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.artists.Artist
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

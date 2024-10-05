@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.encore.music.core.Result
 import com.encore.music.domain.model.authentication.User
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import kotlinx.coroutines.delay

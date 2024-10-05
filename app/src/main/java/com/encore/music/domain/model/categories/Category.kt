@@ -1,4 +1,4 @@
-package com.encore.music.domain.model.spotify.categories
+package com.encore.music.domain.model.categories
 
 import kotlinx.serialization.Serializable
 

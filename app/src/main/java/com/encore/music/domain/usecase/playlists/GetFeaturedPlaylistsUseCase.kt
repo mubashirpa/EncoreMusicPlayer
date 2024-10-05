@@ -3,7 +3,7 @@ package com.encore.music.domain.usecase.playlists
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.core.mapper.toPlaylistsListModel
-import com.encore.music.domain.model.spotify.playlists.Playlist
+import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.EncoreRepository
 import kotlinx.coroutines.flow.Flow

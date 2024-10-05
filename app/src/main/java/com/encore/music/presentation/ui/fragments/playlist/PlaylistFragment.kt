@@ -9,8 +9,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.encore.music.databinding.FragmentPlaylistBinding
-import com.encore.music.domain.model.spotify.playlists.Playlist
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration

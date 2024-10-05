@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.encore.music.R
 import com.encore.music.databinding.LayoutHomePlaylistsBinding
 import com.encore.music.databinding.LayoutHomeTopTracksBinding
-import com.encore.music.domain.model.spotify.playlists.Playlist
-import com.encore.music.domain.model.spotify.tracks.Track
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.HorizontalItemDecoration
 import com.encore.music.presentation.utils.PaddingValues
