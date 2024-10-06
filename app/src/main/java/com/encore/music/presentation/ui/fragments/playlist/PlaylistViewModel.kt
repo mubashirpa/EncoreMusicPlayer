@@ -7,15 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.encore.music.core.Result
-import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
+import com.encore.music.domain.usecase.playlists.InsertPlaylistUseCase
 import com.encore.music.presentation.navigation.Screen
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
     savedStateHandle: SavedStateHandle,
     private val getPlaylistUseCase: GetPlaylistUseCase,
+    private val insertPlaylistUseCase: InsertPlaylistUseCase,
 ) : ViewModel() {
     private val playlistId = savedStateHandle.toRoute<Screen.Playlist>().id
 
@@ -29,7 +31,9 @@ class PlaylistViewModel(
     fun onEvent(event: PlaylistUiEvent) {
         when (event) {
             PlaylistUiEvent.AddToPlaylist -> {
-                // TODO: Add to playlist
+                viewModelScope.launch {
+                    insertPlaylistUseCase((_uiState.value as PlaylistUiState.Success).playlist)
+                }
             }
 
             PlaylistUiEvent.OnRetry -> {

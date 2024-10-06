@@ -87,6 +87,6 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.datastore.preferences)
     implementation(libs.palette)
-    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 }

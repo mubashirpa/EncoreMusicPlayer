@@ -13,6 +13,7 @@ import com.encore.music.domain.usecase.authentication.SignOutUseCase
 import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
+import com.encore.music.domain.usecase.playlists.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword
@@ -24,6 +25,7 @@ val useCaseModule =
     module {
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetPlaylistUseCase)
+        singleOf(::InsertPlaylistUseCase)
         singleOf(::GetLoginPreferencesUseCase)
 
         // Authentication

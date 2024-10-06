@@ -9,6 +9,7 @@ val appModule =
             ktorModule,
             playerModule,
             repositoryModule,
+            roomModule,
             useCaseModule,
             viewModelModule,
         )
