@@ -4,7 +4,7 @@ import com.encore.music.data.remote.dto.categories.CategoriesDto
 import com.encore.music.data.remote.dto.categories.Category
 import com.encore.music.domain.model.categories.Category as CategoryDomainModel
 
-fun CategoriesDto.toCategoryList(): List<CategoryDomainModel> = items?.map { it.toCategoryDomainModel() } ?: emptyList()
+fun CategoriesDto.toCategoryDomainModelList(): List<CategoryDomainModel> = items?.map { it.toCategoryDomainModel() }.orEmpty()
 
 fun Category.toCategoryDomainModel(): CategoryDomainModel =
     CategoryDomainModel(

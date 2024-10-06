@@ -10,20 +10,21 @@ object Constants {
 }
 
 object PreferencesKeys {
+    val REMEMBER_LOGIN_DATA = booleanPreferencesKey("remember_login_data")
     val USER_EMAIL = stringPreferencesKey("user_email")
     val USER_PASSWORD = stringPreferencesKey("user_password")
-    val REMEMBER_LOGIN_DATA = booleanPreferencesKey("remember_login_data")
 }
 
 object Encore {
     const val API_BASE_URL = "http://192.168.23.129:8080/v1"
-    const val ENDPOINT_FEATURED_PLAYLISTS = "browse/featured-playlists"
-    const val ENDPOINT_CATEGORY_PLAYLISTS = "browse/categories/{category_id}/playlists"
-    const val ENDPOINT_HOME_PLAYLISTS = "browse/home-playlists"
+    const val ENDPOINT_GET_CATEGORIES = "categories"
+    const val ENDPOINT_GET_CATEGORY_PLAYLISTS = "categories/{category_id}/playlists"
+    const val ENDPOINT_GET_HOME_PLAYLISTS = "home-playlists"
+    const val ENDPOINT_GET_PLAYLIST = "playlists/{playlist_id}"
 
     object Parameters {
-        const val LOCALE = "locale"
         const val LIMIT = "limit"
+        const val LOCALE = "locale"
         const val OFFSET = "offset"
     }
 }

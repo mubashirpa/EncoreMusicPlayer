@@ -22,7 +22,12 @@ class PlaylistsRepositoryImpl(
         httpClient
             .get(Encore.API_BASE_URL) {
                 url {
-                    appendPathSegments("playlists/$playlistId")
+                    appendPathSegments(
+                        Encore.ENDPOINT_GET_PLAYLIST.replace(
+                            "{playlist_id}",
+                            playlistId,
+                        ),
+                    )
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.body()
@@ -37,7 +42,7 @@ class PlaylistsRepositoryImpl(
             .get(Encore.API_BASE_URL) {
                 url {
                     appendPathSegments(
-                        Encore.ENDPOINT_CATEGORY_PLAYLISTS.replace(
+                        Encore.ENDPOINT_GET_CATEGORY_PLAYLISTS.replace(
                             "{category_id}",
                             categoryId,
                         ),
@@ -52,7 +57,7 @@ class PlaylistsRepositoryImpl(
         httpClient
             .get(Encore.API_BASE_URL) {
                 url {
-                    appendPathSegments(Encore.ENDPOINT_HOME_PLAYLISTS)
+                    appendPathSegments(Encore.ENDPOINT_GET_HOME_PLAYLISTS)
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.body()
