@@ -4,6 +4,7 @@ import com.encore.music.presentation.ui.activities.MainViewModel
 import com.encore.music.presentation.ui.fragments.home.HomeViewModel
 import com.encore.music.presentation.ui.fragments.library.LibraryViewModel
 import com.encore.music.presentation.ui.fragments.playlist.PlaylistViewModel
+import com.encore.music.presentation.ui.fragments.profile.ProfileViewModel
 import com.encore.music.presentation.ui.fragments.resetPassword.ResetPasswordViewModel
 import com.encore.music.presentation.ui.fragments.search.SearchViewModel
 import com.encore.music.presentation.ui.fragments.signIn.SignInViewModel
@@ -17,6 +18,7 @@ val viewModelModule =
         viewModelOf(::LibraryViewModel)
         viewModelOf(::MainViewModel)
         viewModelOf(::PlaylistViewModel)
+        viewModelOf(::ProfileViewModel)
         viewModelOf(::ResetPasswordViewModel)
         viewModelOf(::SearchViewModel)
         viewModelOf(::SignInViewModel)
