@@ -14,9 +14,9 @@ object ImageUtils {
     fun loadProfile(
         context: Context,
         url: String,
-        onStart: (placeholder: Drawable?) -> Unit,
-        onSuccess: (result: Drawable) -> Unit,
-        onError: (error: Drawable?) -> Unit,
+        onStart: (placeholder: Drawable?) -> Unit = {},
+        onSuccess: (result: Drawable) -> Unit = {},
+        onError: (error: Drawable?) -> Unit = {},
     ) {
         val imageLoader =
             ImageLoader
