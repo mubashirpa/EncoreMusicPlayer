@@ -44,8 +44,8 @@ class HomeViewModel(
 
     private fun getCurrentUser() {
         viewModelScope.launch {
-            getCurrentUserUseCase().collect {
-                _currentUser.value = it
+            getCurrentUserUseCase().collect { user ->
+                user?.let { _currentUser.value = it }
             }
         }
     }
