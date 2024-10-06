@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.encore.music.databinding.FragmentSearchBinding
 import com.encore.music.domain.model.authentication.User
+import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.ImageUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -16,6 +18,7 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
+    private val navController by lazy { findNavController() }
     private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreateView(
@@ -85,6 +88,10 @@ class SearchFragment : Fragment() {
 
         viewModel.currentUser.observe(viewLifecycleOwner, currentUserObserver)
         viewModel.uiState.observe(viewLifecycleOwner, uiStateObserver)
+
+        binding.topAppBar.setNavigationOnClickListener {
+            navController.navigateToProfile()
+        }
     }
 
     override fun onDestroyView() {
