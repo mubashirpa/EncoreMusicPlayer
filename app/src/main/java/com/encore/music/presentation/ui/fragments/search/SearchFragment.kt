@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.encore.music.databinding.FragmentSearchBinding
+import com.encore.music.domain.model.authentication.User
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
+import com.encore.music.presentation.utils.ImageUtils
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -31,6 +33,22 @@ class SearchFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        val currentUserObserver =
+            Observer<User> { user ->
+                ImageUtils.loadProfile(
+                    context = requireContext(),
+                    url = user.photoUrl,
+                    onStart = { placeholder ->
+                        binding.topAppBar.navigationIcon = placeholder
+                    },
+                    onSuccess = { result ->
+                        binding.topAppBar.navigationIcon = result
+                    },
+                    onError = { error ->
+                        binding.topAppBar.navigationIcon = error
+                    },
+                )
+            }
         val uiStateObserver =
             Observer<CategoriesUiState> { uiState ->
                 when (uiState) {
@@ -64,6 +82,8 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
+
+        viewModel.currentUser.observe(viewLifecycleOwner, currentUserObserver)
         viewModel.uiState.observe(viewLifecycleOwner, uiStateObserver)
     }
 
