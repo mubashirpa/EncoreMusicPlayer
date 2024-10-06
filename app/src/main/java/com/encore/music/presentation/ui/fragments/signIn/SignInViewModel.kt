@@ -116,23 +116,24 @@ class SignInViewModel(
     }
 
     private fun signInWithGoogle(idToken: String) {
-        googleSignInUseCase(idToken).onEach { result ->
-            when (result) {
-                is Result.Empty -> {}
+        googleSignInUseCase(idToken)
+            .onEach { result ->
+                when (result) {
+                    is Result.Empty -> {}
 
-                is Result.Error -> {
-                    _uiState.emit(SignInUiState.SignInError(result.message!!))
-                }
+                    is Result.Error -> {
+                        _uiState.emit(SignInUiState.SignInError(result.message!!))
+                    }
 
-                is Result.Loading -> {
-                    _uiState.emit(SignInUiState.SignInLoading)
-                }
+                    is Result.Loading -> {
+                        _uiState.emit(SignInUiState.SignInLoading)
+                    }
 
-                is Result.Success -> {
-                    _uiState.emit(SignInUiState.SignInSuccess)
+                    is Result.Success -> {
+                        _uiState.emit(SignInUiState.SignInSuccess)
+                    }
                 }
-            }
-        }
+            }.launchIn(viewModelScope)
     }
 
     private fun getLoginPreferences() {

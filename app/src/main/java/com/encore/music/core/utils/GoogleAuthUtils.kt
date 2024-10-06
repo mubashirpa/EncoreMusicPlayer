@@ -25,7 +25,6 @@ class GoogleAuthUtils(
         onSignInFailure: (message: String) -> Unit,
     ) {
         val credentialManager = CredentialManager.create(context)
-
         val nonce = generateNonce()
 
         val googleIdOption: GetGoogleIdOption =

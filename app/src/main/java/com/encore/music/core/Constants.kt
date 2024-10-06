@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 
 object Constants {
     const val GOOGLE_SERVER_CLIENT_ID =
-        "228051723605-e86203qhe98ed82ad5q13u8cu06hsu9o.apps.googleusercontent.com"
+        "228051723605-fpsj95h4o48fa9l0soudi9r0fdqb9896.apps.googleusercontent.com"
     const val ONBOARDING_BG_IMAGE_FILE_NAME = "bg_onboarding.jpg"
 }
 
