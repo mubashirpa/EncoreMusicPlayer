@@ -1,5 +1,7 @@
 package com.encore.music.presentation.ui.fragments.home
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.encore.music.core.Result
@@ -8,32 +10,36 @@ import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val getHomePlaylistsUseCase: GetHomePlaylistsUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getHomePlaylistsUseCase: GetHomePlaylistsUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableSharedFlow<HomeUiState>()
-    val uiState: SharedFlow<HomeUiState> = _uiState
+    private val _uiState = MutableLiveData<HomeUiState>()
+    val uiState: LiveData<HomeUiState> = _uiState
 
-    private val _topTracks = MutableStateFlow(emptyList<Track>())
-    val topTracks: StateFlow<List<Track>> = _topTracks.asStateFlow()
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User> = _currentUser
 
-    private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
-    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+    private val _topTracks = MutableLiveData<List<Track>>()
+    val topTracks: LiveData<List<Track>> = _topTracks
 
     init {
         getCurrentUser()
         getTopTracks()
         getHomePlaylists()
+    }
+
+    fun onEvent(event: HomeUiEvent) {
+        when (event) {
+            HomeUiEvent.OnRetry -> {
+                getTopTracks()
+                getHomePlaylists()
+            }
+        }
     }
 
     private fun getCurrentUser() {
@@ -64,23 +70,23 @@ class HomeViewModel(
             .onEach { result ->
                 when (result) {
                     is Result.Empty -> {
-                        _uiState.emit(HomeUiState.Empty)
+                        _uiState.value = HomeUiState.Empty
                     }
 
                     is Result.Error -> {
-                        _uiState.emit(HomeUiState.Error(result.message!!))
+                        _uiState.value = HomeUiState.Error(result.message!!)
                     }
 
                     is Result.Loading -> {
-                        _uiState.emit(HomeUiState.Loading)
+                        _uiState.value = HomeUiState.Loading
                     }
 
                     is Result.Success -> {
-                        val playlist = result.data.orEmpty()
-                        if (playlist.isEmpty()) {
-                            _uiState.emit(HomeUiState.Empty)
+                        val categories = result.data
+                        if (categories == null) {
+                            _uiState.value = HomeUiState.Empty
                         } else {
-                            _uiState.emit(HomeUiState.Success(playlist))
+                            _uiState.value = HomeUiState.Success(categories)
                         }
                     }
                 }
