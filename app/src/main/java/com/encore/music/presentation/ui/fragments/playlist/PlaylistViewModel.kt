@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.encore.music.core.Result
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
-import com.encore.music.domain.usecase.playlists.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
 import com.encore.music.presentation.navigation.Screen
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
