@@ -5,18 +5,16 @@ import com.encore.music.domain.repository.SongsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetSavedArtistsUseCase(
+class GetFollowedArtistsUseCase(
     private val songsRepository: SongsRepository,
 ) {
-    // TODO: Implement this
     operator fun invoke(): Flow<List<Artist>> =
-        songsRepository.getPlaylists().map { artists ->
+        songsRepository.getFollowedArtists().map { artists ->
             artists.map { artist ->
                 Artist(
-                    id = artist.playlistId,
+                    id = artist.artistId,
                     image = artist.image,
                     name = artist.name,
-                    tracks = null,
                 )
             }
         }

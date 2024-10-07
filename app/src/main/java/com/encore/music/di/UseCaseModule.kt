@@ -15,10 +15,12 @@ import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.FollowArtistUseCase
+import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
-import com.encore.music.domain.usecase.songs.GetSavedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword
@@ -29,14 +31,16 @@ import org.koin.dsl.module
 val useCaseModule =
     module {
         singleOf(::CreatePlaylistUseCase)
+        singleOf(::FollowArtistUseCase)
         singleOf(::GetCategoriesUseCase)
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
         singleOf(::GetPlaylistUseCase)
         singleOf(::GetRecentTracksUseCase)
-        singleOf(::GetSavedArtistsUseCase)
+        singleOf(::GetFollowedArtistsUseCase)
         singleOf(::GetSavedPlaylistsUseCase)
         singleOf(::InsertPlaylistUseCase)
+        singleOf(::InsertRecentTrackUseCase)
 
         // Authentication
         singleOf(::CreateUserUseCase)

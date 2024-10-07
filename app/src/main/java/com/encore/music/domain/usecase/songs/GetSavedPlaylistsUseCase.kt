@@ -13,6 +13,7 @@ class GetSavedPlaylistsUseCase(
             playlists.map { playlist ->
                 Playlist(
                     description = playlist.description,
+                    id = playlist.playlistId,
                     image = playlist.image,
                     name = playlist.name,
                     owner = playlist.owner,

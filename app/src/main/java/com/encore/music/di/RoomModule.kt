@@ -1,22 +1,30 @@
 package com.encore.music.di
 
 import androidx.room.Room
-import com.encore.music.data.local.dao.SongsDao
-import com.encore.music.data.local.database.AppDatabase
+import com.encore.music.data.local.dao.ArtistsDao
+import com.encore.music.data.local.dao.PlaylistsDao
+import com.encore.music.data.local.dao.TracksDao
+import com.encore.music.data.local.database.SongsDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val roomModule =
     module {
-        single<AppDatabase> {
+        single<SongsDatabase> {
             Room
                 .databaseBuilder(
                     context = androidContext(),
-                    klass = AppDatabase::class.java,
-                    name = "app-database",
+                    klass = SongsDatabase::class.java,
+                    name = "songs-database",
                 ).build()
         }
-        single<SongsDao> {
-            get<AppDatabase>().songsDao()
+        single<ArtistsDao> {
+            get<SongsDatabase>().artistsDao()
+        }
+        single<PlaylistsDao> {
+            get<SongsDatabase>().playlistsDao()
+        }
+        single<TracksDao> {
+            get<SongsDatabase>().tracksDao()
         }
     }

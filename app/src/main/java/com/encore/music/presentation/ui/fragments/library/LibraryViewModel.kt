@@ -11,8 +11,8 @@ import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
-import com.encore.music.domain.usecase.songs.GetSavedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,7 +24,7 @@ class LibraryViewModel(
     private val createPlaylistUseCase: CreatePlaylistUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getRecentTracksUseCase: GetRecentTracksUseCase,
-    private val getSavedArtistsUseCase: GetSavedArtistsUseCase,
+    private val getSavedArtistsUseCase: GetFollowedArtistsUseCase,
     private val getSavedPlaylistsUseCase: GetSavedPlaylistsUseCase,
 ) : ViewModel() {
     private val _uiState = MutableLiveData<LibraryUiState>()

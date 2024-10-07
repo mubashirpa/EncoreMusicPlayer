@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import java.util.UUID
-import com.encore.music.data.local.entity.playlists.Playlist as PlaylistEntity
+import com.encore.music.data.local.entity.playlists.PlaylistEntity as PlaylistEntity
 
 class CreatePlaylistUseCase(
     private val authenticationRepository: AuthenticationRepository,
