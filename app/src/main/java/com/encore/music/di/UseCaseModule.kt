@@ -15,6 +15,9 @@ import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.playlists.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
+import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword
@@ -24,10 +27,12 @@ import org.koin.dsl.module
 
 val useCaseModule =
     module {
+        singleOf(::CreatePlaylistUseCase)
         singleOf(::GetCategoriesUseCase)
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
         singleOf(::GetPlaylistUseCase)
+        singleOf(::GetSavedPlaylistsUseCase)
         singleOf(::InsertPlaylistUseCase)
 
         // Authentication

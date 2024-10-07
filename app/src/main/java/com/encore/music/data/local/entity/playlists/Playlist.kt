@@ -10,4 +10,5 @@ data class Playlist(
     val image: String?,
     val name: String?,
     val owner: String?,
+    val ownerId: String?,
 )
