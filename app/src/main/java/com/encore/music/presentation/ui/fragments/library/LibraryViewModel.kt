@@ -1,116 +1,130 @@
 package com.encore.music.presentation.ui.fragments.library
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.encore.music.core.Result
 import com.encore.music.domain.model.artists.Artist
+import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
-import kotlinx.coroutines.delay
+import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
+import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
+import com.encore.music.domain.usecase.songs.GetSavedArtistsUseCase
+import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class LibraryViewModel : ViewModel() {
-    private val _uiState = MutableSharedFlow<LibraryUiState>()
-    val uiState: SharedFlow<LibraryUiState> = _uiState
+class LibraryViewModel(
+    private val createPlaylistUseCase: CreatePlaylistUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getRecentTracksUseCase: GetRecentTracksUseCase,
+    private val getSavedArtistsUseCase: GetSavedArtistsUseCase,
+    private val getSavedPlaylistsUseCase: GetSavedPlaylistsUseCase,
+) : ViewModel() {
+    private val _uiState = MutableLiveData<LibraryUiState>()
+    val uiState: LiveData<LibraryUiState> = _uiState
 
-    private val _artists = MutableStateFlow(emptyList<Artist>())
-    val artists: StateFlow<List<Artist>> = _artists.asStateFlow()
+    private val _uiEvent = MutableSharedFlow<LibraryUiEvent>()
+    val uiEvent: SharedFlow<LibraryUiEvent> = _uiEvent
 
-    private val _playlists = MutableStateFlow(emptyList<Playlist>())
-    val playlists: StateFlow<List<Playlist>> = _playlists.asStateFlow()
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User> = _currentUser
 
-    private val _tracks = MutableStateFlow(emptyList<Track>())
-    val tracks: StateFlow<List<Track>> = _tracks.asStateFlow()
+    private val _savedArtists = MutableLiveData<List<Artist>>()
+    val savedArtists: LiveData<List<Artist>> = _savedArtists
 
-    val loading = MutableList<Boolean?>(3) { null }
+    private val _savedPlaylists = MutableLiveData<List<Playlist>>()
+    val savedPlaylists: LiveData<List<Playlist>> = _savedPlaylists
+
+    private val _recentTracks = MutableLiveData<List<Track>>()
+    val recentTracks: LiveData<List<Track>> = _recentTracks
+
+    private val isEmpty = mutableListOf(false, false, false)
 
     init {
-        viewModelScope.launch {
-            _uiState.emit(LibraryUiState.Loading)
-        }
-        getUserArtists()
-        getUserPlaylists()
-        getUserTracks()
+        _uiState.value = LibraryUiState.Loading
+        getCurrentUser()
+        getSavedArtists()
+        getSavedPlaylists()
+        getRecentTracks()
     }
 
-    private fun getUserArtists() {
+    private fun getCurrentUser() {
         viewModelScope.launch {
-            delay(3000)
-            // TODO("Emit success only if list is not empty")
-            _uiState.emit(LibraryUiState.Success)
-            _artists.update {
-                listOf(
-                    Artist(
-                        name = "Artist 1",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                    Artist(
-                        name = "Artist 2",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                    Artist(
-                        name = "Artist 3",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                )
+            getCurrentUserUseCase().collect { user ->
+                user?.let { _currentUser.value = it }
             }
         }
     }
 
-    private fun getUserPlaylists() {
+    private fun getSavedArtists() {
         viewModelScope.launch {
-            delay(2000)
-            // TODO("Emit success only if list is not empty")
-            _uiState.emit(LibraryUiState.Success)
-            _playlists.update {
-                listOf(
-                    Playlist(
-                        name = "Playlist 1",
-                        id = "37i9dQZF1DX0XUfTFmNBRM",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                        owner = "Spotify",
-                    ),
-                    Playlist(
-                        name = "Playlist 2",
-                        id = "37i9dQZF1DWTt3gMo0DLxA",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                        owner = "Spotify",
-                    ),
-                )
+            getSavedArtistsUseCase().collect {
+                isEmpty[0] = it.isEmpty()
+                _savedArtists.value = it
+                emitUiState()
             }
         }
     }
 
-    private fun getUserTracks() {
+    private fun getSavedPlaylists() {
         viewModelScope.launch {
-            delay(1000)
-            // TODO("Emit success only if list is not empty")
-            _uiState.emit(LibraryUiState.Success)
-            _tracks.update {
-                listOf(
-                    Track(
-                        name = "Track 1",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                    Track(
-                        name = "Track 2",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                    Track(
-                        name = "Track 3",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                    Track(
-                        name = "Track 4",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                )
+            getSavedPlaylistsUseCase().collect {
+                isEmpty[1] = it.isEmpty()
+                _savedPlaylists.value = it
+                emitUiState()
             }
         }
+    }
+
+    private fun getRecentTracks() {
+        viewModelScope.launch {
+            getRecentTracksUseCase().collect {
+                isEmpty[2] = it.isEmpty()
+                _recentTracks.value = it
+                emitUiState()
+            }
+        }
+    }
+
+    private fun emitUiState() {
+        if (isEmpty.all { it }) {
+            _uiState.value = LibraryUiState.Empty
+        } else {
+            if (uiState.value !is LibraryUiState.Success) {
+                _uiState.value = LibraryUiState.Success
+            }
+        }
+    }
+
+    fun createPlaylist(
+        name: String,
+        description: String,
+    ) {
+        createPlaylistUseCase(name, description)
+            .onEach { result ->
+                when (result) {
+                    is Result.Empty -> {}
+                    is Result.Error -> {
+                        _uiEvent.emit(LibraryUiEvent.OnOpenProgressDialogChange(false))
+                        _uiEvent.emit(LibraryUiEvent.OnShowSnackBar(result.message!!))
+                    }
+
+                    is Result.Loading -> {
+                        _uiEvent.emit(LibraryUiEvent.OnOpenProgressDialogChange(true))
+                    }
+
+                    is Result.Success -> {
+                        _uiEvent.emit(LibraryUiEvent.OnOpenProgressDialogChange(false))
+                        _uiEvent.emit(LibraryUiEvent.OnOpenCreatePlaylistBottomSheetChange(false))
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 }

@@ -55,6 +55,12 @@
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
     <string name="retry">Retry</string>
+    <string name="add_playlist">Add playlist</string>
+    <string name="playlist_name">Playlist name</string>
+    <string name="give_your_playlist_a_catchy_description">Give your playlist a catchy description</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_recent_activity">No recent activity</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>

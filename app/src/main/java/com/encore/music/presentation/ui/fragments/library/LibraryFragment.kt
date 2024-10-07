@@ -14,9 +14,13 @@ import com.encore.music.databinding.FragmentLibraryBinding
 import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
+import com.encore.music.presentation.navigation.navigateToProfile
+import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -26,24 +30,11 @@ class LibraryFragment : Fragment() {
 
     private val viewModel: LibraryViewModel by viewModel()
     private val navController by lazy { findNavController() }
-    private val libraryAdapter by lazy {
-        LibraryAdapter(
-            context = requireContext(),
-            items = mutableListOf(),
-            onArtistClicked = { artist ->
-                artist.id?.let { id ->
-                    navController.navigateToArtist(id)
-                }
-            },
-            onPlaylistClicked = { playlist ->
-                playlist.id?.let { id ->
-                    navController.navigateToPlaylist(id)
-                }
-            },
-            onTrackClicked = { track ->
-                track.id?.let { id ->
-                    navController.navigateToPlayer(id)
-                }
+    private val progressDialog by lazy { ProgressDialogFragment() }
+    private val createPlaylistBottomSheet by lazy {
+        CreatePlaylistBottomSheet(
+            onCreatePlaylist = { name, description ->
+                viewModel.createPlaylist(name, description)
             },
         )
     }
@@ -63,118 +54,205 @@ class LibraryFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        ImageUtils.loadProfile(
-            context = requireContext(),
-            url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-            onStart = { placeholder ->
-                binding.topAppBar.navigationIcon = placeholder
-            },
-            onSuccess = { result ->
-                binding.topAppBar.navigationIcon = result
-            },
-            onError = { error ->
-                binding.topAppBar.navigationIcon = error
-            },
-        )
-
-        binding.recyclerView.apply {
-            addItemDecoration(
-                VerticalItemDecoration(
-                    contentPadding =
-                        PaddingValues(
-                            start = 0,
-                            top = 12,
-                            end = 0,
-                            bottom = 12,
-                        ),
-                    verticalSpacing = 16,
-                ),
+        val libraryAdapter =
+            LibraryAdapter(
+                context = requireContext(),
+                items = mutableListOf(),
+                onArtistClicked = { artist ->
+                    artist.id?.let { id ->
+                        navController.navigateToArtist(id)
+                    }
+                },
+                onPlaylistClicked = { playlist ->
+                    playlist.id?.let { id ->
+                        navController.navigateToPlaylist(id)
+                    }
+                },
+                onTrackClicked = { track ->
+                    track.id?.let { id ->
+                        navController.navigateToPlayer(id)
+                    }
+                },
             )
-            adapter = libraryAdapter
+
+        viewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            ImageUtils.loadProfile(
+                context = requireContext(),
+                url = user.photoUrl,
+                onStart = { placeholder ->
+                    binding.topAppBar.navigationIcon = placeholder
+                },
+                onSuccess = { result ->
+                    binding.topAppBar.navigationIcon = result
+                },
+                onError = { error ->
+                    binding.topAppBar.navigationIcon = error
+                },
+            )
+        }
+
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                LibraryUiState.Empty -> {
+                    binding.errorView.apply {
+                        root.visibility = View.VISIBLE
+                        errorText.text = getString(R.string.no_recent_activity)
+                    }
+                }
+
+                LibraryUiState.Loading -> {
+                    binding.progressCircular.visibility = View.VISIBLE
+                }
+
+                LibraryUiState.Success -> {
+                    binding.errorView.root.visibility = View.GONE
+                    binding.progressCircular.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+
+                    binding.recyclerView.apply {
+                        addItemDecoration(
+                            VerticalItemDecoration(
+                                contentPadding =
+                                    PaddingValues(
+                                        start = 0,
+                                        top = 12,
+                                        end = 0,
+                                        bottom = 12,
+                                    ),
+                                verticalSpacing = 16,
+                            ),
+                        )
+                        adapter = libraryAdapter
+                    }
+                }
+            }
+        }
+
+        viewModel.savedArtists.observe(viewLifecycleOwner) { artists ->
+            if (artists.isNotEmpty()) {
+                libraryAdapter.items.add(
+                    0,
+                    LibraryListItem.ArtistsItem(getString(R.string.artists), artists),
+                )
+            }
+
+            if (artists.isNotEmpty()) {
+                val libraryItems = libraryAdapter.items
+                val firstItem = libraryItems.firstOrNull()
+                if (firstItem is LibraryListItem.ArtistsItem) {
+                    libraryAdapter.notifyArtistsDataChange(artists)
+                } else {
+                    libraryItems.add(
+                        0,
+                        LibraryListItem.ArtistsItem(
+                            title = getString(R.string.artists),
+                            artists = artists,
+                        ),
+                    )
+                    libraryAdapter.notifyItemInserted(0)
+                }
+            }
+        }
+
+        viewModel.savedPlaylists.observe(viewLifecycleOwner) { playlists ->
+            if (playlists.isNotEmpty()) {
+                val libraryItems = libraryAdapter.items
+                val secondItem = libraryItems.getOrNull(1)
+                if (secondItem is LibraryListItem.PlaylistsItem) {
+                    libraryAdapter.notifyPlaylistsDataChange(playlists)
+                } else {
+                    val trackIndex =
+                        libraryItems.indexOfFirst { it is LibraryListItem.TracksItem }
+                    val index =
+                        if (trackIndex == -1) libraryItems.size else trackIndex
+                    libraryItems.add(
+                        index,
+                        LibraryListItem.PlaylistsItem(
+                            title = getString(R.string.playlists),
+                            playlists = playlists,
+                        ),
+                    )
+                    libraryAdapter.notifyItemInserted(index)
+                }
+            }
+        }
+
+        viewModel.recentTracks.observe(viewLifecycleOwner) { tracks ->
+            if (tracks.isNotEmpty()) {
+                val libraryItems = libraryAdapter.items
+                val thirdItem = libraryItems.getOrNull(2)
+                if (thirdItem is LibraryListItem.TracksItem) {
+                    libraryAdapter.notifyTracksDataChange(tracks)
+                } else {
+                    libraryItems.add(
+                        LibraryListItem.TracksItem(
+                            title = getString(R.string.songs),
+                            tracks = tracks,
+                        ),
+                    )
+                    libraryAdapter.notifyItemInserted(libraryItems.size - 1)
+                }
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val libraryItems = libraryAdapter.items
-
-                launch {
-                    viewModel.artists.collect { artists ->
-                        if (artists.isNotEmpty()) {
-                            val firstItem = libraryItems.firstOrNull()
-                            if (firstItem is LibraryListItem.ArtistsItem) {
-                                libraryAdapter.notifyArtistsDataChange(artists)
+                viewModel.uiEvent.collect { uiEvent ->
+                    when (uiEvent) {
+                        is LibraryUiEvent.OnOpenCreatePlaylistBottomSheetChange -> {
+                            if (uiEvent.open) {
+                                if (!createPlaylistBottomSheet.isAdded) {
+                                    createPlaylistBottomSheet.show(
+                                        childFragmentManager,
+                                        CreatePlaylistBottomSheet.TAG,
+                                    )
+                                }
                             } else {
-                                libraryItems.add(
-                                    0,
-                                    LibraryListItem.ArtistsItem(
-                                        title = getString(R.string.artists),
-                                        artists = artists,
-                                    ),
-                                )
-                                libraryAdapter.notifyItemInserted(0)
+                                if (createPlaylistBottomSheet.isAdded) createPlaylistBottomSheet.dismiss()
                             }
                         }
-                    }
-                }
 
-                launch {
-                    viewModel.playlists.collect { playlists ->
-                        if (playlists.isNotEmpty()) {
-                            val secondItem = libraryItems.getOrNull(1)
-                            if (secondItem is LibraryListItem.PlaylistsItem) {
-                                libraryAdapter.notifyPlaylistsDataChange(playlists)
+                        is LibraryUiEvent.OnOpenProgressDialogChange -> {
+                            if (uiEvent.open) {
+                                if (!progressDialog.isAdded) {
+                                    progressDialog.show(
+                                        childFragmentManager,
+                                        ProgressDialogFragment.TAG,
+                                    )
+                                }
                             } else {
-                                val trackIndex =
-                                    libraryItems.indexOfFirst { it is LibraryListItem.TracksItem }
-                                val index =
-                                    if (trackIndex == -1) libraryItems.size else trackIndex
-                                libraryItems.add(
-                                    index,
-                                    LibraryListItem.PlaylistsItem(
-                                        title = getString(R.string.playlists),
-                                        playlists = playlists,
-                                    ),
-                                )
-                                libraryAdapter.notifyItemInserted(index)
+                                if (progressDialog.isAdded) progressDialog.dismiss()
                             }
                         }
-                    }
-                }
 
-                launch {
-                    viewModel.tracks.collect { tracks ->
-                        if (tracks.isNotEmpty()) {
-                            val thirdItem = libraryItems.getOrNull(2)
-                            if (thirdItem is LibraryListItem.TracksItem) {
-                                libraryAdapter.notifyTracksDataChange(tracks)
-                            } else {
-                                libraryItems.add(
-                                    LibraryListItem.TracksItem(
-                                        title = getString(R.string.songs),
-                                        tracks = tracks,
-                                    ),
-                                )
-                                libraryAdapter.notifyItemInserted(libraryItems.size - 1)
-                            }
+                        is LibraryUiEvent.OnShowSnackBar -> {
+                            Snackbar
+                                .make(
+                                    binding.root,
+                                    uiEvent.message.asString(requireContext()),
+                                    Snackbar.LENGTH_LONG,
+                                ).show()
                         }
                     }
                 }
+            }
+        }
 
-                viewModel.uiState.collect { uiState ->
-                    when (uiState) {
-                        LibraryUiState.Error -> TODO()
+        binding.topAppBar.setNavigationOnClickListener {
+            navController.navigateToProfile()
+        }
 
-                        LibraryUiState.Loading -> {
-                            binding.progressCircular.visibility = View.VISIBLE
-                        }
-
-                        LibraryUiState.Success -> {
-                            binding.progressCircular.visibility = View.GONE
-                        }
-
-                        LibraryUiState.Empty -> TODO()
-                    }
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.add_playlist -> {
+                    createPlaylistBottomSheet.show(
+                        childFragmentManager,
+                        CreatePlaylistBottomSheet.TAG,
+                    )
+                    true
                 }
+
+                else -> false
             }
         }
     }

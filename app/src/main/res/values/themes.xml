@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Encore" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/md_theme_primary</item>
@@ -49,10 +49,17 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
     </style>
 
-    <style name="Theme.Encore" parent="Base.Theme.Encore" />
+    <style name="Theme.Encore" parent="Base.Theme.Encore">
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Encore.BottomSheetDialog</item>
+    </style>
 
     <style name="ProgressDialog" parent="MaterialAlertDialog.Material3">
         <item name="android:windowMinWidthMajor">0%</item>
         <item name="android:windowMinWidthMinor">0%</item>
+    </style>
+
+    <style name="ThemeOverlay.Encore.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="android:navigationBarColor" tools:ignore="NewApi">@android:color/transparent
+        </item>
     </style>
 </resources>
