@@ -12,7 +12,5 @@ sealed class HomeUiState {
         val playlists: List<HomePlaylist>,
     ) : HomeUiState()
 
-    data object Empty : HomeUiState()
-
     data object Loading : HomeUiState()
 }

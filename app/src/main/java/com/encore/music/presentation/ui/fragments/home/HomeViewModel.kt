@@ -4,12 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.encore.music.R
 import com.encore.music.core.Result
+import com.encore.music.core.UiText
 import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
-import kotlinx.coroutines.delay
+import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getHomePlaylistsUseCase: GetHomePlaylistsUseCase,
+    private val getRecentTracksUseCase: GetRecentTracksUseCase,
 ) : ViewModel() {
     private val _uiState = MutableLiveData<HomeUiState>()
     val uiState: LiveData<HomeUiState> = _uiState
@@ -33,15 +36,6 @@ class HomeViewModel(
         getHomePlaylists()
     }
 
-    fun onEvent(event: HomeUiEvent) {
-        when (event) {
-            HomeUiEvent.OnRetry -> {
-                getTopTracks()
-                getHomePlaylists()
-            }
-        }
-    }
-
     private fun getCurrentUser() {
         viewModelScope.launch {
             getCurrentUserUseCase().collect { user ->
@@ -51,17 +45,10 @@ class HomeViewModel(
     }
 
     private fun getTopTracks() {
-        // TODO: Get top tracks from Room Database
         viewModelScope.launch {
-            delay(1000)
-            _topTracks.value =
-                List(6) {
-                    Track(
-                        id = "$it",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                        name = "Track $it",
-                    )
-                }
+            getRecentTracksUseCase(limit = 6).collect { tracks ->
+                _topTracks.value = tracks
+            }
         }
     }
 
@@ -69,9 +56,7 @@ class HomeViewModel(
         getHomePlaylistsUseCase()
             .onEach { result ->
                 when (result) {
-                    is Result.Empty -> {
-                        _uiState.value = HomeUiState.Empty
-                    }
+                    is Result.Empty -> Unit
 
                     is Result.Error -> {
                         _uiState.value = HomeUiState.Error(result.message!!)
@@ -82,14 +67,15 @@ class HomeViewModel(
                     }
 
                     is Result.Success -> {
-                        val categories = result.data
-                        if (categories == null) {
-                            _uiState.value = HomeUiState.Empty
-                        } else {
-                            _uiState.value = HomeUiState.Success(categories)
-                        }
+                        _uiState.value = result.data?.let { categories ->
+                            HomeUiState.Success(categories)
+                        } ?: HomeUiState.Error(UiText.StringResource(R.string.error_unexpected))
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    fun retry() {
+        getHomePlaylists()
     }
 }
