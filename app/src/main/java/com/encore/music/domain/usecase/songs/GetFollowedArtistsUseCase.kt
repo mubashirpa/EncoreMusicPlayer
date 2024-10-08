@@ -1,5 +1,6 @@
 package com.encore.music.domain.usecase.songs
 
+import com.encore.music.core.mapper.toArtistDomainModel
 import com.encore.music.domain.model.artists.Artist
 import com.encore.music.domain.repository.SongsRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,12 +11,6 @@ class GetFollowedArtistsUseCase(
 ) {
     operator fun invoke(): Flow<List<Artist>> =
         songsRepository.getFollowedArtists().map { artists ->
-            artists.map { artist ->
-                Artist(
-                    id = artist.artistId,
-                    image = artist.image,
-                    name = artist.name,
-                )
-            }
+            artists.map { it.toArtistDomainModel() }
         }
 }

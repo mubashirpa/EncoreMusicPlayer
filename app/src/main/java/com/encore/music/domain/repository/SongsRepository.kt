@@ -3,6 +3,7 @@ package com.encore.music.domain.repository
 import com.encore.music.data.local.entity.artist.ArtistEntity
 import com.encore.music.data.local.entity.playlists.PlaylistEntity
 import com.encore.music.data.local.entity.playlists.PlaylistTrackCrossRef
+import com.encore.music.data.local.entity.playlists.PlaylistWithTracksAndArtists
 import com.encore.music.data.local.entity.tracks.TrackArtistCrossRef
 import com.encore.music.data.local.entity.tracks.TrackEntity
 import com.encore.music.data.local.entity.tracks.TrackWithArtists
@@ -18,6 +19,8 @@ interface SongsRepository {
     )
 
     fun getPlaylists(): Flow<List<PlaylistEntity>>
+
+    fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists>
 
     suspend fun insertRecentTrack(
         track: TrackEntity,

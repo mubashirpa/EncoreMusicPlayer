@@ -195,8 +195,11 @@ fun NavController.navigateToResetPassword(email: String) {
     navigate(route = Screen.ResetPassword(email = email))
 }
 
-fun NavController.navigateToPlaylist(playlistId: String) {
-    navigate(route = Screen.Playlist(id = playlistId))
+fun NavController.navigateToPlaylist(
+    playlistId: String,
+    isLocal: Boolean,
+) {
+    navigate(route = Screen.Playlist(id = playlistId, isLocal = isLocal))
 }
 
 fun NavController.navigateToArtist(artistId: String) {

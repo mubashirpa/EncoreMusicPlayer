@@ -1,5 +1,6 @@
 package com.encore.music.presentation.ui.fragments.playlist
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,11 +33,14 @@ class PlaylistFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        val playlistAdapter = initRecyclerView()
 
         val uiStateObserver =
             Observer<PlaylistUiState> { uiState ->
@@ -61,13 +65,16 @@ class PlaylistFragment : Fragment() {
                             buildList {
                                 add(PlaylistListItem.HeaderItem(uiState.playlist))
                                 uiState.playlist.tracks?.let { tracks ->
-                                    addAll(tracks.map { PlaylistListItem.TracksItem(it) })
+                                    if (tracks.isEmpty()) {
+                                        add(PlaylistListItem.EmptyTracksItem)
+                                    } else {
+                                        addAll(tracks.map { PlaylistListItem.TracksItem(it) })
+                                    }
                                 }
                             }.toMutableList()
-                        initRecyclerView(items)
+                        playlistAdapter.items = items
+                        playlistAdapter.notifyDataSetChanged()
                     }
-
-                    PlaylistUiState.Empty -> Unit
 
                     PlaylistUiState.Loading -> {
                         binding.errorView.root.visibility = View.GONE
@@ -98,11 +105,11 @@ class PlaylistFragment : Fragment() {
         _binding = null
     }
 
-    private fun initRecyclerView(items: MutableList<PlaylistListItem>) {
+    private fun initRecyclerView(): PlaylistAdapter {
         val playlistAdapter =
             PlaylistAdapter(
                 context = requireContext(),
-                items = items,
+                items = mutableListOf(),
                 onTrackClicked = { track ->
                     track.id?.let { id ->
                         viewModel.onEvent(PlaylistUiEvent.AddTrackToPlaylist(track))
@@ -133,5 +140,6 @@ class PlaylistFragment : Fragment() {
             }
             adapter = playlistAdapter
         }
+        return playlistAdapter
     }
 }

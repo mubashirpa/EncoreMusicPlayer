@@ -12,7 +12,5 @@ sealed class PlaylistUiState {
         val playlist: Playlist,
     ) : PlaylistUiState()
 
-    data object Empty : PlaylistUiState()
-
     data object Loading : PlaylistUiState()
 }

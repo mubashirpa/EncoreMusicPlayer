@@ -29,6 +29,7 @@ sealed class Screen {
     @Serializable
     data class Playlist(
         val id: String,
+        val isLocal: Boolean,
     ) : Screen()
 
     @Serializable

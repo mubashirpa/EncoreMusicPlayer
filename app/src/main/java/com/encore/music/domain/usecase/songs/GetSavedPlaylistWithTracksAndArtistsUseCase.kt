@@ -6,11 +6,11 @@ import com.encore.music.domain.repository.SongsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetSavedPlaylistsUseCase(
+class GetSavedPlaylistWithTracksAndArtistsUseCase(
     private val songsRepository: SongsRepository,
 ) {
-    operator fun invoke(): Flow<List<Playlist>> =
-        songsRepository.getPlaylists().map { playlists ->
-            playlists.map { it.toPlaylistDomainModel() }
-        }
+    operator fun invoke(playlistId: String): Flow<Playlist?> =
+        songsRepository
+            .getPlaylistWithTracksAndArtistsById(playlistId)
+            .map { it.toPlaylistDomainModel() }
 }

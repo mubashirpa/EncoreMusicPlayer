@@ -24,3 +24,10 @@ fun ArtistDomainModel.toArtistEntity(followAt: Long? = null): ArtistEntity =
         image = image,
         name = name,
     )
+
+fun ArtistEntity.toArtistDomainModel(): ArtistDomainModel =
+    ArtistDomainModel(
+        id = artistId,
+        image = image,
+        name = name,
+    )

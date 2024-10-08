@@ -52,7 +52,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 },
                 onPlaylistClicked = { playlist ->
                     playlist.id?.let { id ->
-                        navController.navigateToPlaylist(id)
+                        navController.navigateToPlaylist(
+                            playlistId = id,
+                            isLocal = playlist.isLocal == true,
+                        )
                     }
                 },
             )

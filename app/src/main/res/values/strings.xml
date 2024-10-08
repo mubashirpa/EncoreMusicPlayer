@@ -123,4 +123,5 @@
     <string name="error_invalid_email">Please enter a valid email.</string>
     <string name="error_invalid_password">Use a mix of letters and numbers that you can remember.</string>
     <string name="error_invalid_repeated_password">You must enter the same password twice in order to confirm it.</string>
+    <string name="start_building_your_playlist_by_adding_some_songs">Start building your playlist by adding some songs</string>
 </resources>

@@ -65,7 +65,10 @@ class LibraryFragment : Fragment() {
                 },
                 onPlaylistClicked = { playlist ->
                     playlist.id?.let { id ->
-                        navController.navigateToPlaylist(id)
+                        navController.navigateToPlaylist(
+                            playlistId = id,
+                            isLocal = playlist.isLocal == true,
+                        )
                     }
                 },
                 onTrackClicked = { track ->

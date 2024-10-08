@@ -6,29 +6,40 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.encore.music.R
 import com.encore.music.core.Result
+import com.encore.music.core.UiText
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
+import com.encore.music.domain.usecase.songs.GetSavedPlaylistWithTracksAndArtistsUseCase
 import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.presentation.navigation.Screen
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
     savedStateHandle: SavedStateHandle,
     private val getPlaylistUseCase: GetPlaylistUseCase,
+    private val getSavedPlaylistWithTracksAndArtistsUseCase: GetSavedPlaylistWithTracksAndArtistsUseCase,
     private val insertPlaylistUseCase: InsertPlaylistUseCase,
     private val insertRecentTrackUseCase: InsertRecentTrackUseCase,
 ) : ViewModel() {
-    private val playlistId = savedStateHandle.toRoute<Screen.Playlist>().id
+    private val playlistRoute = savedStateHandle.toRoute<Screen.Playlist>()
+    private val playlistId = playlistRoute.id
+    private val isLocal = playlistRoute.isLocal
 
     private val _uiState = MutableLiveData<PlaylistUiState>()
     val uiState: LiveData<PlaylistUiState> = _uiState
 
     init {
-        getPlaylist(playlistId)
+        if (isLocal) {
+            getPlaylistWithTracksAndArtists(playlistId)
+        } else {
+            getPlaylist(playlistId)
+        }
     }
 
     fun onEvent(event: PlaylistUiEvent) {
@@ -38,7 +49,11 @@ class PlaylistViewModel(
             }
 
             PlaylistUiEvent.OnRetry -> {
-                getPlaylist(playlistId)
+                if (isLocal) {
+                    getPlaylistWithTracksAndArtists(playlistId)
+                } else {
+                    getPlaylist(playlistId)
+                }
             }
 
             PlaylistUiEvent.SavePlaylist -> {
@@ -51,9 +66,7 @@ class PlaylistViewModel(
         getPlaylistUseCase(playlistId)
             .onEach { result ->
                 when (result) {
-                    is Result.Empty -> {
-                        _uiState.value = PlaylistUiState.Empty
-                    }
+                    is Result.Empty -> Unit
 
                     is Result.Error -> {
                         _uiState.value = PlaylistUiState.Error(result.message!!)
@@ -64,15 +77,22 @@ class PlaylistViewModel(
                     }
 
                     is Result.Success -> {
-                        val playlist = result.data
-                        if (playlist == null) {
-                            _uiState.value = PlaylistUiState.Empty
-                        } else {
-                            _uiState.value = PlaylistUiState.Success(playlist)
-                        }
+                        _uiState.value = result.data?.let { playlist ->
+                            PlaylistUiState.Success(playlist)
+                        } ?: PlaylistUiState.Error(UiText.StringResource(R.string.error_unexpected))
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    private fun getPlaylistWithTracksAndArtists(playlistId: String) {
+        viewModelScope.launch {
+            getSavedPlaylistWithTracksAndArtistsUseCase(playlistId).collect {
+                _uiState.value = it?.let { playlist ->
+                    PlaylistUiState.Success(playlist)
+                } ?: PlaylistUiState.Error(UiText.StringResource(R.string.error_unexpected))
+            }
+        }
     }
 
     private fun insertRecentTrack(track: Track) {

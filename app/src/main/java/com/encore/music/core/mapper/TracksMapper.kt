@@ -1,6 +1,7 @@
 package com.encore.music.core.mapper
 
 import com.encore.music.data.local.entity.tracks.TrackEntity
+import com.encore.music.data.local.entity.tracks.TrackWithArtists
 import com.encore.music.data.remote.dto.tracks.Track
 import com.encore.music.data.remote.dto.tracks.TracksDto
 import com.encore.music.domain.model.tracks.Track as TrackDomainModel
@@ -25,4 +26,13 @@ fun TrackDomainModel.toTrackEntity(lastPlayed: Long? = null): TrackEntity =
         lastPlayed = lastPlayed,
         mediaUrl = mediaUrl,
         name = name,
+    )
+
+fun TrackWithArtists.toTrackDomainModel(): TrackDomainModel =
+    TrackDomainModel(
+        artists = artists.map { it.toArtistDomainModel() },
+        id = track.trackId,
+        image = track.image,
+        name = track.name,
+        mediaUrl = track.mediaUrl,
     )
