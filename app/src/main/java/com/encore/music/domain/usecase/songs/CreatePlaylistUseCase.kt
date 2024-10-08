@@ -33,6 +33,7 @@ class CreatePlaylistUseCase(
                         PlaylistEntity(
                             playlistId = UUID.randomUUID().toString(),
                             description = description?.ifEmpty { null },
+                            isLocal = true,
                             image = image?.ifEmpty { null },
                             name = name,
                             owner = user.name,

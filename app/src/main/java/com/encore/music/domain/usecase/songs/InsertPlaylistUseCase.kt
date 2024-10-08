@@ -3,8 +3,10 @@ package com.encore.music.domain.usecase.songs
 import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
+import com.encore.music.core.mapper.toArtistEntity
+import com.encore.music.core.mapper.toPlaylistEntity
+import com.encore.music.core.mapper.toTrackEntity
 import com.encore.music.data.local.entity.artist.ArtistEntity
-import com.encore.music.data.local.entity.playlists.PlaylistEntity
 import com.encore.music.data.local.entity.playlists.PlaylistTrackCrossRef
 import com.encore.music.data.local.entity.tracks.TrackArtistCrossRef
 import com.encore.music.data.local.entity.tracks.TrackEntity
@@ -33,15 +35,7 @@ class InsertPlaylistUseCase(
                 playlist.tracks?.forEach { track ->
                     val trackId = track.id!!
 
-                    trackEntities.add(
-                        TrackEntity(
-                            trackId = trackId,
-                            image = track.image,
-                            name = track.name,
-                            mediaUrl = track.mediaUrl,
-                            lastPlayed = null,
-                        ),
-                    )
+                    trackEntities.add(track.toTrackEntity())
                     playlistTrackCrossRefs.add(
                         PlaylistTrackCrossRef(
                             playlistId = playlistId,
@@ -50,35 +44,18 @@ class InsertPlaylistUseCase(
                     )
 
                     track.artists?.forEach { artist ->
-                        val artistId = artist.id!!
-
-                        artistEntities.add(
-                            ArtistEntity(
-                                artistId = artistId,
-                                image = artist.image,
-                                name = artist.name,
-                                followedAt = null,
-                            ),
-                        )
+                        artistEntities.add(artist.toArtistEntity())
                         trackArtistCrossRefs.add(
                             TrackArtistCrossRef(
                                 trackId = trackId,
-                                artistId = artistId,
+                                artistId = artist.id!!,
                             ),
                         )
                     }
                 }
 
                 songsRepository.insertPlaylist(
-                    playlist =
-                        PlaylistEntity(
-                            playlistId = playlistId,
-                            description = playlist.description,
-                            image = playlist.image,
-                            name = playlist.name,
-                            owner = playlist.owner,
-                            ownerId = "", // TODO: Get owner id
-                        ),
+                    playlist = playlist.toPlaylistEntity(),
                     tracks = trackEntities.ifEmpty { null },
                     artists = artistEntities.ifEmpty { null },
                     playlistTrackCrossRef = playlistTrackCrossRefs.ifEmpty { null },

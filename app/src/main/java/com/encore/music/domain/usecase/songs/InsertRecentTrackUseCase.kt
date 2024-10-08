@@ -3,9 +3,10 @@ package com.encore.music.domain.usecase.songs
 import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
+import com.encore.music.core.mapper.toArtistEntity
+import com.encore.music.core.mapper.toTrackEntity
 import com.encore.music.data.local.entity.artist.ArtistEntity
 import com.encore.music.data.local.entity.tracks.TrackArtistCrossRef
-import com.encore.music.data.local.entity.tracks.TrackEntity
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.repository.SongsRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.datetime.Clock
 
 class InsertRecentTrackUseCase(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -27,31 +29,19 @@ class InsertRecentTrackUseCase(
                 val trackArtistCrossRef: MutableList<TrackArtistCrossRef> = mutableListOf()
 
                 track.artists?.forEach { artist ->
-                    val artistId = artist.id!!
-                    artists.add(
-                        ArtistEntity(
-                            artistId = artistId,
-                            image = artist.image,
-                            name = artist.name,
-                            followedAt = null,
-                        ),
-                    )
+                    artists.add(artist.toArtistEntity())
                     trackArtistCrossRef.add(
                         TrackArtistCrossRef(
                             trackId = trackId,
-                            artistId = artistId,
+                            artistId = artist.id!!,
                         ),
                     )
                 }
 
                 songsRepository.insertRecentTrack(
                     track =
-                        TrackEntity(
-                            trackId = trackId,
-                            image = track.image,
-                            name = track.name,
-                            mediaUrl = track.mediaUrl,
-                            lastPlayed = 0, // TODO: Get current time
+                        track.toTrackEntity(
+                            lastPlayed = Clock.System.now().toEpochMilliseconds(),
                         ),
                     artists = artists,
                     trackArtistCrossRef = trackArtistCrossRef,
