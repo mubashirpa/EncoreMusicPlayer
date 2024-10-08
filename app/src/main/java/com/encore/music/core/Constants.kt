@@ -31,6 +31,7 @@ object Encore {
 
 object Navigation {
     object Args {
+        const val MAIN_BOTTOM_NAVIGATION_VISIBILITY = "main_bottom_navigation_visibility"
         const val RESET_PASSWORD_EMAIL = "reset_password_email"
     }
 }

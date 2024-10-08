@@ -101,6 +101,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.search.SearchView
+        android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="@string/what_will_you_listen_to"

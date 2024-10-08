@@ -92,38 +92,11 @@ fun NavigationBarView.setupWithNavController(navController: NavController) {
         }
     }
 
-    navController.addOnDestinationChangedListener { _, destination, _ ->
-        val matchingNavItemId =
-            routeToNavItemId.entries
-                .firstOrNull { entry ->
-                    destination.hierarchy.any {
-                        it.hasRoute(entry.key)
-                    }
-                }?.value
-
-        isVisible =
-            when (matchingNavItemId) {
-                R.id.home -> {
-                    selectNavigationItem(R.id.home)
-                    true
-                }
-
-                R.id.search -> {
-                    selectNavigationItem(R.id.search)
-                    true
-                }
-
-                R.id.library -> {
-                    selectNavigationItem(R.id.library)
-                    true
-                }
-
-                else -> false
-            }
-    }
-
     setOnItemSelectedListener { item ->
-        if (!isNavigationItemSelectedProgrammatically) {
+        if (isNavigationItemSelectedProgrammatically) {
+            isNavigationItemSelectedProgrammatically = false
+            true
+        } else {
             when (item.itemId) {
                 R.id.home -> {
                     navController.navigateFromNavigationBar(Screen.Home)
@@ -142,10 +115,22 @@ fun NavigationBarView.setupWithNavController(navController: NavController) {
 
                 else -> false
             }
-        } else {
-            isNavigationItemSelectedProgrammatically = false
-            false
         }
+    }
+
+    navController.addOnDestinationChangedListener { _, destination, _ ->
+        val matchingNavItemId =
+            routeToNavItemId.entries
+                .firstOrNull { entry ->
+                    destination.hierarchy.any {
+                        it.hasRoute(entry.key)
+                    }
+                }?.value
+
+        isVisible = matchingNavItemId?.let {
+            selectNavigationItem(matchingNavItemId)
+            true
+        } ?: false
     }
 }
 

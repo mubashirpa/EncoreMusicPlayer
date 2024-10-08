@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.encore.music.core.Navigation
 import com.encore.music.databinding.FragmentSearchBinding
 import com.encore.music.domain.model.authentication.User
 import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.ImageUtils
+import com.encore.music.presentation.utils.setNavigationResult
+import com.google.android.material.search.SearchView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -91,6 +94,26 @@ class SearchFragment : Fragment() {
 
         binding.topAppBar.setNavigationOnClickListener {
             navController.navigateToProfile()
+        }
+
+        binding.searchView.addTransitionListener { _, _, newState ->
+            when (newState) {
+                SearchView.TransitionState.HIDING -> {
+                    navController.setNavigationResult(
+                        Navigation.Args.MAIN_BOTTOM_NAVIGATION_VISIBILITY,
+                        true,
+                    )
+                }
+
+                SearchView.TransitionState.SHOWING -> {
+                    navController.setNavigationResult(
+                        Navigation.Args.MAIN_BOTTOM_NAVIGATION_VISIBILITY,
+                        false,
+                    )
+                }
+
+                else -> Unit
+            }
         }
     }
 

@@ -3,6 +3,8 @@ package com.encore.music.presentation.ui.activities
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import com.encore.music.core.Navigation
 import com.encore.music.databinding.ActivityMainBinding
 import com.encore.music.presentation.navigation.Graph
 import com.encore.music.presentation.navigation.findNavController
@@ -26,5 +28,14 @@ class MainActivity : AppCompatActivity() {
             )
 
         binding.bottomNavigation.setupWithNavController(navController)
+
+        val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+        savedStateHandle
+            ?.getLiveData<Boolean>(Navigation.Args.MAIN_BOTTOM_NAVIGATION_VISIBILITY)
+            ?.observe(this) { value ->
+                value?.also {
+                    binding.bottomNavigation.isVisible = it
+                }
+            }
     }
 }
