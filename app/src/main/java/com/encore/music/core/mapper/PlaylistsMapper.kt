@@ -11,7 +11,9 @@ fun Playlist.toPlaylistDomainModel(): PlaylistDomainModel =
         description = description,
         id = id,
         image = image,
+        isLocal = isLocal,
         name = name,
         owner = owner,
+        ownerId = ownerId,
         tracks = tracks?.map { it.toTrackDomainModel() },
     )

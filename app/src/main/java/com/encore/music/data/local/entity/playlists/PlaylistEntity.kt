@@ -8,6 +8,7 @@ data class PlaylistEntity(
     @PrimaryKey val playlistId: String,
     val description: String?,
     val image: String?,
+    val isLocal: Boolean? = null,
     val name: String?,
     val owner: String?,
     val ownerId: String?,
