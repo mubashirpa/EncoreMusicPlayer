@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class TrackEntity(
     @PrimaryKey val trackId: String,
     val image: String?,
-    val name: String?,
-    val mediaUrl: String?,
     val lastPlayed: Long?,
+    val mediaUrl: String?,
+    val name: String?,
 )
