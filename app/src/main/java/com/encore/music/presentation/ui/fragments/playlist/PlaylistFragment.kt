@@ -84,7 +84,7 @@ class PlaylistFragment : Fragment() {
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.favorite -> {
-                    viewModel.onEvent(PlaylistUiEvent.AddToPlaylist)
+                    viewModel.onEvent(PlaylistUiEvent.SavePlaylist)
                     true
                 }
 
@@ -105,6 +105,7 @@ class PlaylistFragment : Fragment() {
                 items = items,
                 onTrackClicked = { track ->
                     track.id?.let { id ->
+                        viewModel.onEvent(PlaylistUiEvent.AddTrackToPlaylist(track))
                         navController.navigateToPlayer(id)
                     }
                 },

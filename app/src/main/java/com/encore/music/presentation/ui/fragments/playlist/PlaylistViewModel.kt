@@ -7,17 +7,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.encore.music.core.Result
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.presentation.navigation.Screen
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
     savedStateHandle: SavedStateHandle,
     private val getPlaylistUseCase: GetPlaylistUseCase,
     private val insertPlaylistUseCase: InsertPlaylistUseCase,
+    private val insertRecentTrackUseCase: InsertRecentTrackUseCase,
 ) : ViewModel() {
     private val playlistId = savedStateHandle.toRoute<Screen.Playlist>().id
 
@@ -30,14 +33,16 @@ class PlaylistViewModel(
 
     fun onEvent(event: PlaylistUiEvent) {
         when (event) {
-            PlaylistUiEvent.AddToPlaylist -> {
-                viewModelScope.launch {
-                    insertPlaylistUseCase((_uiState.value as PlaylistUiState.Success).playlist)
-                }
+            is PlaylistUiEvent.AddTrackToPlaylist -> {
+                insertRecentTrack(event.track)
             }
 
             PlaylistUiEvent.OnRetry -> {
                 getPlaylist(playlistId)
+            }
+
+            PlaylistUiEvent.SavePlaylist -> {
+                insertPlaylist((_uiState.value as PlaylistUiState.Success).playlist)
             }
         }
     }
@@ -68,5 +73,13 @@ class PlaylistViewModel(
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    private fun insertRecentTrack(track: Track) {
+        insertRecentTrackUseCase(track).launchIn(viewModelScope)
+    }
+
+    private fun insertPlaylist(playlist: Playlist) {
+        insertPlaylistUseCase(playlist).launchIn(viewModelScope)
     }
 }

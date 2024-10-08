@@ -23,8 +23,8 @@ import kotlinx.coroutines.launch
 class LibraryViewModel(
     private val createPlaylistUseCase: CreatePlaylistUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getFollowedArtistsUseCase: GetFollowedArtistsUseCase,
     private val getRecentTracksUseCase: GetRecentTracksUseCase,
-    private val getSavedArtistsUseCase: GetFollowedArtistsUseCase,
     private val getSavedPlaylistsUseCase: GetSavedPlaylistsUseCase,
 ) : ViewModel() {
     private val _uiState = MutableLiveData<LibraryUiState>()
@@ -65,7 +65,7 @@ class LibraryViewModel(
 
     private fun getSavedArtists() {
         viewModelScope.launch {
-            getSavedArtistsUseCase().collect {
+            getFollowedArtistsUseCase().collect {
                 isEmpty[0] = it.isEmpty()
                 _savedArtists.value = it
                 emitUiState()

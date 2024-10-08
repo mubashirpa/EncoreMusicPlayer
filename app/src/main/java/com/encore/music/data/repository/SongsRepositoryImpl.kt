@@ -19,10 +19,14 @@ class SongsRepositoryImpl(
 ) : SongsRepository {
     override suspend fun insertPlaylist(
         playlist: PlaylistEntity,
+        tracks: List<TrackEntity>?,
+        artists: List<ArtistEntity>?,
         playlistTrackCrossRef: List<PlaylistTrackCrossRef>?,
         trackArtistCrossRef: List<TrackArtistCrossRef>?,
     ) {
         playlistsDao.insertPlaylist(playlist)
+        tracks?.let { playlistsDao.insertTracks(it) }
+        artists?.let { playlistsDao.insertArtists(it) }
         playlistTrackCrossRef?.let { playlistsDao.insertPlaylistTrackCrossRef(it) }
         trackArtistCrossRef?.let { playlistsDao.insertTrackArtistCrossRef(it) }
     }
@@ -31,9 +35,11 @@ class SongsRepositoryImpl(
 
     override suspend fun insertRecentTrack(
         track: TrackEntity,
+        artists: List<ArtistEntity>,
         trackArtistCrossRef: List<TrackArtistCrossRef>,
     ) {
         tracksDao.insertRecentTrack(track)
+        tracksDao.insertArtists(artists)
         tracksDao.insertTrackArtistCrossRef(trackArtistCrossRef)
     }
 

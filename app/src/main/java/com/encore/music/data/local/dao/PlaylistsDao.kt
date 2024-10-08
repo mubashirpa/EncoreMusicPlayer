@@ -1,6 +1,8 @@
 package com.encore.music.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
@@ -17,10 +19,10 @@ interface PlaylistsDao {
     @Upsert
     suspend fun insertPlaylist(playlist: PlaylistEntity)
 
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTracks(tracks: List<TrackEntity>)
 
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertArtists(artists: List<ArtistEntity>)
 
     @Upsert

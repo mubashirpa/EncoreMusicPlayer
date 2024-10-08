@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.Flow
 interface SongsRepository {
     suspend fun insertPlaylist(
         playlist: PlaylistEntity,
+        tracks: List<TrackEntity>? = null,
+        artists: List<ArtistEntity>? = null,
         playlistTrackCrossRef: List<PlaylistTrackCrossRef>? = null,
         trackArtistCrossRef: List<TrackArtistCrossRef>? = null,
     )
@@ -19,6 +21,7 @@ interface SongsRepository {
 
     suspend fun insertRecentTrack(
         track: TrackEntity,
+        artists: List<ArtistEntity>,
         trackArtistCrossRef: List<TrackArtistCrossRef>,
     )
 

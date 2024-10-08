@@ -30,7 +30,7 @@ import org.koin.dsl.module
 
 val useCaseModule =
     module {
-        singleOf(::CreatePlaylistUseCase)
+        single { CreatePlaylistUseCase(authenticationRepository = get(), songsRepository = get()) }
         singleOf(::FollowArtistUseCase)
         singleOf(::GetCategoriesUseCase)
         singleOf(::GetHomePlaylistsUseCase)
@@ -39,8 +39,8 @@ val useCaseModule =
         singleOf(::GetRecentTracksUseCase)
         singleOf(::GetFollowedArtistsUseCase)
         singleOf(::GetSavedPlaylistsUseCase)
-        singleOf(::InsertPlaylistUseCase)
-        singleOf(::InsertRecentTrackUseCase)
+        single { InsertPlaylistUseCase(songsRepository = get()) }
+        single { InsertRecentTrackUseCase(songsRepository = get()) }
 
         // Authentication
         singleOf(::CreateUserUseCase)

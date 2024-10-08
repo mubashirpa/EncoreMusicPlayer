@@ -47,7 +47,7 @@ class TracksAdapter(
                 placeholder(R.drawable.bg_placeholder)
             }
             headlineText.text = items[position].name
-            supportingText.text = items[position].name // TODO("Replace with artists")
+            supportingText.text = items[position].artists?.joinToString { it.name.orEmpty() }
 
             menuButton.setOnClickListener { /*TODO*/ }
 

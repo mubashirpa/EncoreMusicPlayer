@@ -5,13 +5,17 @@ import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.SongsRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.util.UUID
 import com.encore.music.data.local.entity.playlists.PlaylistEntity as PlaylistEntity
 
 class CreatePlaylistUseCase(
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val authenticationRepository: AuthenticationRepository,
     private val songsRepository: SongsRepository,
 ) {
@@ -40,5 +44,5 @@ class CreatePlaylistUseCase(
             } catch (e: Exception) {
                 emit(Result.Error(UiText.StringResource(R.string.error_unexpected)))
             }
-        }
+        }.flowOn(ioDispatcher)
 }
