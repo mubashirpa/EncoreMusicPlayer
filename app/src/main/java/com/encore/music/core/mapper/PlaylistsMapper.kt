@@ -1,5 +1,6 @@
 package com.encore.music.core.mapper
 
+import com.encore.music.data.local.entity.playlists.PlaylistEntity
 import com.encore.music.data.remote.dto.playlists.Playlist
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
 import com.encore.music.domain.model.playlists.Playlist as PlaylistDomainModel
@@ -16,4 +17,17 @@ fun Playlist.toPlaylistDomainModel(): PlaylistDomainModel =
         owner = owner,
         ownerId = ownerId,
         tracks = tracks?.map { it.toTrackDomainModel() },
+    )
+
+// Entities
+
+fun PlaylistDomainModel.toPlaylistEntity(): PlaylistEntity =
+    PlaylistEntity(
+        playlistId = id!!,
+        description = description,
+        image = image,
+        isLocal = isLocal,
+        name = name,
+        owner = owner,
+        ownerId = ownerId,
     )
