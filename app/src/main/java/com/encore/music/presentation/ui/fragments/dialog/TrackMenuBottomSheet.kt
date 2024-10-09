@@ -100,7 +100,7 @@ class MenuListAdapter(
 
         binding.run {
             leadingIcon.setImageResource(item.icon)
-            headlineText.setText(item.title)
+            headlineText.text = item.title
         }
 
         return binding.root
