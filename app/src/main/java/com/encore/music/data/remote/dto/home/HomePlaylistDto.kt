@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class HomePlaylistDto(
-    val title: String = "",
-    val playlists: List<Playlist> = emptyList(),
+    val title: String? = null,
+    val playlists: List<Playlist>? = null,
 )
