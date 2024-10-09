@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
-import com.encore.music.databinding.LayoutCreatePlaylistBinding
+import com.encore.music.databinding.LayoutDialogCreatePlaylistBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CreatePlaylistBottomSheet(
@@ -13,7 +13,7 @@ class CreatePlaylistBottomSheet(
 ) : BottomSheetDialogFragment() {
     constructor() : this({ _, _ -> })
 
-    private var _binding: LayoutCreatePlaylistBinding? = null
+    private var _binding: LayoutDialogCreatePlaylistBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -21,7 +21,7 @@ class CreatePlaylistBottomSheet(
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = LayoutCreatePlaylistBinding.inflate(inflater, container, false)
+        _binding = LayoutDialogCreatePlaylistBinding.inflate(inflater, container, false)
         return binding.root
     }
 

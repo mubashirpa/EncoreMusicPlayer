@@ -9,7 +9,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class ProgressDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
         MaterialAlertDialogBuilder(requireContext(), R.style.ProgressDialog)
-            .setView(R.layout.layout_progress_dialog)
+            .setView(R.layout.layout_dialog_progress)
             .create()
 
     companion object {
