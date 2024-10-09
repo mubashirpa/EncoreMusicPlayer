@@ -1,10 +1,12 @@
 package com.encore.music.di
 
+import com.encore.music.data.repository.ArtistsRepositoryImpl
 import com.encore.music.data.repository.AuthenticationRepositoryImpl
 import com.encore.music.data.repository.CategoriesRepositoryImpl
 import com.encore.music.data.repository.DatastoreRepositoryImpl
 import com.encore.music.data.repository.PlaylistsRepositoryImpl
 import com.encore.music.data.repository.SongsRepositoryImpl
+import com.encore.music.domain.repository.ArtistsRepository
 import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.CategoriesRepository
 import com.encore.music.domain.repository.DatastoreRepository
@@ -16,6 +18,7 @@ import org.koin.dsl.module
 
 val repositoryModule =
     module {
+        singleOf(::ArtistsRepositoryImpl) { bind<ArtistsRepository>() }
         singleOf(::AuthenticationRepositoryImpl) { bind<AuthenticationRepository>() }
         singleOf(::CategoriesRepositoryImpl) { bind<CategoriesRepository>() }
         singleOf(::DatastoreRepositoryImpl) { bind<DatastoreRepository>() }

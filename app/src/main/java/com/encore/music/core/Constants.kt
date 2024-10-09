@@ -17,6 +17,7 @@ object PreferencesKeys {
 
 object Encore {
     const val API_BASE_URL = "http://192.168.23.129:8080/v1"
+    const val ENDPOINT_GET_ARTIST_TOP_TRACKS = "artists/{artist_id}/top-tracks"
     const val ENDPOINT_GET_CATEGORIES = "categories"
     const val ENDPOINT_GET_CATEGORY_PLAYLISTS = "categories/{category_id}/playlists"
     const val ENDPOINT_GET_HOME_PLAYLISTS = "home-playlists"
@@ -25,6 +26,7 @@ object Encore {
     object Parameters {
         const val LIMIT = "limit"
         const val LOCALE = "locale"
+        const val MARKET = "market"
         const val OFFSET = "offset"
     }
 }

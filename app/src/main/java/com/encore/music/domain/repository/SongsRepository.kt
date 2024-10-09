@@ -32,5 +32,9 @@ interface SongsRepository {
 
     suspend fun insertFollowedArtist(artist: ArtistEntity)
 
+    suspend fun updateFollowedArtist(artist: ArtistEntity)
+
     fun getFollowedArtists(): Flow<List<ArtistEntity>>
+
+    fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?>
 }

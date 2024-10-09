@@ -2,6 +2,7 @@ package com.encore.music.di
 
 import com.encore.music.data.AndroidMailMatcher
 import com.encore.music.domain.MailMatcher
+import com.encore.music.domain.usecase.artists.GetArtistsTopTracksUseCase
 import com.encore.music.domain.usecase.authentication.CreateUserUseCase
 import com.encore.music.domain.usecase.authentication.GetCurrentUserIdUseCase
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
@@ -16,12 +17,14 @@ import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.FollowArtistUseCase
+import com.encore.music.domain.usecase.songs.GetFollowedArtistUseCase
 import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
 import com.encore.music.domain.usecase.songs.GetSavedPlaylistWithTracksAndArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
+import com.encore.music.domain.usecase.songs.UnfollowArtistUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword
@@ -33,16 +36,19 @@ val useCaseModule =
     module {
         single { CreatePlaylistUseCase(authenticationRepository = get(), songsRepository = get()) }
         singleOf(::FollowArtistUseCase)
+        singleOf(::GetArtistsTopTracksUseCase)
         singleOf(::GetCategoriesUseCase)
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
         singleOf(::GetPlaylistUseCase)
         singleOf(::GetRecentTracksUseCase)
+        singleOf(::GetFollowedArtistUseCase)
         singleOf(::GetFollowedArtistsUseCase)
         singleOf(::GetSavedPlaylistsUseCase)
         singleOf(::GetSavedPlaylistWithTracksAndArtistsUseCase)
         single { InsertPlaylistUseCase(songsRepository = get()) }
         single { InsertRecentTrackUseCase(songsRepository = get()) }
+        singleOf(::UnfollowArtistUseCase)
 
         // Authentication
         singleOf(::CreateUserUseCase)

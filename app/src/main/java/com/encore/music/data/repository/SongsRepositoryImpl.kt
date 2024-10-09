@@ -53,5 +53,11 @@ class SongsRepositoryImpl(
         artistsDao.insertFollowedArtist(artist)
     }
 
+    override suspend fun updateFollowedArtist(artist: ArtistEntity) {
+        artistsDao.updateFollowedArtist(artist)
+    }
+
     override fun getFollowedArtists(): Flow<List<ArtistEntity>> = artistsDao.getFollowedArtists()
+
+    override fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?> = artistsDao.getFollowedArtistById(artistId)
 }
