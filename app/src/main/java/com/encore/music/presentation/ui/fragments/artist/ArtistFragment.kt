@@ -1,5 +1,6 @@
 package com.encore.music.presentation.ui.fragments.artist
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +10,17 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.encore.music.databinding.FragmentArtistBinding
-import com.encore.music.domain.model.artists.Artist
-import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ArtistFragment : Fragment() {
     private var _binding: FragmentArtistBinding? = null
     private val binding get() = _binding!!
 
     private val navController by lazy { findNavController() }
+    private val viewModel: ArtistViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,68 +31,95 @@ class ArtistFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val items =
-            mutableListOf(
-                ArtistListItem.HeaderItem(
-                    Artist(
-                        name = "Artist Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                ArtistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                ArtistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                ArtistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                ArtistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                ArtistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-                ArtistListItem.TracksItem(
-                    Track(
-                        name = "Track Name",
-                        image = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRm2-IiCQnnEHH1dk5HN2K60xrv8Wyu8VRW7Q&s",
-                    ),
-                ),
-            )
+        val artistAdapter = initRecyclerView()
+
+        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is ArtistUiState.Error -> {
+                    binding.progressCircular.visibility = View.GONE
+                    binding.errorView.apply {
+                        root.visibility = View.VISIBLE
+                        errorText.text = uiState.message.asString(requireContext())
+                        retryButton.visibility = View.VISIBLE
+                        retryButton.setOnClickListener {
+                            viewModel.retry()
+                        }
+                    }
+                }
+
+                is ArtistUiState.Success -> {
+                    binding.progressCircular.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+
+                    val items =
+                        buildList {
+                            add(
+                                ArtistListItem.HeaderItem(
+                                    artist = uiState.artist,
+                                    isFollowed = uiState.isFollowed,
+                                ),
+                            )
+                            uiState.artist.tracks?.let { tracks ->
+                                if (tracks.isEmpty()) {
+                                    add(ArtistListItem.EmptyTracksItem)
+                                } else {
+                                    addAll(tracks.map { ArtistListItem.TracksItem(it) })
+                                }
+                            }
+                        }.toMutableList()
+                    artistAdapter.items = items
+                    artistAdapter.notifyDataSetChanged()
+                }
+
+                ArtistUiState.Loading -> {
+                    binding.errorView.root.visibility = View.GONE
+                    binding.progressCircular.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        viewModel.isFollowed.observe(viewLifecycleOwner) { isFollowed ->
+            artistAdapter.items.firstOrNull()?.let {
+                if (it is ArtistListItem.HeaderItem) {
+                    it.isFollowed = isFollowed
+                    artistAdapter.notifyItemChanged(0)
+                }
+            }
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            navController.navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun initRecyclerView(): ArtistAdapter {
         val artistAdapter =
             ArtistAdapter(
                 context = requireContext(),
-                items = items,
+                items = mutableListOf(),
+                onFollowArtistClicked = { artist, isFollowed ->
+                    if (isFollowed) {
+                        viewModel.unfollowArtist(artist)
+                    } else {
+                        viewModel.followArtist(artist)
+                    }
+                },
                 onTrackClicked = { track ->
                     track.id?.let { id ->
                         navController.navigateToPlayer(id)
                     }
-                },
-                onNavigateUp = {
-                    navController.navigateUp()
                 },
             )
 
@@ -104,7 +132,7 @@ class ArtistFragment : Fragment() {
                             contentPadding =
                                 PaddingValues(
                                     start = insets.left,
-                                    top = insets.top,
+                                    top = 0,
                                     end = insets.right,
                                     bottom = insets.bottom,
                                     convertToDp = false,
@@ -115,13 +143,9 @@ class ArtistFragment : Fragment() {
                 }
                 WindowInsetsCompat.CONSUMED
             }
-
             adapter = artistAdapter
         }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        return artistAdapter
     }
 }

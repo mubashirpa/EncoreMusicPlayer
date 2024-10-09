@@ -3,18 +3,21 @@ package com.encore.music.presentation.ui.fragments.artist
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.LayoutArtistHeaderBinding
+import com.encore.music.databinding.LayoutErrorBinding
 import com.encore.music.databinding.ListItemTracksDetailedBinding
+import com.encore.music.domain.model.artists.Artist
 import com.encore.music.domain.model.tracks.Track
 
 class ArtistAdapter(
     private val context: Context,
     var items: MutableList<ArtistListItem>,
+    private val onFollowArtistClicked: (artist: Artist, isFollowed: Boolean) -> Unit,
     private val onTrackClicked: (Track) -> Unit,
-    private val onNavigateUp: () -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class HeaderViewHolder(
         private val binding: LayoutArtistHeaderBinding,
@@ -26,10 +29,13 @@ class ArtistAdapter(
                     placeholder(R.drawable.bg_placeholder)
                 }
                 title.text = item.artist.name
-                subtitle.text = item.artist.name // TODO
+                val followers = item.artist.followers ?: 0
+                subtitle.text =
+                    context.resources.getQuantityString(R.plurals.followers, followers, followers)
+                followButton.isSelected = item.isFollowed
 
-                topAppBar.setNavigationOnClickListener {
-                    onNavigateUp()
+                followButton.setOnClickListener {
+                    onFollowArtistClicked(item.artist, item.isFollowed)
                 }
             }
         }
@@ -45,11 +51,27 @@ class ArtistAdapter(
                     placeholder(R.drawable.bg_placeholder)
                 }
                 headlineText.text = item.track.name
-                supportingText.text = item.track.name // TODO("Replace with artists")
+                supportingText.text = item.track.artists?.joinToString { it.name.orEmpty() }
 
                 root.setOnClickListener {
                     onTrackClicked(item.track)
                 }
+            }
+        }
+    }
+
+    inner class EmptyTracksViewHolder(
+        private val binding: LayoutErrorBinding,
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind() {
+            binding.apply {
+                binding.root.layoutParams =
+                    ConstraintLayout.LayoutParams(
+                        ConstraintLayout.LayoutParams.MATCH_PARENT,
+                        ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                    )
+                errorText.text =
+                    context.getString(R.string.no_recent_activity)
             }
         }
     }
@@ -79,6 +101,16 @@ class ArtistAdapter(
                 TracksViewHolder(binding)
             }
 
+            2 -> {
+                val binding =
+                    LayoutErrorBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false,
+                    )
+                EmptyTracksViewHolder(binding)
+            }
+
             else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
@@ -91,6 +123,7 @@ class ArtistAdapter(
         when (val item = items[position]) {
             is ArtistListItem.HeaderItem -> (holder as HeaderViewHolder).bind(item)
             is ArtistListItem.TracksItem -> (holder as TracksViewHolder).bind(item)
+            ArtistListItem.EmptyTracksItem -> (holder as EmptyTracksViewHolder).bind()
         }
     }
 
@@ -98,5 +131,6 @@ class ArtistAdapter(
         when (items[position]) {
             is ArtistListItem.HeaderItem -> 0
             is ArtistListItem.TracksItem -> 1
+            ArtistListItem.EmptyTracksItem -> 2
         }
 }
