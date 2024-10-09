@@ -12,6 +12,7 @@ import com.encore.music.domain.model.tracks.Track
 
 class TracksAdapter(
     private val onTrackClicked: (Track) -> Unit,
+    private val onTrackMoreClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Track> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Track>
@@ -49,7 +50,9 @@ class TracksAdapter(
             headlineText.text = items[position].name
             supportingText.text = items[position].artists?.joinToString { it.name.orEmpty() }
 
-            menuButton.setOnClickListener { /*TODO*/ }
+            menuButton.setOnClickListener {
+                onTrackMoreClicked(items[position])
+            }
 
             root.setOnClickListener {
                 onTrackClicked(items[position])

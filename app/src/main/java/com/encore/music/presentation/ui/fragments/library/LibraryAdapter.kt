@@ -20,10 +20,16 @@ class LibraryAdapter(
     private val onArtistClicked: (Artist) -> Unit,
     private val onPlaylistClicked: (Playlist) -> Unit,
     private val onTrackClicked: (Track) -> Unit,
+    private val onTrackMoreClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val artistsAdapter by lazy { ArtistsAdapter(onArtistClicked) }
     private val playlistsAdapter by lazy { PlaylistsAdapter(onPlaylistClicked) }
-    private val tracksAdapter by lazy { TracksAdapter(onTrackClicked) }
+    private val tracksAdapter by lazy {
+        TracksAdapter(
+            onTrackClicked = onTrackClicked,
+            onTrackMoreClicked = onTrackMoreClicked,
+        )
+    }
     private val horizontalItemDecoration =
         HorizontalItemDecoration(
             contentPadding =

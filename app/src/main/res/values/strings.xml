@@ -61,6 +61,12 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="no_recent_activity">No recent activity</string>
+    <string name="icon">Icon</string>
+    <string name="play_now">Play now</string>
+    <string name="play_next">Play next</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="more_from_">More from %1$s</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>

@@ -11,11 +11,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentLibraryBinding
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.MenuBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.MenuItem
 import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
@@ -75,6 +78,9 @@ class LibraryFragment : Fragment() {
                     track.id?.let { id ->
                         navController.navigateToPlayer(id)
                     }
+                },
+                onTrackMoreClicked = { track ->
+                    showTrackMenu(track)
                 },
             )
 
@@ -263,5 +269,63 @@ class LibraryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showTrackMenu(track: Track) {
+        val artist = track.artists?.firstOrNull()
+        val items =
+            listOf(
+                MenuItem(
+                    getString(R.string.play_now),
+                    R.drawable.baseline_play_arrow_24,
+                ),
+                MenuItem(
+                    getString(R.string.play_next),
+                    R.drawable.baseline_skip_next_24,
+                ),
+                MenuItem(
+                    getString(R.string.add_to_queue),
+                    R.drawable.baseline_add_to_queue_24,
+                ),
+                MenuItem(
+                    getString(R.string.add_to_playlist),
+                    R.drawable.baseline_playlist_add_24,
+                ),
+                MenuItem(
+                    getString(
+                        R.string.more_from_,
+                        artist?.name.orEmpty(),
+                    ),
+                    R.drawable.baseline_person_search_24,
+                ),
+            )
+        MenuBottomSheet(track, items)
+            .apply {
+                setOnMenuItemClickListener = { position ->
+                    when (position) {
+                        0 -> {
+                            track.id?.let { id ->
+                                navController.navigateToPlayer(id)
+                            }
+                        }
+
+                        1 -> { // TODO
+                        }
+
+                        2 -> { // TODO
+                        }
+
+                        3 -> { // TODO
+                        }
+
+                        4 -> {
+                            artist?.id?.let { navController.navigateToArtist(it) }
+                        }
+                    }
+                }
+            }.show(
+                childFragmentManager,
+                MenuBottomSheet.TAG,
+            )
     }
 }
