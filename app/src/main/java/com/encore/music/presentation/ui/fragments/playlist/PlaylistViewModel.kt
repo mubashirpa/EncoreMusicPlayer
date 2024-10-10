@@ -18,6 +18,8 @@ import com.encore.music.domain.usecase.songs.GetSavedPlaylistWithTracksAndArtist
 import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.presentation.navigation.Screen
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -37,6 +39,9 @@ class PlaylistViewModel(
 
     private val _uiState = MutableLiveData<PlaylistUiState>()
     val uiState: LiveData<PlaylistUiState> = _uiState
+
+    private val _uiEvent = MutableSharedFlow<PlaylistUiEvent>()
+    val uiEvent: SharedFlow<PlaylistUiEvent> = _uiEvent
 
     private val _isSaved = MutableLiveData<Boolean>()
     val isSaved: LiveData<Boolean> = _isSaved
@@ -99,7 +104,12 @@ class PlaylistViewModel(
     }
 
     private fun deletePlaylist(playlist: Playlist) {
-        deletePlaylistUseCase(playlist).launchIn(viewModelScope)
+        deletePlaylistUseCase(playlist)
+            .onEach {
+                if (it is Result.Success) {
+                    _uiEvent.emit(PlaylistUiEvent.NavigateUp)
+                }
+            }.launchIn(viewModelScope)
     }
 
     fun savePlaylist() {

@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentPlaylistBinding
@@ -15,6 +18,7 @@ import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomShe
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
@@ -99,6 +103,16 @@ class PlaylistFragment : Fragment() {
                     .findItem(R.id.save_playlist)
                     .setIcon(R.drawable.baseline_favorite_border_24)
                     .isVisible = true
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiEvent.collect { uiEvent ->
+                    when (uiEvent) {
+                        PlaylistUiEvent.NavigateUp -> navController.navigateUp()
+                    }
+                }
             }
         }
 
