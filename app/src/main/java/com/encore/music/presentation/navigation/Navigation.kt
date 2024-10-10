@@ -12,6 +12,7 @@ import androidx.navigation.fragment.fragment
 import androidx.navigation.navigation
 import com.encore.music.R
 import com.encore.music.presentation.ui.fragments.artist.ArtistFragment
+import com.encore.music.presentation.ui.fragments.category.CategoryFragment
 import com.encore.music.presentation.ui.fragments.home.HomeFragment
 import com.encore.music.presentation.ui.fragments.library.LibraryFragment
 import com.encore.music.presentation.ui.fragments.onboarding.OnboardingFragment
@@ -70,6 +71,9 @@ fun AppCompatActivity.findNavController(
             }
             fragment<ProfileFragment, Screen.Profile> {
                 label = getString(R.string.label_profile_screen)
+            }
+            fragment<CategoryFragment, Screen.Category> {
+                label = getString(R.string.label_category_screen)
             }
         }
 
@@ -199,4 +203,11 @@ fun NavController.navigateToPlayer(trackId: String) {
 
 fun NavController.navigateToProfile() {
     navigate(Screen.Profile)
+}
+
+fun NavController.navigateToCategory(
+    categoryId: String,
+    title: String,
+) {
+    navigate(route = Screen.Category(id = categoryId, title = title))
 }

@@ -2,6 +2,7 @@ package com.encore.music.di
 
 import com.encore.music.presentation.ui.activities.MainViewModel
 import com.encore.music.presentation.ui.fragments.artist.ArtistViewModel
+import com.encore.music.presentation.ui.fragments.category.CategoryViewModel
 import com.encore.music.presentation.ui.fragments.home.HomeViewModel
 import com.encore.music.presentation.ui.fragments.library.LibraryViewModel
 import com.encore.music.presentation.ui.fragments.playlist.PlaylistViewModel
@@ -16,6 +17,7 @@ import org.koin.dsl.module
 val viewModelModule =
     module {
         viewModelOf(::ArtistViewModel)
+        viewModelOf(::CategoryViewModel)
         viewModelOf(::HomeViewModel)
         viewModelOf(::LibraryViewModel)
         viewModelOf(::MainViewModel)

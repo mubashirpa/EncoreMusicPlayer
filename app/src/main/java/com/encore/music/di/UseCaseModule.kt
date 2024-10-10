@@ -13,6 +13,7 @@ import com.encore.music.domain.usecase.authentication.SignInUseCase
 import com.encore.music.domain.usecase.authentication.SignOutUseCase
 import com.encore.music.domain.usecase.categories.GetCategoriesUseCase
 import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
+import com.encore.music.domain.usecase.playlists.GetCategoryPlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
@@ -41,6 +42,7 @@ val useCaseModule =
         singleOf(::FollowArtistUseCase)
         singleOf(::GetArtistsTopTracksUseCase)
         singleOf(::GetCategoriesUseCase)
+        singleOf(::GetCategoryPlaylistsUseCase)
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
         singleOf(::GetPlaylistUseCase)

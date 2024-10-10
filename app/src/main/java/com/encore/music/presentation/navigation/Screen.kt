@@ -44,4 +44,10 @@ sealed class Screen {
 
     @Serializable
     data object Profile : Screen()
+
+    @Serializable
+    data class Category(
+        val id: String,
+        val title: String,
+    ) : Screen()
 }
