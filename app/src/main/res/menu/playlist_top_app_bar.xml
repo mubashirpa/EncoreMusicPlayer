@@ -3,9 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/favorite"
+        android:id="@+id/save_playlist"
         android:contentDescription="@string/save_playlist"
         android:icon="@drawable/baseline_favorite_border_24"
         android:title="@string/save_playlist"
+        android:visible="false"
         app:showAsAction="ifRoom" />
+
+    <group
+        android:id="@+id/local_playlist"
+        android:visible="false">
+        <item
+            android:id="@+id/edit_playlist"
+            android:contentDescription="@string/edit_playlist"
+            android:title="@string/edit"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/delete_playlist"
+            android:contentDescription="@string/delete_playlist"
+            android:title="@string/delete"
+            app:showAsAction="never" />
+    </group>
 </menu>

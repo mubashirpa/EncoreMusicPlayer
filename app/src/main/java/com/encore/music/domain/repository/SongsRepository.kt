@@ -10,25 +10,9 @@ import com.encore.music.data.local.entity.tracks.TrackWithArtists
 import kotlinx.coroutines.flow.Flow
 
 interface SongsRepository {
-    suspend fun insertPlaylist(
-        playlist: PlaylistEntity,
-        tracks: List<TrackEntity>? = null,
-        artists: List<ArtistEntity>? = null,
-        playlistTrackCrossRef: List<PlaylistTrackCrossRef>? = null,
-        trackArtistCrossRef: List<TrackArtistCrossRef>? = null,
-    )
-
-    fun getPlaylists(): Flow<List<PlaylistEntity>>
-
-    fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists>
-
-    suspend fun insertRecentTrack(
-        track: TrackEntity,
-        artists: List<ArtistEntity>,
-        trackArtistCrossRef: List<TrackArtistCrossRef>,
-    )
-
-    fun getRecentTracks(limit: Int = 20): Flow<List<TrackWithArtists>>
+    /**
+     * Artists
+     */
 
     suspend fun insertFollowedArtist(artist: ArtistEntity)
 
@@ -37,4 +21,36 @@ interface SongsRepository {
     fun getFollowedArtists(): Flow<List<ArtistEntity>>
 
     fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?>
+
+    /**
+     * Playlists
+     */
+
+    suspend fun insertPlaylist(
+        playlist: PlaylistEntity,
+        tracks: List<TrackEntity>? = null,
+        artists: List<ArtistEntity>? = null,
+        playlistTrackCrossRef: List<PlaylistTrackCrossRef>? = null,
+        trackArtistCrossRef: List<TrackArtistCrossRef>? = null,
+    )
+
+    fun getPlaylistById(id: String): Flow<PlaylistEntity?>
+
+    fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists?>
+
+    fun getPlaylists(): Flow<List<PlaylistEntity>>
+
+    suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity)
+
+    /**
+     * Tracks
+     */
+
+    suspend fun insertRecentTrack(
+        track: TrackEntity,
+        artists: List<ArtistEntity>,
+        trackArtistCrossRef: List<TrackArtistCrossRef>,
+    )
+
+    fun getRecentTracks(limit: Int = 20): Flow<List<TrackWithArtists>>
 }

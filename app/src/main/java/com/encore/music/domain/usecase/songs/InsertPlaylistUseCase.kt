@@ -56,10 +56,10 @@ class InsertPlaylistUseCase(
 
                 songsRepository.insertPlaylist(
                     playlist = playlist.toPlaylistEntity(),
-                    tracks = trackEntities.ifEmpty { null },
-                    artists = artistEntities.ifEmpty { null },
-                    playlistTrackCrossRef = playlistTrackCrossRefs.ifEmpty { null },
-                    trackArtistCrossRef = trackArtistCrossRefs.ifEmpty { null },
+                    tracks = trackEntities,
+                    artists = artistEntities,
+                    playlistTrackCrossRef = playlistTrackCrossRefs,
+                    trackArtistCrossRef = trackArtistCrossRefs,
                 )
                 emit(Result.Success(playlistId))
             } catch (e: Exception) {

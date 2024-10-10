@@ -18,36 +18,9 @@ class SongsRepositoryImpl(
     private val playlistsDao: PlaylistsDao,
     private val tracksDao: TracksDao,
 ) : SongsRepository {
-    override suspend fun insertPlaylist(
-        playlist: PlaylistEntity,
-        tracks: List<TrackEntity>?,
-        artists: List<ArtistEntity>?,
-        playlistTrackCrossRef: List<PlaylistTrackCrossRef>?,
-        trackArtistCrossRef: List<TrackArtistCrossRef>?,
-    ) {
-        playlistsDao.insertPlaylist(playlist)
-        tracks?.let { playlistsDao.insertTracks(it) }
-        artists?.let { playlistsDao.insertArtists(it) }
-        playlistTrackCrossRef?.let { playlistsDao.insertPlaylistTrackCrossRef(it) }
-        trackArtistCrossRef?.let { playlistsDao.insertTrackArtistCrossRef(it) }
-    }
-
-    override fun getPlaylists(): Flow<List<PlaylistEntity>> = playlistsDao.getPlaylists()
-
-    override fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists> =
-        playlistsDao.getPlaylistWithTracksAndArtistsById(id)
-
-    override suspend fun insertRecentTrack(
-        track: TrackEntity,
-        artists: List<ArtistEntity>,
-        trackArtistCrossRef: List<TrackArtistCrossRef>,
-    ) {
-        tracksDao.insertRecentTrack(track)
-        tracksDao.insertArtists(artists)
-        tracksDao.insertTrackArtistCrossRef(trackArtistCrossRef)
-    }
-
-    override fun getRecentTracks(limit: Int): Flow<List<TrackWithArtists>> = tracksDao.getRecentTracks(limit)
+    /**
+     * Artists
+     */
 
     override suspend fun insertFollowedArtist(artist: ArtistEntity) {
         artistsDao.insertFollowedArtist(artist)
@@ -60,4 +33,51 @@ class SongsRepositoryImpl(
     override fun getFollowedArtists(): Flow<List<ArtistEntity>> = artistsDao.getFollowedArtists()
 
     override fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?> = artistsDao.getFollowedArtistById(artistId)
+
+    /**
+     * Playlists
+     */
+
+    override suspend fun insertPlaylist(
+        playlist: PlaylistEntity,
+        tracks: List<TrackEntity>?,
+        artists: List<ArtistEntity>?,
+        playlistTrackCrossRef: List<PlaylistTrackCrossRef>?,
+        trackArtistCrossRef: List<TrackArtistCrossRef>?,
+    ) {
+        playlistsDao.insertPlaylistWithTracksAndArtists(
+            playlist = playlist,
+            tracks = tracks,
+            artists = artists,
+            playlistTrackCrossRefs = playlistTrackCrossRef,
+            trackArtistCrossRefs = trackArtistCrossRef,
+        )
+    }
+
+    override fun getPlaylistById(id: String): Flow<PlaylistEntity?> = playlistsDao.getPlaylistById(id)
+
+    override fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists?> =
+        playlistsDao.getPlaylistWithTracksAndArtistsById(id)
+
+    override fun getPlaylists(): Flow<List<PlaylistEntity>> = playlistsDao.getPlaylists()
+
+    override suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity) {
+        playlistsDao.deletePlaylistWithCrossRefs(playlist)
+    }
+
+    /**
+     * Tracks
+     */
+
+    override suspend fun insertRecentTrack(
+        track: TrackEntity,
+        artists: List<ArtistEntity>,
+        trackArtistCrossRef: List<TrackArtistCrossRef>,
+    ) {
+        tracksDao.insertRecentTrack(track)
+        tracksDao.insertArtists(artists)
+        tracksDao.insertTrackArtistCrossRef(trackArtistCrossRef)
+    }
+
+    override fun getRecentTracks(limit: Int): Flow<List<TrackWithArtists>> = tracksDao.getRecentTracks(limit)
 }

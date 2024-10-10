@@ -2,9 +2,11 @@ package com.encore.music.presentation.ui.fragments.playlist
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -15,9 +17,13 @@ import com.encore.music.domain.model.tracks.Track
 
 class PlaylistAdapter(
     private val context: Context,
-    var items: MutableList<PlaylistListItem>,
     private val onTrackClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val differ: AsyncListDiffer<PlaylistListItem> = AsyncListDiffer(this, DIFF_CALLBACK)
+    var items: List<PlaylistListItem>
+        get() = differ.currentList
+        set(value) = differ.submitList(value)
+
     inner class HeaderViewHolder(
         private val binding: LayoutPlaylistHeaderBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -28,12 +34,9 @@ class PlaylistAdapter(
                     placeholder(R.drawable.bg_placeholder)
                 }
                 title.text = item.playlist.name
-                val description = item.playlist.description
-                if (!description.isNullOrEmpty()) {
-                    subtitle.text = description
-                } else {
-                    subtitle.visibility = View.GONE
-                }
+                val description = item.playlist.description.orEmpty()
+                subtitle.text = description
+                subtitle.isVisible = description.isNotBlank()
             }
         }
     }
@@ -130,4 +133,19 @@ class PlaylistAdapter(
             is PlaylistListItem.TracksItem -> 1
             is PlaylistListItem.EmptyTracksItem -> 2
         }
+
+    companion object {
+        val DIFF_CALLBACK =
+            object : DiffUtil.ItemCallback<PlaylistListItem>() {
+                override fun areItemsTheSame(
+                    oldItem: PlaylistListItem,
+                    newItem: PlaylistListItem,
+                ): Boolean = oldItem.id == newItem.id
+
+                override fun areContentsTheSame(
+                    oldItem: PlaylistListItem,
+                    newItem: PlaylistListItem,
+                ): Boolean = oldItem == newItem
+            }
+    }
 }

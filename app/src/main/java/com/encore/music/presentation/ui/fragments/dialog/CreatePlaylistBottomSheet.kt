@@ -9,12 +9,15 @@ import com.encore.music.databinding.LayoutDialogCreatePlaylistBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CreatePlaylistBottomSheet(
-    private val onCreatePlaylist: (name: String, description: String) -> Unit,
+    private val onCreatePlaylist: (dialogFragment: CreatePlaylistBottomSheet, name: String, description: String) -> Unit,
 ) : BottomSheetDialogFragment() {
-    constructor() : this({ _, _ -> })
+    constructor() : this({ _, _, _ -> })
 
     private var _binding: LayoutDialogCreatePlaylistBinding? = null
     private val binding get() = _binding!!
+
+    var name: String = ""
+    var description: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,12 +34,17 @@ class CreatePlaylistBottomSheet(
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.nameField.editText?.setText(name)
+        binding.descriptionField.editText?.setText(description)
+        binding.saveButton.isEnabled = name.isNotBlank()
+
         binding.cancelButton.setOnClickListener {
             dismiss()
         }
 
         binding.saveButton.setOnClickListener {
             onCreatePlaylist(
+                this,
                 binding.nameField.editText
                     ?.text
                     .toString(),
