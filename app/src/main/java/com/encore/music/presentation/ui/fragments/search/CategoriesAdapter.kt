@@ -10,6 +10,7 @@ import com.encore.music.domain.model.categories.Category
 
 class CategoriesAdapter(
     private val items: List<Category>,
+    private val onItemClick: (Category) -> Unit,
 ) : RecyclerView.Adapter<CategoriesAdapter.ViewHolder>() {
     class ViewHolder(
         val binding: ListItemCategoriesBinding,
@@ -36,6 +37,10 @@ class CategoriesAdapter(
                 placeholder(R.drawable.bg_placeholder)
             }
             title.text = items[position].name
+
+            root.setOnClickListener {
+                onItemClick(items[position])
+            }
         }
     }
 }

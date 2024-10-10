@@ -12,13 +12,9 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 private const val NO_SPACING = 0
 
 class AdaptiveSpacingItemDecoration(
-    private var size: Int,
+    private val size: Int,
     private val edgeEnabled: Boolean = false,
 ) : ItemDecoration() {
-    init {
-        size = size.dpToPx()
-    }
-
     override fun getItemOffsets(
         outRect: Rect,
         view: View,

@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.encore.music.R
 import com.encore.music.core.Result
+import com.encore.music.core.UiText
 import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.categories.GetCategoriesUseCase
@@ -27,14 +29,6 @@ class SearchViewModel(
         getCategories()
     }
 
-    fun onEvent(event: SearchUiEvent) {
-        when (event) {
-            SearchUiEvent.OnRetry -> {
-                getCategories()
-            }
-        }
-    }
-
     private fun getCurrentUser() {
         viewModelScope.launch {
             getCurrentUserUseCase().collect { user ->
@@ -43,13 +37,11 @@ class SearchViewModel(
         }
     }
 
-    private fun getCategories() {
+    fun getCategories() {
         getCategoriesUseCase()
             .onEach { result ->
                 when (result) {
-                    is Result.Empty -> {
-                        _uiState.value = CategoriesUiState.Empty
-                    }
+                    is Result.Empty -> Unit
 
                     is Result.Error -> {
                         _uiState.value = CategoriesUiState.Error(result.message!!)
@@ -60,12 +52,10 @@ class SearchViewModel(
                     }
 
                     is Result.Success -> {
-                        val categories = result.data
-                        if (categories == null) {
-                            _uiState.value = CategoriesUiState.Empty
-                        } else {
-                            _uiState.value = CategoriesUiState.Success(categories)
+                        _uiState.value = result.data?.let { categories ->
+                            CategoriesUiState.Success(categories)
                         }
+                            ?: CategoriesUiState.Error(UiText.StringResource(R.string.error_unexpected))
                     }
                 }
             }.launchIn(viewModelScope)

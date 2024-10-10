@@ -12,7 +12,5 @@ sealed class CategoriesUiState {
         val categories: List<Category>,
     ) : CategoriesUiState()
 
-    data object Empty : CategoriesUiState()
-
     data object Loading : CategoriesUiState()
 }

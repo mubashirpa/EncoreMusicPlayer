@@ -26,21 +26,6 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/search_bar_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.search.SearchBar
-                android:id="@+id/search_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/what_will_you_listen_to" />
-        </com.google.android.material.appbar.AppBarLayout>
-
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nested_scroll_view"
             android:layout_width="0dp"
@@ -50,7 +35,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_bar_layout">
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,6 +45,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="72dp"
                     android:paddingHorizontal="16dp"
                     android:text="@string/browse_all_title_case"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
@@ -71,10 +57,28 @@
                     android:nestedScrollingEnabled="true"
                     android:paddingHorizontal="4dp"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:spanCount="3"
                     tools:listitem="@layout/list_item_categories" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/search_bar_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                android:hint="@string/what_will_you_listen_to"
+                app:defaultMarginsEnabled="false" />
+        </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress_circular"
@@ -107,11 +111,55 @@
         android:hint="@string/what_will_you_listen_to"
         app:layout_anchor="@id/search_bar">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/search_recycler_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/list_item_tracks_detailed" />
+            android:orientation="vertical">
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                app:selectionRequired="true"
+                app:singleLine="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/songs_filter"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/songs"
+                    app:checkedIconVisible="false"
+                    app:ensureMinTouchTargetSize="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/playlists_filter"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/playlists"
+                    app:checkedIconVisible="false"
+                    app:ensureMinTouchTargetSize="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/artists_filter"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/artists"
+                    app:checkedIconVisible="false"
+                    app:ensureMinTouchTargetSize="false" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/list_item_tracks_detailed" />
+        </LinearLayout>
     </com.google.android.material.search.SearchView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
