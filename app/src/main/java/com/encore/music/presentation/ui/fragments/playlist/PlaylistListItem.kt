@@ -8,12 +8,11 @@ sealed class PlaylistListItem(
 ) {
     data class HeaderItem(
         val playlist: Playlist,
-    ) : PlaylistListItem("header")
+    ) : PlaylistListItem(playlist.id.orEmpty())
 
     data class TracksItem(
-        val trackId: String,
         val track: Track,
-    ) : PlaylistListItem(trackId)
+    ) : PlaylistListItem(track.id.orEmpty())
 
     data object EmptyTracksItem : PlaylistListItem("empty")
 }

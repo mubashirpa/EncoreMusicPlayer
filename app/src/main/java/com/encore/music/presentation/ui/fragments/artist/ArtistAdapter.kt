@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -15,10 +17,14 @@ import com.encore.music.domain.model.tracks.Track
 
 class ArtistAdapter(
     private val context: Context,
-    var items: MutableList<ArtistListItem>,
     private val onFollowArtistClicked: (artist: Artist, isFollowed: Boolean) -> Unit,
     private val onTrackClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val differ: AsyncListDiffer<ArtistListItem> = AsyncListDiffer(this, DIFF_CALLBACK)
+    var items: List<ArtistListItem>
+        get() = differ.currentList
+        set(value) = differ.submitList(value)
+
     inner class HeaderViewHolder(
         private val binding: LayoutArtistHeaderBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -133,4 +139,19 @@ class ArtistAdapter(
             is ArtistListItem.TracksItem -> 1
             ArtistListItem.EmptyTracksItem -> 2
         }
+
+    companion object {
+        val DIFF_CALLBACK =
+            object : DiffUtil.ItemCallback<ArtistListItem>() {
+                override fun areItemsTheSame(
+                    oldItem: ArtistListItem,
+                    newItem: ArtistListItem,
+                ): Boolean = oldItem.id == newItem.id
+
+                override fun areContentsTheSame(
+                    oldItem: ArtistListItem,
+                    newItem: ArtistListItem,
+                ): Boolean = oldItem == newItem
+            }
+    }
 }

@@ -74,11 +74,7 @@ class PlaylistFragment : Fragment() {
                                 if (tracks.isEmpty()) {
                                     add(PlaylistListItem.EmptyTracksItem)
                                 } else {
-                                    addAll(
-                                        tracks.map { track ->
-                                            PlaylistListItem.TracksItem(track.id.orEmpty(), track)
-                                        },
-                                    )
+                                    addAll(tracks.map { PlaylistListItem.TracksItem(it) })
                                 }
                             }
                         }
@@ -158,7 +154,6 @@ class PlaylistFragment : Fragment() {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle(R.string.delete_playlist)
                         .setMessage(R.string.are_you_sure_you_want_to_delete_this_playlist)
-                        .setNegativeButton(R.string.cancel) { _, _ -> }
                         .setPositiveButton(R.string.delete) { _, _ ->
                             viewModel.deletePlaylist()
                         }.show()

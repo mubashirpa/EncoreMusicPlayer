@@ -1,6 +1,5 @@
 package com.encore.music.presentation.ui.fragments.artist
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +30,6 @@ class ArtistFragment : Fragment() {
         return binding.root
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -73,9 +71,8 @@ class ArtistFragment : Fragment() {
                                     addAll(tracks.map { ArtistListItem.TracksItem(it) })
                                 }
                             }
-                        }.toMutableList()
+                        }
                     artistAdapter.items = items
-                    artistAdapter.notifyDataSetChanged()
                 }
 
                 ArtistUiState.Loading -> {
@@ -108,7 +105,6 @@ class ArtistFragment : Fragment() {
         val artistAdapter =
             ArtistAdapter(
                 context = requireContext(),
-                items = mutableListOf(),
                 onFollowArtistClicked = { artist, isFollowed ->
                     if (isFollowed) {
                         viewModel.unfollowArtist(artist)
@@ -145,7 +141,6 @@ class ArtistFragment : Fragment() {
             }
             adapter = artistAdapter
         }
-
         return artistAdapter
     }
 }

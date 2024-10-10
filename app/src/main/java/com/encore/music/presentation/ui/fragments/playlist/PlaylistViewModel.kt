@@ -55,6 +55,7 @@ class PlaylistViewModel(
         }
     }
 
+    // Load playlist from API if playlist is not local
     private fun getPlaylist(playlistId: String) {
         getPlaylistUseCase(playlistId)
             .onEach { result ->
@@ -78,6 +79,7 @@ class PlaylistViewModel(
             }.launchIn(viewModelScope)
     }
 
+    // Load playlist from database if playlist is local
     private fun getPlaylistWithTracksAndArtists(playlistId: String) {
         viewModelScope.launch {
             getSavedPlaylistWithTracksAndArtistsUseCase(playlistId).collect {
@@ -107,7 +109,10 @@ class PlaylistViewModel(
         deletePlaylistUseCase(playlist)
             .onEach {
                 if (it is Result.Success) {
-                    _uiEvent.emit(PlaylistUiEvent.NavigateUp)
+                    // No need to navigate up if the playlist is not local
+                    if (isLocal) {
+                        _uiEvent.emit(PlaylistUiEvent.NavigateUp)
+                    }
                 }
             }.launchIn(viewModelScope)
     }
