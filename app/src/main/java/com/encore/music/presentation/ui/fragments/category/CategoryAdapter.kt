@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
-import com.encore.music.databinding.ListItemPlaylistsBinding
+import com.encore.music.databinding.ListItemCategoryPlaylistsBinding
 import com.encore.music.domain.model.playlists.Playlist
 
 class CategoryAdapter(
@@ -20,7 +20,7 @@ class CategoryAdapter(
         set(value) = differ.submitList(value)
 
     class ViewHolder(
-        val binding: ListItemPlaylistsBinding,
+        val binding: ListItemCategoryPlaylistsBinding,
     ) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(
@@ -28,7 +28,11 @@ class CategoryAdapter(
         viewType: Int,
     ): ViewHolder {
         val binding =
-            ListItemPlaylistsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListItemCategoryPlaylistsBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            )
         return ViewHolder(binding)
     }
 

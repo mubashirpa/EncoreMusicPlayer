@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.encore.music.R
+import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.LayoutHomePlaylistsBinding
 import com.encore.music.databinding.LayoutHomeTopTracksBinding
 import com.encore.music.domain.model.playlists.Playlist
@@ -27,7 +28,7 @@ class HomeAdapter(
             topTracksAdapter.items = item.tracks
             binding.recyclerView.apply {
                 if (itemDecorationCount == 0) {
-                    addItemDecoration(AdaptiveSpacingItemDecoration(10, false))
+                    addItemDecoration(AdaptiveSpacingItemDecoration(10.dpToPx(context), false))
                 }
                 adapter = topTracksAdapter
             }
