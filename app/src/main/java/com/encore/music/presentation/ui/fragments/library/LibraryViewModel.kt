@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.encore.music.core.Result
 import com.encore.music.domain.model.artists.Artist
 import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.playlists.Playlist
@@ -14,10 +13,8 @@ import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LibraryViewModel(
@@ -26,12 +23,10 @@ class LibraryViewModel(
     private val getFollowedArtistsUseCase: GetFollowedArtistsUseCase,
     private val getRecentTracksUseCase: GetRecentTracksUseCase,
     private val getSavedPlaylistsUseCase: GetSavedPlaylistsUseCase,
+    private val insertPlaylistUseCase: InsertPlaylistUseCase,
 ) : ViewModel() {
     private val _uiState = MutableLiveData<LibraryUiState>()
     val uiState: LiveData<LibraryUiState> = _uiState
-
-    private val _uiEvent = MutableSharedFlow<LibraryUiEvent>()
-    val uiEvent: SharedFlow<LibraryUiEvent> = _uiEvent
 
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> = _currentUser
@@ -104,24 +99,10 @@ class LibraryViewModel(
     }
 
     fun createPlaylist(playlist: Playlist) {
-        createPlaylistUseCase(playlist)
-            .onEach { result ->
-                when (result) {
-                    is Result.Empty -> {}
-                    is Result.Error -> {
-                        _uiEvent.emit(LibraryUiEvent.OnOpenProgressDialogChange(false))
-                        _uiEvent.emit(LibraryUiEvent.OnShowSnackBar(result.message!!))
-                    }
+        createPlaylistUseCase(playlist).launchIn(viewModelScope)
+    }
 
-                    is Result.Loading -> {
-                        _uiEvent.emit(LibraryUiEvent.OnOpenProgressDialogChange(true))
-                    }
-
-                    is Result.Success -> {
-                        _uiEvent.emit(LibraryUiEvent.OnOpenProgressDialogChange(false))
-                        _uiEvent.emit(LibraryUiEvent.OnOpenCreatePlaylistBottomSheetChange(false))
-                    }
-                }
-            }.launchIn(viewModelScope)
+    fun savePlaylist(playlist: Playlist) {
+        insertPlaylistUseCase(playlist).launchIn(viewModelScope)
     }
 }

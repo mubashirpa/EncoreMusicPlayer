@@ -5,9 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentLibraryBinding
@@ -16,15 +13,13 @@ import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.navigation.navigateToProfile
+import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
-import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
 import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LibraryFragment : Fragment() {
@@ -33,13 +28,6 @@ class LibraryFragment : Fragment() {
 
     private val viewModel: LibraryViewModel by viewModel()
     private val navController by lazy { findNavController() }
-    private val progressDialog by lazy { ProgressDialogFragment() }
-    private val createPlaylistBottomSheet by lazy {
-        CreatePlaylistBottomSheet().setOnCreatePlaylistClickListener { _, playlist ->
-            // TODO
-            viewModel.createPlaylist(playlist)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -117,49 +105,6 @@ class LibraryFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiEvent.collect { uiEvent ->
-                    when (uiEvent) {
-                        is LibraryUiEvent.OnOpenCreatePlaylistBottomSheetChange -> {
-                            if (uiEvent.open) {
-                                if (!createPlaylistBottomSheet.isAdded) {
-                                    createPlaylistBottomSheet.show(
-                                        childFragmentManager,
-                                        CreatePlaylistBottomSheet.TAG,
-                                    )
-                                }
-                            } else {
-                                if (createPlaylistBottomSheet.isAdded) createPlaylistBottomSheet.dismiss()
-                            }
-                        }
-
-                        is LibraryUiEvent.OnOpenProgressDialogChange -> {
-                            if (uiEvent.open) {
-                                if (!progressDialog.isAdded) {
-                                    progressDialog.show(
-                                        childFragmentManager,
-                                        ProgressDialogFragment.TAG,
-                                    )
-                                }
-                            } else {
-                                if (progressDialog.isAdded) progressDialog.dismiss()
-                            }
-                        }
-
-                        is LibraryUiEvent.OnShowSnackBar -> {
-                            Snackbar
-                                .make(
-                                    binding.root,
-                                    uiEvent.message.asString(requireContext()),
-                                    Snackbar.LENGTH_LONG,
-                                ).show()
-                        }
-                    }
-                }
-            }
-        }
-
         binding.topAppBar.setNavigationOnClickListener {
             navController.navigateToProfile()
         }
@@ -167,10 +112,7 @@ class LibraryFragment : Fragment() {
         binding.topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.add_playlist -> {
-                    createPlaylistBottomSheet.show(
-                        childFragmentManager,
-                        CreatePlaylistBottomSheet.TAG,
-                    )
+                    showCreatePlaylistBottomSheet(null)
                     true
                 }
 
@@ -214,7 +156,7 @@ class LibraryFragment : Fragment() {
                     }
                 },
                 onTrackMoreClicked = { track ->
-                    showTrackMenu(track)
+                    showTrackMenuBottomSheet(track)
                 },
             )
         binding.recyclerView.apply {
@@ -235,7 +177,7 @@ class LibraryFragment : Fragment() {
         return libraryAdapter
     }
 
-    private fun showTrackMenu(track: Track) {
+    private fun showTrackMenuBottomSheet(track: Track) {
         val artist = track.artists?.firstOrNull()
         val items =
             listOf(
@@ -282,7 +224,8 @@ class LibraryFragment : Fragment() {
                     2 -> { // TODO
                     }
 
-                    3 -> { // TODO
+                    3 -> {
+                        showAddToPlaylistBottomSheet(track)
                     }
 
                     4 -> {
@@ -292,6 +235,37 @@ class LibraryFragment : Fragment() {
             }.show(
                 childFragmentManager,
                 TrackMenuBottomSheet.TAG,
+            )
+    }
+
+    private fun showAddToPlaylistBottomSheet(track: Track) {
+        val playlists =
+            viewModel.savedPlaylists.value
+                .orEmpty()
+                .filter { it.isLocal == true }
+        AddToPlaylistBottomSheet(track, playlists)
+            .setOnCreatePlaylistClickListener { dialog, playlistTrack ->
+                showCreatePlaylistBottomSheet(playlistTrack)
+                dialog.dismiss()
+            }.setOnAddToPlaylistClickListener { dialog, playlist ->
+                viewModel.savePlaylist(playlist)
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                AddToPlaylistBottomSheet.TAG,
+            )
+    }
+
+    private fun showCreatePlaylistBottomSheet(track: Track?) {
+        CreatePlaylistBottomSheet()
+            .apply {
+                track?.let { setTracks(listOf(it)) }
+            }.setOnCreatePlaylistClickListener { dialog, playlist ->
+                viewModel.createPlaylist(playlist)
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                CreatePlaylistBottomSheet.TAG,
             )
     }
 }
