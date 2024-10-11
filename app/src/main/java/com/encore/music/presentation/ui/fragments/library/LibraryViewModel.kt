@@ -10,10 +10,10 @@ import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
-import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
-import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
+import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.launchIn
@@ -103,11 +103,8 @@ class LibraryViewModel(
         }
     }
 
-    fun createPlaylist(
-        name: String,
-        description: String,
-    ) {
-        createPlaylistUseCase(name, description)
+    fun createPlaylist(playlist: Playlist) {
+        createPlaylistUseCase(playlist)
             .onEach { result ->
                 when (result) {
                     is Result.Empty -> {}

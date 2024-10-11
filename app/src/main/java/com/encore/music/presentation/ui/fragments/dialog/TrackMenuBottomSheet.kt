@@ -15,7 +15,7 @@ import com.encore.music.databinding.ListItemMenuBinding
 import com.encore.music.domain.model.tracks.Track
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class MenuBottomSheet() : BottomSheetDialogFragment() {
+class TrackMenuBottomSheet() : BottomSheetDialogFragment() {
     constructor(track: Track, items: List<MenuItem>) : this() {
         this.track = track
         this.items = items
@@ -26,7 +26,8 @@ class MenuBottomSheet() : BottomSheetDialogFragment() {
 
     private var track: Track? = null
     private var items: List<MenuItem> = emptyList()
-    var setOnMenuItemClickListener: ((position: Int) -> Unit)? = null
+    private var onMenuItemClickListener: ((dialog: TrackMenuBottomSheet, position: Int) -> Unit)? =
+        null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,10 +58,8 @@ class MenuBottomSheet() : BottomSheetDialogFragment() {
 
             listView.adapter = menuListAdapter
             listView.setOnItemClickListener { _, _, position, _ ->
-                setOnMenuItemClickListener?.let {
-                    it(position)
-                    dismiss()
-                }
+                onMenuItemClickListener?.invoke(this@TrackMenuBottomSheet, position)
+                dismiss()
             }
         }
     }
@@ -73,6 +72,11 @@ class MenuBottomSheet() : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "TrackMenuBottomSheet"
     }
+
+    fun setOnMenuItemClickListener(listener: (dialog: TrackMenuBottomSheet, position: Int) -> Unit): TrackMenuBottomSheet {
+        onMenuItemClickListener = listener
+        return this
+    }
 }
 
 data class MenuItem(
@@ -80,7 +84,7 @@ data class MenuItem(
     @DrawableRes val icon: Int,
 )
 
-class MenuListAdapter(
+private class MenuListAdapter(
     private val context: Context,
     @LayoutRes private val resource: Int,
     private val items: List<MenuItem>,

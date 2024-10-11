@@ -17,9 +17,9 @@ import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
-import com.encore.music.presentation.ui.fragments.dialog.MenuBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
 import com.encore.music.presentation.ui.fragments.dialog.ProgressDialogFragment
+import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
@@ -35,11 +35,10 @@ class LibraryFragment : Fragment() {
     private val navController by lazy { findNavController() }
     private val progressDialog by lazy { ProgressDialogFragment() }
     private val createPlaylistBottomSheet by lazy {
-        CreatePlaylistBottomSheet(
-            onCreatePlaylist = { _, name, description ->
-                viewModel.createPlaylist(name, description)
-            },
-        )
+        CreatePlaylistBottomSheet().setOnCreatePlaylistClickListener { _, playlist ->
+            // TODO
+            viewModel.createPlaylist(playlist)
+        }
     }
 
     override fun onCreateView(
@@ -264,33 +263,31 @@ class LibraryFragment : Fragment() {
                     R.drawable.baseline_person_search_24,
                 ),
             )
-        MenuBottomSheet(track, items)
-            .apply {
-                setOnMenuItemClickListener = { position ->
-                    when (position) {
-                        0 -> {
-                            track.id?.let { id ->
-                                navController.navigateToPlayer(id)
-                            }
+        TrackMenuBottomSheet(track, items)
+            .setOnMenuItemClickListener { _, position ->
+                when (position) {
+                    0 -> {
+                        track.id?.let { id ->
+                            navController.navigateToPlayer(id)
                         }
+                    }
 
-                        1 -> { // TODO
-                        }
+                    1 -> { // TODO
+                    }
 
-                        2 -> { // TODO
-                        }
+                    2 -> { // TODO
+                    }
 
-                        3 -> { // TODO
-                        }
+                    3 -> { // TODO
+                    }
 
-                        4 -> {
-                            artist?.id?.let { navController.navigateToArtist(it) }
-                        }
+                    4 -> {
+                        artist?.id?.let { navController.navigateToArtist(it) }
                     }
                 }
             }.show(
                 childFragmentManager,
-                MenuBottomSheet.TAG,
+                TrackMenuBottomSheet.TAG,
             )
     }
 }

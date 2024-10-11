@@ -32,15 +32,18 @@ interface PlaylistsDao {
     @Upsert
     suspend fun insertTrackArtistCrossRef(crossRefs: List<TrackArtistCrossRef>)
 
-    @Query("SELECT * FROM playlists where playlistId = :id")
+    @Query("SELECT * FROM playlists WHERE playlistId = :id")
     fun getPlaylistById(id: String): Flow<PlaylistEntity?>
 
     @Transaction
-    @Query("SELECT * FROM playlists where playlistId = :id")
+    @Query("SELECT * FROM playlists WHERE playlistId = :id")
     fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists?>
 
     @Query("SELECT * FROM playlists")
     fun getPlaylists(): Flow<List<PlaylistEntity>>
+
+    @Query("SELECT * FROM playlists WHERE isLocal = 1")
+    fun getLocalPlaylists(): Flow<List<PlaylistEntity>>
 
     @Delete
     suspend fun deletePlaylist(playlist: PlaylistEntity)

@@ -13,8 +13,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentPlaylistBinding
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
+import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
+import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.MenuItem
+import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -58,7 +64,7 @@ class PlaylistFragment : Fragment() {
                         errorText.text = uiState.message.asString(requireContext())
                         retryButton.visibility = View.VISIBLE
                         retryButton.setOnClickListener {
-                            viewModel.retry()
+                            viewModel.onEvent(PlaylistEvent.OnRetry)
                         }
                     }
                 }
@@ -120,9 +126,9 @@ class PlaylistFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.save_playlist -> {
                     if (viewModel.isSaved.value == true) {
-                        viewModel.deletePlaylist()
+                        viewModel.onEvent(PlaylistEvent.OnUnSavePlaylist)
                     } else {
-                        viewModel.savePlaylist()
+                        viewModel.onEvent(PlaylistEvent.OnSavePlaylist)
                     }
                     true
                 }
@@ -130,20 +136,7 @@ class PlaylistFragment : Fragment() {
                 R.id.edit_playlist -> {
                     if (viewModel.uiState.value is PlaylistUiState.Success) {
                         val playlist = (viewModel.uiState.value as PlaylistUiState.Success).playlist
-                        val createPlaylistBottomSheet =
-                            CreatePlaylistBottomSheet(
-                                onCreatePlaylist = { dialog, name, description ->
-                                    viewModel.editPlaylist(name, description)
-                                    dialog.dismiss()
-                                },
-                            ).apply {
-                                name = playlist.name.orEmpty()
-                                description = playlist.description.orEmpty()
-                            }
-                        createPlaylistBottomSheet.show(
-                            childFragmentManager,
-                            CreatePlaylistBottomSheet.TAG,
-                        )
+                        showEditPlaylistBottomSheet(playlist)
                         true
                     } else {
                         false
@@ -156,7 +149,7 @@ class PlaylistFragment : Fragment() {
                         .setMessage(R.string.are_you_sure_you_want_to_delete_this_playlist)
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .setPositiveButton(R.string.delete) { _, _ ->
-                            viewModel.deletePlaylist()
+                            viewModel.onEvent(PlaylistEvent.OnDeleteLocalPlaylist)
                         }.show()
                     true
                 }
@@ -177,9 +170,11 @@ class PlaylistFragment : Fragment() {
                 context = requireContext(),
                 onTrackClicked = { track ->
                     track.id?.let { id ->
-                        viewModel.insertRecentTrack(track)
                         navController.navigateToPlayer(id)
                     }
+                },
+                onTrackMoreClicked = { track ->
+                    showTrackMenuBottomSheet(track)
                 },
             )
         binding.recyclerView.apply {
@@ -206,5 +201,113 @@ class PlaylistFragment : Fragment() {
             adapter = playlistAdapter
         }
         return playlistAdapter
+    }
+
+    private fun showTrackMenuBottomSheet(track: Track) {
+        val artist = track.artists?.firstOrNull()
+        val items =
+            buildList {
+                add(
+                    MenuItem(
+                        getString(R.string.play_now),
+                        R.drawable.baseline_play_arrow_24,
+                    ),
+                )
+                add(
+                    MenuItem(
+                        getString(R.string.play_next),
+                        R.drawable.baseline_skip_next_24,
+                    ),
+                )
+                add(
+                    MenuItem(
+                        getString(R.string.add_to_queue),
+                        R.drawable.baseline_add_to_queue_24,
+                    ),
+                )
+                add(
+                    MenuItem(
+                        getString(R.string.add_to_playlist),
+                        R.drawable.baseline_playlist_add_24,
+                    ),
+                )
+                artist?.let {
+                    add(
+                        MenuItem(
+                            getString(
+                                R.string.more_from_,
+                                artist.name.orEmpty(),
+                            ),
+                            R.drawable.baseline_person_search_24,
+                        ),
+                    )
+                }
+            }
+        TrackMenuBottomSheet(track, items)
+            .setOnMenuItemClickListener { _, position ->
+                when (position) {
+                    0 -> {
+                        track.id?.let { id ->
+                            navController.navigateToPlayer(id)
+                        }
+                    }
+
+                    1 -> { // TODO
+                    }
+
+                    2 -> { // TODO
+                    }
+
+                    3 -> {
+                        showAddToPlaylistBottomSheet(track)
+                    }
+
+                    4 -> {
+                        artist?.id?.let { navController.navigateToArtist(it) }
+                    }
+                }
+            }.show(
+                childFragmentManager,
+                TrackMenuBottomSheet.TAG,
+            )
+    }
+
+    private fun showAddToPlaylistBottomSheet(track: Track) {
+        val playlists = viewModel.savedPlaylists.value.orEmpty()
+        AddToPlaylistBottomSheet(track, playlists)
+            .setOnCreatePlaylistClickListener { dialog, playlistTrack ->
+                showCreatePlaylistBottomSheet(playlistTrack)
+                dialog.dismiss()
+            }.setOnAddToPlaylistClickListener { dialog, playlist ->
+                viewModel.onEvent(PlaylistEvent.OnInsertTrackToLocalPlaylist(playlist))
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                AddToPlaylistBottomSheet.TAG,
+            )
+    }
+
+    private fun showCreatePlaylistBottomSheet(track: Track) {
+        CreatePlaylistBottomSheet()
+            .setTracks(listOf(track))
+            .setOnCreatePlaylistClickListener { dialog, playlist ->
+                viewModel.onEvent(PlaylistEvent.OnCreatePlaylist(playlist))
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                CreatePlaylistBottomSheet.TAG,
+            )
+    }
+
+    private fun showEditPlaylistBottomSheet(playlist: Playlist) {
+        CreatePlaylistBottomSheet()
+            .setPlaylist(playlist)
+            .setOnUpdatePlaylistClickListener { dialog, updatedPlaylist ->
+                viewModel.onEvent(PlaylistEvent.OnEditLocalPlaylist(updatedPlaylist))
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                CreatePlaylistBottomSheet.TAG,
+            )
     }
 }

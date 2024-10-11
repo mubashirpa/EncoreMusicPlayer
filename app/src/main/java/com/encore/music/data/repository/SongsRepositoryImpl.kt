@@ -61,6 +61,8 @@ class SongsRepositoryImpl(
 
     override fun getPlaylists(): Flow<List<PlaylistEntity>> = playlistsDao.getPlaylists()
 
+    override fun getLocalPlaylists(): Flow<List<PlaylistEntity>> = playlistsDao.getLocalPlaylists()
+
     override suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity) {
         playlistsDao.deletePlaylistWithCrossRefs(playlist)
     }

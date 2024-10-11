@@ -16,18 +16,19 @@ import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
 import com.encore.music.domain.usecase.playlists.GetCategoryPlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
-import com.encore.music.domain.usecase.songs.CreatePlaylistUseCase
-import com.encore.music.domain.usecase.songs.DeletePlaylistUseCase
 import com.encore.music.domain.usecase.songs.FollowArtistUseCase
 import com.encore.music.domain.usecase.songs.GetFollowedArtistUseCase
 import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
-import com.encore.music.domain.usecase.songs.GetSavedPlaylistUseCase
-import com.encore.music.domain.usecase.songs.GetSavedPlaylistWithTracksAndArtistsUseCase
-import com.encore.music.domain.usecase.songs.GetSavedPlaylistsUseCase
-import com.encore.music.domain.usecase.songs.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.domain.usecase.songs.UnfollowArtistUseCase
+import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.DeletePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistWithTracksAndArtistsUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
+import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword
@@ -43,15 +44,16 @@ val useCaseModule =
         singleOf(::GetArtistsTopTracksUseCase)
         singleOf(::GetCategoriesUseCase)
         singleOf(::GetCategoryPlaylistsUseCase)
+        singleOf(::GetFollowedArtistUseCase)
+        singleOf(::GetFollowedArtistsUseCase)
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
         singleOf(::GetPlaylistUseCase)
         singleOf(::GetRecentTracksUseCase)
-        singleOf(::GetFollowedArtistUseCase)
-        singleOf(::GetFollowedArtistsUseCase)
+        singleOf(::GetSavedLocalPlaylistsUseCase)
         singleOf(::GetSavedPlaylistUseCase)
-        singleOf(::GetSavedPlaylistsUseCase)
         singleOf(::GetSavedPlaylistWithTracksAndArtistsUseCase)
+        singleOf(::GetSavedPlaylistsUseCase)
         single { InsertPlaylistUseCase(songsRepository = get()) }
         single { InsertRecentTrackUseCase(songsRepository = get()) }
         singleOf(::UnfollowArtistUseCase)

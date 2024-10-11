@@ -40,6 +40,8 @@ interface SongsRepository {
 
     fun getPlaylists(): Flow<List<PlaylistEntity>>
 
+    fun getLocalPlaylists(): Flow<List<PlaylistEntity>>
+
     suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity)
 
     /**

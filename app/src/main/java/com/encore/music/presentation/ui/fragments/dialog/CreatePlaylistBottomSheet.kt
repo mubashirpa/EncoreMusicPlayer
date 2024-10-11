@@ -6,18 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import com.encore.music.databinding.LayoutDialogCreatePlaylistBinding
+import com.encore.music.domain.model.playlists.Playlist
+import com.encore.music.domain.model.tracks.Track
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class CreatePlaylistBottomSheet(
-    private val onCreatePlaylist: (dialogFragment: CreatePlaylistBottomSheet, name: String, description: String) -> Unit,
-) : BottomSheetDialogFragment() {
-    constructor() : this({ _, _, _ -> })
-
+class CreatePlaylistBottomSheet : BottomSheetDialogFragment() {
     private var _binding: LayoutDialogCreatePlaylistBinding? = null
     private val binding get() = _binding!!
 
-    var name: String = ""
-    var description: String = ""
+    private var playlist: Playlist? = null
+    private var tracks: List<Track>? = null
+    private var onCreatePlaylistClickListener: ((dialog: CreatePlaylistBottomSheet, playlist: Playlist) -> Unit)? =
+        null
+    private var onUpdatePlaylistClickListener: ((dialog: CreatePlaylistBottomSheet, playlist: Playlist) -> Unit)? =
+        null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,24 +36,40 @@ class CreatePlaylistBottomSheet(
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.nameField.editText?.setText(name)
-        binding.descriptionField.editText?.setText(description)
-        binding.saveButton.isEnabled = name.isNotBlank()
+        playlist?.let {
+            val name = it.name.orEmpty()
+            binding.nameField.editText?.setText(name)
+            binding.descriptionField.editText?.setText(it.description.orEmpty())
+            binding.saveButton.isEnabled = name.isNotBlank()
+        }
 
         binding.cancelButton.setOnClickListener {
             dismiss()
         }
 
         binding.saveButton.setOnClickListener {
-            onCreatePlaylist(
-                this,
+            val name =
                 binding.nameField.editText
                     ?.text
-                    .toString(),
+                    .toString()
+            val description =
                 binding.descriptionField.editText
                     ?.text
-                    .toString(),
-            )
+                    .toString()
+
+            if (playlist != null) {
+                val updatedPlaylist =
+                    playlist!!.copy(description = description, name = name, tracks = tracks)
+                onUpdatePlaylistClickListener?.invoke(this, updatedPlaylist)
+            } else {
+                val newPlaylist =
+                    Playlist(
+                        description = description,
+                        name = name,
+                        tracks = tracks,
+                    )
+                onCreatePlaylistClickListener?.invoke(this, newPlaylist)
+            }
         }
 
         binding.nameField.editText?.doOnTextChanged { text, _, _, _ ->
@@ -66,5 +84,29 @@ class CreatePlaylistBottomSheet(
 
     companion object {
         const val TAG = "CreatePlaylistBottomSheet"
+    }
+
+    fun setPlaylist(playlist: Playlist): CreatePlaylistBottomSheet {
+        this.playlist = playlist
+        return this
+    }
+
+    fun setTracks(tracks: List<Track>): CreatePlaylistBottomSheet {
+        this.tracks = tracks
+        return this
+    }
+
+    fun setOnCreatePlaylistClickListener(
+        listener: (dialog: CreatePlaylistBottomSheet, playlist: Playlist) -> Unit,
+    ): CreatePlaylistBottomSheet {
+        onCreatePlaylistClickListener = listener
+        return this
+    }
+
+    fun setOnUpdatePlaylistClickListener(
+        listener: (dialog: CreatePlaylistBottomSheet, playlist: Playlist) -> Unit,
+    ): CreatePlaylistBottomSheet {
+        onUpdatePlaylistClickListener = listener
+        return this
     }
 }
