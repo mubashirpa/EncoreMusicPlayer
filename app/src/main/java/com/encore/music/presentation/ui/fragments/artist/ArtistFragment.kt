@@ -8,8 +8,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.encore.music.R
 import com.encore.music.databinding.FragmentArtistBinding
+import com.encore.music.domain.model.tracks.Track
+import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
+import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.MenuItem
+import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -117,6 +124,9 @@ class ArtistFragment : Fragment() {
                         navController.navigateToPlayer(id)
                     }
                 },
+                onTrackMoreClicked = { track ->
+                    showTrackMenuBottomSheet(track)
+                },
             )
 
         binding.recyclerView.apply {
@@ -142,5 +152,94 @@ class ArtistFragment : Fragment() {
             adapter = artistAdapter
         }
         return artistAdapter
+    }
+
+    private fun showTrackMenuBottomSheet(track: Track) {
+        val artist = track.artists?.firstOrNull()
+        val items =
+            listOf(
+                MenuItem(
+                    id = 0,
+                    title = getString(R.string.play_now),
+                    icon = R.drawable.baseline_play_arrow_24,
+                ),
+                MenuItem(
+                    id = 1,
+                    title = getString(R.string.play_next),
+                    icon = R.drawable.baseline_skip_next_24,
+                ),
+                MenuItem(
+                    id = 2,
+                    title = getString(R.string.add_to_queue),
+                    icon = R.drawable.baseline_add_to_queue_24,
+                ),
+                MenuItem(
+                    id = 3,
+                    title = getString(R.string.add_to_playlist),
+                    icon = R.drawable.baseline_playlist_add_24,
+                ),
+                MenuItem(
+                    id = 4,
+                    title =
+                        getString(
+                            R.string.more_from_,
+                            artist?.name.orEmpty(),
+                        ),
+                    icon = R.drawable.baseline_person_search_24,
+                ),
+            )
+        TrackMenuBottomSheet(track, items)
+            .setOnMenuItemClickListener { _, id ->
+                when (id) {
+                    0 -> {
+                        track.id?.let { navController.navigateToPlayer(it) }
+                    }
+
+                    1 -> { // TODO
+                    }
+
+                    2 -> { // TODO
+                    }
+
+                    3 -> {
+                        showAddToPlaylistBottomSheet(track)
+                    }
+
+                    4 -> {
+                        artist?.id?.let { navController.navigateToArtist(it) }
+                    }
+                }
+            }.show(
+                childFragmentManager,
+                TrackMenuBottomSheet.TAG,
+            )
+    }
+
+    private fun showAddToPlaylistBottomSheet(track: Track) {
+        val playlists = viewModel.savedPlaylists.value.orEmpty()
+        AddToPlaylistBottomSheet(track, playlists)
+            .setOnCreatePlaylistClickListener { dialog, playlistTrack ->
+                showCreatePlaylistBottomSheet(playlistTrack)
+                dialog.dismiss()
+            }.setOnAddToPlaylistClickListener { dialog, playlist ->
+                viewModel.savePlaylist(playlist)
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                AddToPlaylistBottomSheet.TAG,
+            )
+    }
+
+    private fun showCreatePlaylistBottomSheet(track: Track?) {
+        CreatePlaylistBottomSheet()
+            .apply {
+                track?.let { setTracks(listOf(it)) }
+            }.setOnCreatePlaylistClickListener { dialog, playlist ->
+                viewModel.createPlaylist(playlist)
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                CreatePlaylistBottomSheet.TAG,
+            )
     }
 }

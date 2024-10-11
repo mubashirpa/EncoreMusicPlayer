@@ -10,10 +10,14 @@ import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.domain.model.artists.Artist
+import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.usecase.artists.GetArtistsTopTracksUseCase
 import com.encore.music.domain.usecase.songs.FollowArtistUseCase
 import com.encore.music.domain.usecase.songs.GetFollowedArtistUseCase
 import com.encore.music.domain.usecase.songs.UnfollowArtistUseCase
+import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
+import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
 import com.encore.music.presentation.navigation.Screen
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -21,9 +25,12 @@ import kotlinx.coroutines.launch
 
 class ArtistViewModel(
     savedStateHandle: SavedStateHandle,
+    private val createPlaylistUseCase: CreatePlaylistUseCase,
     private val followArtistUseCase: FollowArtistUseCase,
     private val getArtistsTopTracksUseCase: GetArtistsTopTracksUseCase,
     private val getFollowedArtistUseCase: GetFollowedArtistUseCase,
+    private val getSavedLocalPlaylistsUseCase: GetSavedLocalPlaylistsUseCase,
+    private val insertPlaylistUseCase: InsertPlaylistUseCase,
     private val unfollowArtistUseCase: UnfollowArtistUseCase,
 ) : ViewModel() {
     private val artistId = savedStateHandle.toRoute<Screen.Artist>().id
@@ -34,9 +41,13 @@ class ArtistViewModel(
     private val _isFollowed = MutableLiveData<Boolean>()
     val isFollowed: LiveData<Boolean> = _isFollowed
 
+    private val _savedPlaylists = MutableLiveData<List<Playlist>>()
+    val savedPlaylists: LiveData<List<Playlist>> = _savedPlaylists
+
     init {
         getFollowedArtist(artistId)
         getArtist(artistId)
+        getSavedLocalPlaylists()
     }
 
     private fun getArtist(artistId: String) {
@@ -73,6 +84,15 @@ class ArtistViewModel(
         }
     }
 
+    // Fetched to add track to playlist
+    private fun getSavedLocalPlaylists() {
+        viewModelScope.launch {
+            getSavedLocalPlaylistsUseCase().collect {
+                _savedPlaylists.value = it
+            }
+        }
+    }
+
     fun followArtist(artist: Artist) {
         followArtistUseCase(artist).launchIn(viewModelScope)
     }
@@ -83,5 +103,13 @@ class ArtistViewModel(
 
     fun retry() {
         getArtist(artistId)
+    }
+
+    fun createPlaylist(playlist: Playlist) {
+        createPlaylistUseCase(playlist).launchIn(viewModelScope)
+    }
+
+    fun savePlaylist(playlist: Playlist) {
+        insertPlaylistUseCase(playlist).launchIn(viewModelScope)
     }
 }

@@ -19,6 +19,7 @@ class ArtistAdapter(
     private val context: Context,
     private val onFollowArtistClicked: (artist: Artist, isFollowed: Boolean) -> Unit,
     private val onTrackClicked: (Track) -> Unit,
+    private val onTrackMoreClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val differ: AsyncListDiffer<ArtistListItem> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<ArtistListItem>
@@ -61,6 +62,10 @@ class ArtistAdapter(
 
                 root.setOnClickListener {
                     onTrackClicked(item.track)
+                }
+
+                menuButton.setOnClickListener {
+                    onTrackMoreClicked(item.track)
                 }
             }
         }
