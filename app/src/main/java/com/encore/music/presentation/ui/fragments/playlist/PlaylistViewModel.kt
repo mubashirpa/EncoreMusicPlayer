@@ -13,6 +13,7 @@ import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.DeletePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.DeleteTrackFromPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistWithTracksAndArtistsUseCase
@@ -28,6 +29,7 @@ class PlaylistViewModel(
     savedStateHandle: SavedStateHandle,
     private val createPlaylistUseCase: CreatePlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
+    private val deleteTrackFromPlaylistUseCase: DeleteTrackFromPlaylistUseCase,
     private val getPlaylistUseCase: GetPlaylistUseCase,
     private val getSavedLocalPlaylistsUseCase: GetSavedLocalPlaylistsUseCase,
     private val getSavedPlaylistUseCase: GetSavedPlaylistUseCase,
@@ -73,6 +75,10 @@ class PlaylistViewModel(
 
             is PlaylistEvent.OnInsertTrackToLocalPlaylist -> {
                 savePlaylist(event.playlist)
+            }
+
+            is PlaylistEvent.OnRemoveTrackFromLocalPlaylist -> {
+                deleteTrackFromPlaylist(playlistId, event.trackId)
             }
 
             PlaylistEvent.OnDeleteLocalPlaylist -> {
@@ -165,6 +171,13 @@ class PlaylistViewModel(
 
     private fun createPlaylist(playlist: Playlist) {
         createPlaylistUseCase(playlist).launchIn(viewModelScope)
+    }
+
+    private fun deleteTrackFromPlaylist(
+        playlistId: String,
+        trackId: String,
+    ) {
+        deleteTrackFromPlaylistUseCase(playlistId, trackId).launchIn(viewModelScope)
     }
 
     // Fetched to add track to playlist

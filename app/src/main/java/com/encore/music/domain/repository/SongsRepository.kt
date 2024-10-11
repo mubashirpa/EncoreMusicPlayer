@@ -44,6 +44,11 @@ interface SongsRepository {
 
     suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity)
 
+    suspend fun deleteTrackFromPlaylist(
+        playlistId: String,
+        trackId: String,
+    )
+
     /**
      * Tracks
      */

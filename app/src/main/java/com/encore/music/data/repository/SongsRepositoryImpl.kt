@@ -67,6 +67,13 @@ class SongsRepositoryImpl(
         playlistsDao.deletePlaylistWithCrossRefs(playlist)
     }
 
+    override suspend fun deleteTrackFromPlaylist(
+        playlistId: String,
+        trackId: String,
+    ) {
+        playlistsDao.deletePlaylistTrackCrossRefByIds(playlistId, trackId)
+    }
+
     /**
      * Tracks
      */

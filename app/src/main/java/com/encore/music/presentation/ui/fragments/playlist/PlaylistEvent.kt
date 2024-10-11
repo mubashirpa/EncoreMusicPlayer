@@ -15,6 +15,10 @@ sealed class PlaylistEvent {
         val playlist: Playlist,
     ) : PlaylistEvent()
 
+    data class OnRemoveTrackFromLocalPlaylist(
+        val trackId: String,
+    ) : PlaylistEvent()
+
     data object OnDeleteLocalPlaylist : PlaylistEvent()
 
     data object OnRetry : PlaylistEvent()

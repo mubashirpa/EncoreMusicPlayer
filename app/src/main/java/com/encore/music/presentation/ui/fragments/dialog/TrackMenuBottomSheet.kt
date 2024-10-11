@@ -26,7 +26,7 @@ class TrackMenuBottomSheet() : BottomSheetDialogFragment() {
 
     private var track: Track? = null
     private var items: List<MenuItem> = emptyList()
-    private var onMenuItemClickListener: ((dialog: TrackMenuBottomSheet, position: Int) -> Unit)? =
+    private var onMenuItemClickListener: ((dialog: TrackMenuBottomSheet, id: Int) -> Unit)? =
         null
 
     override fun onCreateView(
@@ -58,7 +58,7 @@ class TrackMenuBottomSheet() : BottomSheetDialogFragment() {
 
             listView.adapter = menuListAdapter
             listView.setOnItemClickListener { _, _, position, _ ->
-                onMenuItemClickListener?.invoke(this@TrackMenuBottomSheet, position)
+                onMenuItemClickListener?.invoke(this@TrackMenuBottomSheet, items[position].id)
                 dismiss()
             }
         }
@@ -73,13 +73,14 @@ class TrackMenuBottomSheet() : BottomSheetDialogFragment() {
         const val TAG = "TrackMenuBottomSheet"
     }
 
-    fun setOnMenuItemClickListener(listener: (dialog: TrackMenuBottomSheet, position: Int) -> Unit): TrackMenuBottomSheet {
+    fun setOnMenuItemClickListener(listener: (dialog: TrackMenuBottomSheet, id: Int) -> Unit): TrackMenuBottomSheet {
         onMenuItemClickListener = listener
         return this
     }
 }
 
 data class MenuItem(
+    val id: Int,
     val title: String,
     @DrawableRes val icon: Int,
 )

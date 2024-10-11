@@ -209,47 +209,60 @@ class PlaylistFragment : Fragment() {
             buildList {
                 add(
                     MenuItem(
-                        getString(R.string.play_now),
-                        R.drawable.baseline_play_arrow_24,
+                        id = 0,
+                        title = getString(R.string.play_now),
+                        icon = R.drawable.baseline_play_arrow_24,
                     ),
                 )
                 add(
                     MenuItem(
-                        getString(R.string.play_next),
-                        R.drawable.baseline_skip_next_24,
+                        id = 1,
+                        title = getString(R.string.play_next),
+                        icon = R.drawable.baseline_skip_next_24,
                     ),
                 )
                 add(
                     MenuItem(
-                        getString(R.string.add_to_queue),
-                        R.drawable.baseline_add_to_queue_24,
+                        id = 2,
+                        title = getString(R.string.add_to_queue),
+                        icon = R.drawable.baseline_add_to_queue_24,
                     ),
                 )
+                if (viewModel.isLocal) {
+                    add(
+                        MenuItem(
+                            id = 3,
+                            title = getString(R.string.remove_from_playlist),
+                            icon = R.drawable.baseline_remove_circle_outline_24,
+                        ),
+                    )
+                }
                 add(
                     MenuItem(
-                        getString(R.string.add_to_playlist),
-                        R.drawable.baseline_playlist_add_24,
+                        id = 4,
+                        title = getString(R.string.add_to_another_playlist),
+                        icon = R.drawable.baseline_playlist_add_24,
                     ),
                 )
                 artist?.let {
                     add(
                         MenuItem(
-                            getString(
-                                R.string.more_from_,
-                                artist.name.orEmpty(),
-                            ),
-                            R.drawable.baseline_person_search_24,
+                            id = 5,
+                            title =
+                                getString(
+                                    R.string.more_from_,
+                                    artist.name.orEmpty(),
+                                ),
+                            icon = R.drawable.baseline_person_search_24,
                         ),
                     )
                 }
             }
         TrackMenuBottomSheet(track, items)
-            .setOnMenuItemClickListener { _, position ->
-                when (position) {
+            .setOnMenuItemClickListener { _, id ->
+                when (id) {
                     0 -> {
-                        track.id?.let { id ->
-                            navController.navigateToPlayer(id)
-                        }
+                        track.id?.let { navController.navigateToPlayer(it) }
                     }
 
                     1 -> { // TODO
@@ -259,10 +272,16 @@ class PlaylistFragment : Fragment() {
                     }
 
                     3 -> {
-                        showAddToPlaylistBottomSheet(track)
+                        track.id?.let {
+                            viewModel.onEvent(PlaylistEvent.OnRemoveTrackFromLocalPlaylist(it))
+                        }
                     }
 
                     4 -> {
+                        showAddToPlaylistBottomSheet(track)
+                    }
+
+                    5 -> {
                         artist?.id?.let { navController.navigateToArtist(it) }
                     }
                 }

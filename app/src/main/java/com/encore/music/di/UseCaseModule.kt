@@ -24,6 +24,7 @@ import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.domain.usecase.songs.UnfollowArtistUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.DeletePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.DeleteTrackFromPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistWithTracksAndArtistsUseCase
@@ -40,6 +41,7 @@ val useCaseModule =
     module {
         single { CreatePlaylistUseCase(authenticationRepository = get(), songsRepository = get()) }
         single { DeletePlaylistUseCase(songsRepository = get()) }
+        single { DeleteTrackFromPlaylistUseCase(songsRepository = get()) }
         singleOf(::FollowArtistUseCase)
         singleOf(::GetArtistsTopTracksUseCase)
         singleOf(::GetCategoriesUseCase)
