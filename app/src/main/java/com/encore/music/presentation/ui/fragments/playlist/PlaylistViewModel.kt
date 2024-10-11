@@ -43,8 +43,8 @@ class PlaylistViewModel(
     private val _uiState = MutableLiveData<PlaylistUiState>()
     val uiState: LiveData<PlaylistUiState> = _uiState
 
-    private val _uiEvent = MutableSharedFlow<PlaylistUiEvent>()
-    val uiEvent: SharedFlow<PlaylistUiEvent> = _uiEvent
+    private val _uiEvent = MutableSharedFlow<PlaylistEvent>()
+    val uiEvent: SharedFlow<PlaylistEvent> = _uiEvent
 
     private val _isSaved = MutableLiveData<Boolean>()
     val isSaved: LiveData<Boolean> = _isSaved
@@ -62,38 +62,38 @@ class PlaylistViewModel(
         getSavedLocalPlaylists()
     }
 
-    fun onEvent(event: PlaylistEvent) {
+    fun onEvent(event: PlaylistUiEvent) {
         when (event) {
-            is PlaylistEvent.OnCreatePlaylist -> {
+            is PlaylistUiEvent.OnCreatePlaylist -> {
                 createPlaylist(event.playlist)
             }
 
-            is PlaylistEvent.OnEditLocalPlaylist -> {
+            is PlaylistUiEvent.OnEditLocalPlaylist -> {
                 // No need to save tracks since the tracks are already in the database
                 savePlaylist(event.playlist.copy(tracks = null))
             }
 
-            is PlaylistEvent.OnInsertTrackToLocalPlaylist -> {
+            is PlaylistUiEvent.OnInsertTrackToLocalPlaylist -> {
                 savePlaylist(event.playlist)
             }
 
-            is PlaylistEvent.OnRemoveTrackFromLocalPlaylist -> {
+            is PlaylistUiEvent.OnRemoveTrackFromLocalPlaylist -> {
                 deleteTrackFromPlaylist(playlistId, event.trackId)
             }
 
-            PlaylistEvent.OnDeleteLocalPlaylist -> {
+            PlaylistUiEvent.OnDeleteLocalPlaylist -> {
                 if (uiState.value is PlaylistUiState.Success) {
                     deletePlaylist((uiState.value as PlaylistUiState.Success).playlist)
                 }
             }
 
-            PlaylistEvent.OnRetry -> {
+            PlaylistUiEvent.OnRetry -> {
                 if (!isLocal) {
                     getPlaylist(playlistId)
                 }
             }
 
-            PlaylistEvent.OnSavePlaylist -> {
+            PlaylistUiEvent.OnSavePlaylist -> {
                 if (uiState.value is PlaylistUiState.Success) {
                     val playlist = (uiState.value as PlaylistUiState.Success).playlist
                     // No need to save tracks since the tracks are loaded form API
@@ -101,7 +101,7 @@ class PlaylistViewModel(
                 }
             }
 
-            PlaylistEvent.OnUnSavePlaylist -> {
+            PlaylistUiEvent.OnUnSavePlaylist -> {
                 if (uiState.value is PlaylistUiState.Success) {
                     deletePlaylist((uiState.value as PlaylistUiState.Success).playlist)
                 }
@@ -159,7 +159,7 @@ class PlaylistViewModel(
                 if (it is Result.Success) {
                     // No need to navigate up if the playlist is not local
                     if (isLocal) {
-                        _uiEvent.emit(PlaylistUiEvent.NavigateUp)
+                        _uiEvent.emit(PlaylistEvent.NavigateUp)
                     }
                 }
             }.launchIn(viewModelScope)

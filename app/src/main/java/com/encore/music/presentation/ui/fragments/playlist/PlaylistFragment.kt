@@ -64,7 +64,7 @@ class PlaylistFragment : Fragment() {
                         errorText.text = uiState.message.asString(requireContext())
                         retryButton.visibility = View.VISIBLE
                         retryButton.setOnClickListener {
-                            viewModel.onEvent(PlaylistEvent.OnRetry)
+                            viewModel.onEvent(PlaylistUiEvent.OnRetry)
                         }
                     }
                 }
@@ -112,7 +112,7 @@ class PlaylistFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiEvent.collect { uiEvent ->
                     when (uiEvent) {
-                        PlaylistUiEvent.NavigateUp -> navController.navigateUp()
+                        PlaylistEvent.NavigateUp -> navController.navigateUp()
                     }
                 }
             }
@@ -126,9 +126,9 @@ class PlaylistFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.save_playlist -> {
                     if (viewModel.isSaved.value == true) {
-                        viewModel.onEvent(PlaylistEvent.OnUnSavePlaylist)
+                        viewModel.onEvent(PlaylistUiEvent.OnUnSavePlaylist)
                     } else {
-                        viewModel.onEvent(PlaylistEvent.OnSavePlaylist)
+                        viewModel.onEvent(PlaylistUiEvent.OnSavePlaylist)
                     }
                     true
                 }
@@ -149,7 +149,7 @@ class PlaylistFragment : Fragment() {
                         .setMessage(R.string.are_you_sure_you_want_to_delete_this_playlist)
                         .setNegativeButton(R.string.cancel) { _, _ -> }
                         .setPositiveButton(R.string.delete) { _, _ ->
-                            viewModel.onEvent(PlaylistEvent.OnDeleteLocalPlaylist)
+                            viewModel.onEvent(PlaylistUiEvent.OnDeleteLocalPlaylist)
                         }.show()
                     true
                 }
@@ -273,7 +273,7 @@ class PlaylistFragment : Fragment() {
 
                     3 -> {
                         track.id?.let {
-                            viewModel.onEvent(PlaylistEvent.OnRemoveTrackFromLocalPlaylist(it))
+                            viewModel.onEvent(PlaylistUiEvent.OnRemoveTrackFromLocalPlaylist(it))
                         }
                     }
 
@@ -298,7 +298,7 @@ class PlaylistFragment : Fragment() {
                 showCreatePlaylistBottomSheet(playlistTrack)
                 dialog.dismiss()
             }.setOnAddToPlaylistClickListener { dialog, playlist ->
-                viewModel.onEvent(PlaylistEvent.OnInsertTrackToLocalPlaylist(playlist))
+                viewModel.onEvent(PlaylistUiEvent.OnInsertTrackToLocalPlaylist(playlist))
                 dialog.dismiss()
             }.show(
                 childFragmentManager,
@@ -310,7 +310,7 @@ class PlaylistFragment : Fragment() {
         CreatePlaylistBottomSheet()
             .setTracks(listOf(track))
             .setOnCreatePlaylistClickListener { dialog, playlist ->
-                viewModel.onEvent(PlaylistEvent.OnCreatePlaylist(playlist))
+                viewModel.onEvent(PlaylistUiEvent.OnCreatePlaylist(playlist))
                 dialog.dismiss()
             }.show(
                 childFragmentManager,
@@ -322,7 +322,7 @@ class PlaylistFragment : Fragment() {
         CreatePlaylistBottomSheet()
             .setPlaylist(playlist)
             .setOnUpdatePlaylistClickListener { dialog, updatedPlaylist ->
-                viewModel.onEvent(PlaylistEvent.OnEditLocalPlaylist(updatedPlaylist))
+                viewModel.onEvent(PlaylistUiEvent.OnEditLocalPlaylist(updatedPlaylist))
                 dialog.dismiss()
             }.show(
                 childFragmentManager,
