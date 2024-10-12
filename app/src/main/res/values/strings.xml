@@ -80,6 +80,7 @@
     <string name="you_don_t_have_any_playlists">You don\'t have any playlists</string>
     <string name="no_playlists_found">No playlists found</string>
     <string name="create_playlist">Create playlist</string>
+    <string name="no_results_for_">No results for %1$s</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>

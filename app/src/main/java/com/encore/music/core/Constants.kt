@@ -22,12 +22,16 @@ object Encore {
     const val ENDPOINT_GET_CATEGORY_PLAYLISTS = "categories/{category_id}/playlists"
     const val ENDPOINT_GET_HOME_PLAYLISTS = "home-playlists"
     const val ENDPOINT_GET_PLAYLIST = "playlists/{playlist_id}"
+    const val ENDPOINT_GET_SEARCH = "search"
 
     object Parameters {
+        const val INCLUDE_EXTERNAL = "include_external"
         const val LIMIT = "limit"
         const val LOCALE = "locale"
         const val MARKET = "market"
         const val OFFSET = "offset"
+        const val TYPE = "type"
+        const val QUERY = "q"
     }
 }
 

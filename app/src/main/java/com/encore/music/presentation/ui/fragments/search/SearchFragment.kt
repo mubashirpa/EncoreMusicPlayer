@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.encore.music.core.Navigation
 import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.FragmentSearchBinding
+import com.encore.music.domain.model.search.SearchType
 import com.encore.music.presentation.navigation.navigateToCategory
 import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
@@ -40,6 +42,14 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.chipGroup.check(
+            when (viewModel.searchType) {
+                SearchType.ARTIST -> binding.artistsFilter.id
+                SearchType.PLAYLIST -> binding.playlistsFilter.id
+                SearchType.TRACK -> binding.songsFilter.id
+            },
+        )
 
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             ImageUtils.loadProfile(
@@ -110,6 +120,48 @@ class SearchFragment : Fragment() {
             }
         }
 
+        viewModel.searchState.observe(viewLifecycleOwner) { uiState ->
+            when (uiState) {
+                is SearchUiState.Empty -> {
+                    binding.searchProgressCircular.visibility = View.GONE
+                    binding.searchRecyclerView.visibility = View.GONE
+                    uiState.message?.let { message ->
+                        binding.searchErrorView.apply {
+                            root.visibility = View.VISIBLE
+                            errorText.text = message.asString(requireContext())
+                        }
+                    }
+                }
+
+                is SearchUiState.Error -> {
+                    binding.searchProgressCircular.visibility = View.GONE
+                    binding.searchErrorView.apply {
+                        root.visibility = View.VISIBLE
+                        errorText.text = uiState.message.asString(requireContext())
+                        retryButton.visibility = View.VISIBLE
+                        retryButton.setOnClickListener {
+                            // TODO: Implement retry logic
+                        }
+                    }
+                }
+
+                SearchUiState.Loading -> {
+                    binding.searchRecyclerView.visibility = View.GONE
+                    binding.searchErrorView.root.visibility = View.GONE
+                    binding.searchProgressCircular.visibility = View.VISIBLE
+                }
+
+                is SearchUiState.Success -> {
+                    binding.searchProgressCircular.visibility = View.GONE
+                    binding.searchRecyclerView.visibility = View.VISIBLE
+
+                    val searchAdapter =
+                        SearchAdapter(requireContext(), uiState.searchListItem)
+                    binding.searchRecyclerView.adapter = searchAdapter
+                }
+            }
+        }
+
         binding.topAppBar.setNavigationOnClickListener {
             navController.navigateToProfile()
         }
@@ -132,6 +184,20 @@ class SearchFragment : Fragment() {
 
                 else -> Unit
             }
+        }
+
+        binding.chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            viewModel.searchType =
+                when (checkedIds.firstOrNull()) {
+                    binding.playlistsFilter.id -> SearchType.PLAYLIST
+                    binding.artistsFilter.id -> SearchType.ARTIST
+                    else -> SearchType.TRACK
+                }
+            viewModel.search(binding.searchView.text.toString(), viewModel.searchType, 500)
+        }
+
+        binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
+            viewModel.search(text.toString(), viewModel.searchType, 500)
         }
     }
 
