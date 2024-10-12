@@ -106,9 +106,14 @@ class SearchViewModel(
                             _searchState.value = result.data?.let { search ->
                                 when (type) {
                                     SearchType.ARTIST -> {
-                                        val artists = search.artists.orEmpty()
+                                        val artists =
+                                            search.artists
+                                                ?.map {
+                                                    SearchListItem.ArtistItem(it)
+                                                }.orEmpty()
+
                                         if (artists.isNotEmpty()) {
-                                            SearchUiState.Success(SearchListItem.ArtistsItem(artists))
+                                            SearchUiState.Success(artists, false)
                                         } else {
                                             SearchUiState.Empty(
                                                 UiText.StringResource(
@@ -120,13 +125,14 @@ class SearchViewModel(
                                     }
 
                                     SearchType.PLAYLIST -> {
-                                        val playlists = search.playlists.orEmpty()
+                                        val playlists =
+                                            search.playlists
+                                                ?.map {
+                                                    SearchListItem.PlaylistItem(it)
+                                                }.orEmpty()
+
                                         if (playlists.isNotEmpty()) {
-                                            SearchUiState.Success(
-                                                SearchListItem.PlaylistsItem(
-                                                    playlists,
-                                                ),
-                                            )
+                                            SearchUiState.Success(playlists, true)
                                         } else {
                                             SearchUiState.Empty(
                                                 UiText.StringResource(
@@ -138,9 +144,14 @@ class SearchViewModel(
                                     }
 
                                     SearchType.TRACK -> {
-                                        val tracks = search.tracks.orEmpty()
+                                        val tracks =
+                                            search.tracks
+                                                ?.map {
+                                                    SearchListItem.TrackItem(it)
+                                                }.orEmpty()
+
                                         if (tracks.isNotEmpty()) {
-                                            SearchUiState.Success(SearchListItem.TracksItem(tracks))
+                                            SearchUiState.Success(tracks, false)
                                         } else {
                                             SearchUiState.Empty(
                                                 UiText.StringResource(

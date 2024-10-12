@@ -12,7 +12,8 @@ sealed class SearchUiState {
     ) : SearchUiState()
 
     data class Success(
-        val searchListItem: SearchListItem,
+        val items: List<SearchListItem>,
+        val isGridLayout: Boolean,
     ) : SearchUiState()
 
     data object Loading : SearchUiState()

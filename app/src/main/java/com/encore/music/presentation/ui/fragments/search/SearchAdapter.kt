@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ListItemArtistsHorizontalBinding
-import com.encore.music.databinding.ListItemPlaylistsBinding
+import com.encore.music.databinding.ListItemCategoryPlaylistsBinding
 import com.encore.music.databinding.ListItemTracksDetailedBinding
 import com.encore.music.domain.model.artists.Artist
 import com.encore.music.domain.model.playlists.Playlist
@@ -15,8 +15,12 @@ import com.encore.music.domain.model.tracks.Track
 
 class SearchAdapter(
     private val context: Context,
-    private val item: SearchListItem,
+    private val onArtistClick: (Artist) -> Unit = {},
+    private val onPlaylistClick: (Playlist) -> Unit = {},
+    private val onTrackClick: (Track) -> Unit = {},
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var items: List<SearchListItem> = emptyList()
+
     inner class ArtistsViewHolder(
         private val binding: ListItemArtistsHorizontalBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -27,12 +31,16 @@ class SearchAdapter(
                     placeholder(R.drawable.bg_placeholder)
                 }
                 title.text = item.name
+
+                root.setOnClickListener {
+                    onArtistClick(item)
+                }
             }
         }
     }
 
     inner class PlaylistsViewHolder(
-        private val binding: ListItemPlaylistsBinding,
+        private val binding: ListItemCategoryPlaylistsBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Playlist) {
             binding.apply {
@@ -42,6 +50,10 @@ class SearchAdapter(
                 }
                 title.text = item.name
                 subtitle.text = item.owner
+
+                root.setOnClickListener {
+                    onPlaylistClick(item)
+                }
             }
         }
     }
@@ -57,6 +69,10 @@ class SearchAdapter(
                 }
                 headlineText.text = item.name
                 supportingText.text = item.artists?.joinToString { it.name.orEmpty() }
+
+                root.setOnClickListener {
+                    onTrackClick(item)
+                }
             }
         }
     }
@@ -78,7 +94,7 @@ class SearchAdapter(
 
             1 -> {
                 val binding =
-                    ListItemPlaylistsBinding.inflate(
+                    ListItemCategoryPlaylistsBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false,
@@ -99,28 +115,23 @@ class SearchAdapter(
             else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
-    override fun getItemCount(): Int =
-        when (item) {
-            is SearchListItem.ArtistsItem -> item.artists.count()
-            is SearchListItem.PlaylistsItem -> item.playlists.count()
-            is SearchListItem.TracksItem -> item.tracks.count()
-        }
+    override fun getItemCount(): Int = items.count()
 
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
-        when (item) {
-            is SearchListItem.ArtistsItem -> (holder as ArtistsViewHolder).bind(item.artists[position])
-            is SearchListItem.PlaylistsItem -> (holder as PlaylistsViewHolder).bind(item.playlists[position])
-            is SearchListItem.TracksItem -> (holder as TracksViewHolder).bind(item.tracks[position])
+        when (val item = items[position]) {
+            is SearchListItem.ArtistItem -> (holder as ArtistsViewHolder).bind(item.artist)
+            is SearchListItem.PlaylistItem -> (holder as PlaylistsViewHolder).bind(item.playlist)
+            is SearchListItem.TrackItem -> (holder as TracksViewHolder).bind(item.track)
         }
     }
 
     override fun getItemViewType(position: Int): Int =
-        when (item) {
-            is SearchListItem.ArtistsItem -> 0
-            is SearchListItem.PlaylistsItem -> 1
-            is SearchListItem.TracksItem -> 2
+        when (items[position]) {
+            is SearchListItem.ArtistItem -> 0
+            is SearchListItem.PlaylistItem -> 1
+            is SearchListItem.TrackItem -> 2
         }
 }
