@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.encore.music.core.Navigation
 import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.FragmentSearchBinding
 import com.encore.music.domain.model.search.SearchType
@@ -21,8 +20,6 @@ import com.encore.music.presentation.navigation.navigateToProfile
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.SpanCount
-import com.encore.music.presentation.utils.setNavigationResult
-import com.google.android.material.search.SearchView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -56,6 +53,8 @@ class SearchFragment : Fragment() {
                 SearchType.TRACK -> binding.songsFilter.id
             },
         )
+
+        binding.searchErrorView.root.setBackgroundColor(requireContext().getColor(android.R.color.transparent))
 
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             ImageUtils.loadProfile(
@@ -194,26 +193,6 @@ class SearchFragment : Fragment() {
             navController.navigateToProfile()
         }
 
-        binding.searchView.addTransitionListener { _, _, newState ->
-            when (newState) {
-                SearchView.TransitionState.HIDING -> {
-                    navController.setNavigationResult(
-                        Navigation.Args.MAIN_BOTTOM_NAVIGATION_VISIBILITY,
-                        true,
-                    )
-                }
-
-                SearchView.TransitionState.SHOWING -> {
-                    navController.setNavigationResult(
-                        Navigation.Args.MAIN_BOTTOM_NAVIGATION_VISIBILITY,
-                        false,
-                    )
-                }
-
-                else -> Unit
-            }
-        }
-
         binding.chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
             viewModel.searchType =
                 when (checkedIds.firstOrNull()) {
@@ -239,15 +218,22 @@ class SearchFragment : Fragment() {
             SearchAdapter(
                 context = requireContext(),
                 onArtistClick = { artist ->
-                    artist.id?.let { navController.navigateToArtist(it) }
+                    artist.id?.let {
+                        binding.searchView.setVisible(false)
+                        navController.navigateToArtist(it)
+                    }
                 },
                 onPlaylistClick = { playlist ->
                     playlist.id?.let {
+                        binding.searchView.setVisible(false)
                         navController.navigateToPlaylist(it, playlist.isLocal == true)
                     }
                 },
                 onTrackClick = { track ->
-                    track.id?.let { navController.navigateToPlayer(it) }
+                    track.id?.let {
+                        binding.searchView.setVisible(false)
+                        navController.navigateToPlayer(it)
+                    }
                 },
             )
         binding.searchRecyclerView.apply {

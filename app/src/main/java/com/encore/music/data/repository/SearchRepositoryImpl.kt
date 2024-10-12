@@ -29,10 +29,7 @@ class SearchRepositoryImpl(
                 url {
                     appendPathSegments(Encore.ENDPOINT_GET_SEARCH)
                     parameters.append(Encore.Parameters.QUERY, query)
-                    parameters.append(
-                        Encore.Parameters.TYPE,
-                        type.joinToString(",") { it.name.lowercase() },
-                    )
+                    parameters.appendAll(Encore.Parameters.TYPE, type.map { it.name.lowercase() })
                     market?.let { parameters.append(Encore.Parameters.MARKET, market) }
                     parameters.append(Encore.Parameters.LIMIT, limit.toString())
                     parameters.append(Encore.Parameters.OFFSET, offset.toString())
