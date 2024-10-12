@@ -138,6 +138,7 @@
             android:layout_height="wrap_content"
             android:contentDescription=""
             app:cornerRadius="16dp"
+            android:visibility="gone"
             app:icon="@drawable/ic_facebook_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/google_login_button"

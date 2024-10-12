@@ -149,6 +149,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription=""
+            android:visibility="gone"
             app:cornerRadius="16dp"
             app:icon="@drawable/ic_facebook_24"
             app:layout_constraintEnd_toEndOf="parent"
