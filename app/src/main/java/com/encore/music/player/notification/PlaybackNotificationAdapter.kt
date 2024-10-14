@@ -15,11 +15,13 @@ class PlaybackNotificationAdapter(
     private val context: Context,
     private val pendingIntent: PendingIntent?,
 ) : PlayerNotificationManager.MediaDescriptionAdapter {
-    override fun getCurrentContentTitle(player: Player): CharSequence = player.mediaMetadata.albumTitle ?: "Unknown"
+    override fun getCurrentContentTitle(player: Player): CharSequence = player.mediaMetadata.title ?: "Unknown"
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? = pendingIntent
 
-    override fun getCurrentContentText(player: Player): CharSequence = player.mediaMetadata.displayTitle ?: "Unknown"
+    override fun getCurrentContentText(player: Player): CharSequence? = player.mediaMetadata.artist ?: "Unknown"
+
+    override fun getCurrentSubText(player: Player): CharSequence? = null
 
     override fun getCurrentLargeIcon(
         player: Player,

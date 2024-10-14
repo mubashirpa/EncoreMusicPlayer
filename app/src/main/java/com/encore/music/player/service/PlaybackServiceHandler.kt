@@ -18,9 +18,9 @@ import kotlinx.coroutines.launch
 class PlaybackServiceHandler(
     private val exoPlayer: ExoPlayer,
 ) : Player.Listener {
-    private val _audioState: MutableStateFlow<PlaybackState> =
+    private val _playbackState: MutableStateFlow<PlaybackState> =
         MutableStateFlow(PlaybackState.Initial)
-    val audioState: StateFlow<PlaybackState> = _audioState.asStateFlow()
+    val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
 
     private var job: Job? = null
 
@@ -57,7 +57,7 @@ class PlaybackServiceHandler(
 
                     else -> {
                         exoPlayer.seekToDefaultPosition(selectedAudioIndex)
-                        _audioState.value =
+                        _playbackState.value =
                             PlaybackState.Playing(
                                 isPlaying = true,
                             )
@@ -79,27 +79,27 @@ class PlaybackServiceHandler(
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
             ExoPlayer.STATE_BUFFERING ->
-                _audioState.value =
+                _playbackState.value =
                     PlaybackState.Buffering(exoPlayer.currentPosition)
 
             ExoPlayer.STATE_READY ->
-                _audioState.value =
+                _playbackState.value =
                     PlaybackState.Ready(exoPlayer.duration)
 
             Player.STATE_ENDED -> {
-                // TODO()
+                // TODO
             }
 
             Player.STATE_IDLE -> {
-                // TODO()
+                // TODO
             }
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        _audioState.value = PlaybackState.Playing(isPlaying = isPlaying)
-        _audioState.value = PlaybackState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
+        _playbackState.value = PlaybackState.Playing(isPlaying = isPlaying)
+        _playbackState.value = PlaybackState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
         if (isPlaying) {
             GlobalScope.launch(Dispatchers.Main) {
                 startProgressUpdate()
@@ -115,7 +115,7 @@ class PlaybackServiceHandler(
             stopProgressUpdate()
         } else {
             exoPlayer.play()
-            _audioState.value =
+            _playbackState.value =
                 PlaybackState.Playing(
                     isPlaying = true,
                 )
@@ -127,12 +127,12 @@ class PlaybackServiceHandler(
         job.run {
             while (true) {
                 delay(500)
-                _audioState.value = PlaybackState.Progress(exoPlayer.currentPosition)
+                _playbackState.value = PlaybackState.Progress(exoPlayer.currentPosition)
             }
         }
 
     private fun stopProgressUpdate() {
         job?.cancel()
-        _audioState.value = PlaybackState.Playing(isPlaying = false)
+        _playbackState.value = PlaybackState.Playing(isPlaying = false)
     }
 }
