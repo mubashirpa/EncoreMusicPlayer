@@ -19,7 +19,7 @@ class PlaybackNotificationAdapter(
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? = pendingIntent
 
-    override fun getCurrentContentText(player: Player): CharSequence? = player.mediaMetadata.artist ?: "Unknown"
+    override fun getCurrentContentText(player: Player): CharSequence? = player.mediaMetadata.artist
 
     override fun getCurrentSubText(player: Player): CharSequence? = null
 
