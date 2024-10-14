@@ -9,12 +9,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp">
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/media"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/bg_placeholder"
             android:contentDescription="@string/media"
             android:scaleType="centerCrop"
@@ -28,9 +29,10 @@
             android:id="@+id/progress_circular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:indicatorSize="52dp"
+            app:indicatorSize="42dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:trackThickness="2dp" />
 
         <TextView
             android:id="@+id/title"
@@ -41,7 +43,7 @@
             android:maxLines="1"
             android:text="@string/title"
             android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textColor="?attr/colorOnTertiaryFixed"
+            android:textColor="?attr/colorOnTertiaryContainer"
             app:layout_constraintBottom_toTopOf="@+id/subtitle"
             app:layout_constraintEnd_toStartOf="@+id/play_button"
             app:layout_constraintStart_toEndOf="@+id/progress_circular"
@@ -66,10 +68,10 @@
             android:id="@+id/play_button"
             style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:contentDescription="@string/play"
             app:icon="@drawable/baseline_play_arrow_24"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnTertiaryContainer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
