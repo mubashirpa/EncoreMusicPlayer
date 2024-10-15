@@ -26,8 +26,8 @@ class LibraryFragment : Fragment() {
     private var _binding: FragmentLibraryBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: LibraryViewModel by viewModel()
     private val navController by lazy { findNavController() }
+    private val viewModel: LibraryViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
