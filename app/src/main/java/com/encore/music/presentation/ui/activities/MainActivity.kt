@@ -7,11 +7,14 @@ import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import coil.load
 import com.encore.music.R
 import com.encore.music.databinding.ActivityMainBinding
 import com.encore.music.player.service.PlaybackService
 import com.encore.music.presentation.navigation.Graph
+import com.encore.music.presentation.navigation.Screen
 import com.encore.music.presentation.navigation.findNavController
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.setupWithNavController
@@ -22,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModel()
     private var isServiceRunning = false
+    private var isPlayerVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.currentSelectedAudio.observe(this) { track ->
             val isTrackNull = track == null
             binding.playerControls.apply {
-                root.isVisible = !isTrackNull
+                root.isVisible = !isTrackNull && !isPlayerVisible
                 if (!isTrackNull) {
                     media.load(track.image) {
                         crossfade(true)
@@ -74,6 +78,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.playerControls.playButton.setOnClickListener {
             viewModel.onEvent(MainUiEvent.PlayPause)
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            isPlayerVisible = destination.hierarchy.any { it.hasRoute(Screen.Player::class) }
+            binding.playerControls.root.isVisible = !isPlayerVisible
         }
     }
 
