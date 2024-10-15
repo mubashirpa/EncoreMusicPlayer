@@ -243,7 +243,7 @@ class MainViewModel(
         MediaItem
             .Builder()
             .setMediaId(id.orEmpty())
-            .setUri(mediaUrl)
+            .setUri(mediaUrl.orEmpty())
             .setMediaMetadata(
                 MediaMetadata
                     .Builder()
