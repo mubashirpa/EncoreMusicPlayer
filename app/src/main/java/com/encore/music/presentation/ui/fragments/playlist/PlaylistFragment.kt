@@ -343,7 +343,7 @@ class PlaylistFragment : Fragment() {
 
     private fun playTrack(track: Track) {
         if (viewModel.uiState.value is PlaylistUiState.Success) {
-            if (track.id != null) {
+            if (track.id != null && track.mediaUrl != null) {
                 val tracks =
                     (viewModel.uiState.value as PlaylistUiState.Success).playlist.tracks!!
                 mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks, track.id))
