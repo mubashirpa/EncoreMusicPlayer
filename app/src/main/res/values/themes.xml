@@ -62,4 +62,9 @@
         <item name="android:navigationBarColor" tools:ignore="NewApi">@android:color/transparent
         </item>
     </style>
+
+    <style name="ShapeAppearanceOverlay.Encore.PlayerMini" parent="">
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
 </resources>

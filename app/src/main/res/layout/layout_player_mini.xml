@@ -4,7 +4,8 @@
     style="?attr/materialCardViewElevatedStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="?attr/colorTertiaryContainer">
+    app:cardBackgroundColor="?attr/colorTertiaryContainer"
+    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Encore.PlayerMini">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
