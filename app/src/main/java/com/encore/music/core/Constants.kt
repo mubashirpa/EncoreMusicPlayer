@@ -16,7 +16,7 @@ object PreferencesKeys {
 }
 
 object Encore {
-    const val API_BASE_URL = "http://192.168.220.37:8080/v1"
+    const val API_BASE_URL = "http://192.168.220.36:8080/v1"
     const val ENDPOINT_GET_ARTIST_TOP_TRACKS = "artists/{artist_id}/top-tracks"
     const val ENDPOINT_GET_CATEGORIES = "categories"
     const val ENDPOINT_GET_CATEGORY_PLAYLISTS = "categories/{category_id}/playlists"
@@ -37,7 +37,6 @@ object Encore {
 
 object Navigation {
     object Args {
-        const val MAIN_BOTTOM_NAVIGATION_VISIBILITY = "main_bottom_navigation_visibility"
         const val RESET_PASSWORD_EMAIL = "reset_password_email"
     }
 }
