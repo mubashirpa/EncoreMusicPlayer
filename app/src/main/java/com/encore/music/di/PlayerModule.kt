@@ -9,6 +9,9 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
 import com.encore.music.player.notification.PlaybackNotificationManager
 import com.encore.music.player.service.PlaybackServiceHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -35,4 +38,5 @@ val playerModule =
         single<MediaSession> { MediaSession.Builder(androidContext(), get()).build() }
         singleOf(::PlaybackNotificationManager)
         singleOf(::PlaybackServiceHandler)
+        single { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
     }

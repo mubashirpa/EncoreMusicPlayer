@@ -5,18 +5,18 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlaybackServiceHandler(
     private val exoPlayer: ExoPlayer,
+    private val scope: CoroutineScope,
 ) : Player.Listener {
     private val _playbackState: MutableStateFlow<PlaybackState> =
         MutableStateFlow(PlaybackState.Initial)
@@ -28,111 +28,149 @@ class PlaybackServiceHandler(
         exoPlayer.addListener(this)
     }
 
-    fun addMediaItem(mediaItem: MediaItem) {
-        exoPlayer.setMediaItem(mediaItem)
-        exoPlayer.prepare()
-    }
-
-    fun setMediaItemList(mediaItems: List<MediaItem>) {
-        exoPlayer.setMediaItems(mediaItems)
-        exoPlayer.prepare()
-    }
-
-    suspend fun onPlayerEvents(
-        playerEvent: PlayerEvent,
-        selectedAudioIndex: Int = -1,
-        seekPosition: Long = 0,
-    ) {
-        when (playerEvent) {
-            PlayerEvent.Backward -> exoPlayer.seekBack()
-            PlayerEvent.Forward -> exoPlayer.seekForward()
-            PlayerEvent.SeekToNext -> exoPlayer.seekToNext()
-            PlayerEvent.PlayPause -> playOrPause()
-            PlayerEvent.SeekTo -> exoPlayer.seekTo(seekPosition)
-            PlayerEvent.SelectedAudioChange -> {
-                when (selectedAudioIndex) {
-                    exoPlayer.currentMediaItemIndex -> {
-                        playOrPause()
-                    }
-
-                    else -> {
-                        exoPlayer.seekToDefaultPosition(selectedAudioIndex)
-                        _playbackState.value =
-                            PlaybackState.Playing(
-                                isPlaying = true,
-                            )
-                        exoPlayer.playWhenReady = true
-                        startProgressUpdate()
-                    }
-                }
-            }
-
-            PlayerEvent.Stop -> stopProgressUpdate()
-            is PlayerEvent.UpdateProgress -> {
-                exoPlayer.seekTo(
-                    (exoPlayer.duration * playerEvent.newProgress).toLong(),
-                )
-            }
-        }
-    }
+    // Player event listener
 
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
-            ExoPlayer.STATE_BUFFERING ->
-                _playbackState.value =
-                    PlaybackState.Buffering(exoPlayer.currentPosition)
-
-            ExoPlayer.STATE_READY ->
-                _playbackState.value =
-                    PlaybackState.Ready(exoPlayer.duration)
-
-            Player.STATE_ENDED -> {
-                // TODO
+            ExoPlayer.STATE_BUFFERING -> {
+                _playbackState.update { PlaybackState.Buffering(exoPlayer.currentPosition) }
             }
 
-            Player.STATE_IDLE -> {
-                // TODO
+            ExoPlayer.STATE_READY -> {
+                _playbackState.update { PlaybackState.Ready(exoPlayer.duration) }
             }
+
+            else -> Unit
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        _playbackState.value = PlaybackState.Playing(isPlaying = isPlaying)
-        _playbackState.value = PlaybackState.CurrentPlaying(exoPlayer.currentMediaItemIndex)
+        _playbackState.update { PlaybackState.Playing(isPlaying) }
         if (isPlaying) {
-            GlobalScope.launch(Dispatchers.Main) {
-                startProgressUpdate()
-            }
+            startProgressUpdate()
         } else {
             stopProgressUpdate()
         }
     }
 
-    private suspend fun playOrPause() {
+    override fun onMediaItemTransition(
+        mediaItem: MediaItem?,
+        reason: Int,
+    ) {
+        _playbackState.update { PlaybackState.CurrentPlaying(exoPlayer.currentMediaItemIndex) }
+        _playbackState.update { PlaybackState.Ready(exoPlayer.duration) }
+        _playbackState.update { PlaybackState.Playing(exoPlayer.isPlaying) }
+    }
+
+    // Private methods
+
+    private fun playOrPause() {
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
             stopProgressUpdate()
         } else {
             exoPlayer.play()
-            _playbackState.value =
-                PlaybackState.Playing(
-                    isPlaying = true,
-                )
+            _playbackState.update { PlaybackState.Playing(true) }
             startProgressUpdate()
         }
     }
 
-    private suspend fun startProgressUpdate() =
-        job.run {
-            while (true) {
-                delay(500)
-                _playbackState.value = PlaybackState.Progress(exoPlayer.currentPosition)
+    private fun startProgressUpdate() {
+        scope.launch {
+            job.run {
+                while (true) {
+                    delay(500)
+                    _playbackState.update { PlaybackState.Progress(exoPlayer.currentPosition) }
+                }
             }
         }
+    }
 
     private fun stopProgressUpdate() {
         job?.cancel()
-        _playbackState.value = PlaybackState.Playing(isPlaying = false)
+        _playbackState.update { PlaybackState.Playing(false) }
+    }
+
+    // Public methods
+
+    fun setMediaItem(mediaItem: MediaItem) {
+        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
+    }
+
+    fun setMediaItems(mediaItems: List<MediaItem>) {
+        exoPlayer.setMediaItems(mediaItems)
+        exoPlayer.prepare()
+    }
+
+    fun addMediaItem(mediaItem: MediaItem) {
+        exoPlayer.addMediaItem(mediaItem)
+    }
+
+    fun addMediaItemNext(mediaItem: MediaItem) {
+        val index = exoPlayer.currentMediaItemIndex + 1
+        exoPlayer.addMediaItem(index, mediaItem)
+    }
+
+    fun moveMediaItemNext(currentIndex: Int) {
+        val index = exoPlayer.currentMediaItemIndex + 1
+        exoPlayer.moveMediaItem(currentIndex, index)
+    }
+
+    fun onPlayerEvents(
+        event: PlayerEvent,
+        selectedAudioIndex: Int = -1,
+        seekPosition: Long = 0,
+    ) {
+        when (event) {
+            PlayerEvent.Backward -> {
+                exoPlayer.seekBack()
+            }
+
+            is PlayerEvent.ChangeShuffleModeEnabled -> {
+                exoPlayer.shuffleModeEnabled = event.shuffleModeEnabled
+            }
+
+            PlayerEvent.Forward -> {
+                exoPlayer.seekForward()
+            }
+
+            PlayerEvent.PlayPause -> {
+                playOrPause()
+            }
+
+            PlayerEvent.SeekTo -> {
+                exoPlayer.seekTo(seekPosition)
+            }
+
+            PlayerEvent.SeekToNext -> {
+                exoPlayer.seekToNext()
+            }
+
+            PlayerEvent.SeekToPrevious -> {
+                exoPlayer.seekToPrevious()
+            }
+
+            PlayerEvent.SelectedAudioChange -> {
+                // If the selected audio is the current one, just play/pause.
+                // Otherwise, seek to the new audio and start playback.
+                if (selectedAudioIndex == exoPlayer.currentMediaItemIndex) {
+                    playOrPause()
+                } else {
+                    exoPlayer.seekToDefaultPosition(selectedAudioIndex)
+                    _playbackState.update { PlaybackState.Playing(true) }
+                    exoPlayer.playWhenReady = true
+                    startProgressUpdate()
+                }
+            }
+
+            PlayerEvent.Stop -> {
+                stopProgressUpdate()
+            }
+
+            is PlayerEvent.UpdateProgress -> {
+                exoPlayer.seekTo((exoPlayer.duration * event.newProgress).toLong())
+            }
+        }
     }
 }
