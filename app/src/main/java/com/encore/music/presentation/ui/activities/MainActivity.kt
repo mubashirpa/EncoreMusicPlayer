@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.playerControls.root.setOnClickListener {
-            navController.navigateToPlayer("")
+            navController.navigateToPlayer()
         }
 
         binding.playerControls.playButton.setOnClickListener {

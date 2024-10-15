@@ -150,10 +150,8 @@ class LibraryFragment : Fragment() {
                         )
                     }
                 },
-                onTrackClicked = { track ->
-                    track.id?.let { id ->
-                        navController.navigateToPlayer(id)
-                    }
+                onTrackClicked = {
+                    navController.navigateToPlayer()
                 },
                 onTrackMoreClicked = { track ->
                     showTrackMenuBottomSheet(track)
@@ -215,7 +213,7 @@ class LibraryFragment : Fragment() {
             .setOnMenuItemClickListener { _, id ->
                 when (id) {
                     0 -> {
-                        track.id?.let { navController.navigateToPlayer(it) }
+                        track.id?.let { navController.navigateToPlayer() }
                     }
 
                     1 -> { // TODO

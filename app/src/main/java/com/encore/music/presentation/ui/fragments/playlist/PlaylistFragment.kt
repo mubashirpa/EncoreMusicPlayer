@@ -347,7 +347,7 @@ class PlaylistFragment : Fragment() {
                 val tracks =
                     (viewModel.uiState.value as PlaylistUiState.Success).playlist.tracks!!
                 mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks, track.id))
-                navController.navigateToPlayer(track.id)
+                navController.navigateToPlayer()
             } else {
                 showMessage(getString(R.string.error_unexpected))
             }

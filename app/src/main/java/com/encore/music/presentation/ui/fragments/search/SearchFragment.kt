@@ -232,7 +232,7 @@ class SearchFragment : Fragment() {
                 onTrackClick = { track ->
                     track.id?.let {
                         binding.searchView.setVisible(false)
-                        navController.navigateToPlayer(it)
+                        navController.navigateToPlayer()
                     }
                 },
             )
