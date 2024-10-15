@@ -8,12 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentHomeBinding
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.navigation.navigateToProfile
+import com.encore.music.presentation.ui.activities.MainUiEvent
+import com.encore.music.presentation.ui.activities.MainViewModel
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
+import com.google.android.material.snackbar.Snackbar
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -22,6 +27,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val navController by lazy { findNavController() }
     private val viewModel: HomeViewModel by viewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,8 +48,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             HomeAdapter(
                 context = requireContext(),
                 items = mutableListOf(),
-                onTrackClicked = {
-                    navController.navigateToPlayer()
+                onTrackClicked = { track ->
+                    playTrack(track)
                 },
                 onPlaylistClicked = { playlist ->
                     playlist.id?.let { id ->
@@ -127,10 +133,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewModel.topTracks.observe(viewLifecycleOwner) { tracks ->
             if (tracks.isNotEmpty()) {
                 if (homeAdapter.items.firstOrNull() is HomeListItem.TopTracksItem) {
-                    homeAdapter.items[0] = HomeListItem.TopTracksItem(tracks)
+                    homeAdapter.items[0] = HomeListItem.TopTracksItem(tracks.take(6))
                     homeAdapter.notifyItemChanged(0)
                 } else {
-                    homeAdapter.items.add(0, HomeListItem.TopTracksItem(tracks))
+                    homeAdapter.items.add(0, HomeListItem.TopTracksItem(tracks.take(6)))
                     homeAdapter.notifyItemInserted(0)
                 }
             }
@@ -144,5 +150,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun playTrack(track: Track) {
+        if (track.id != null && track.mediaUrl != null) {
+            val tracks = viewModel.topTracks.value!!
+            mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks, track.id))
+            navController.navigateToPlayer()
+        } else {
+            showMessage(getString(R.string.error_unexpected))
+        }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }

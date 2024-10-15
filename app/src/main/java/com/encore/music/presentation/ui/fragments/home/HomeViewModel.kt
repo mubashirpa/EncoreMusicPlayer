@@ -46,7 +46,7 @@ class HomeViewModel(
 
     private fun getTopTracks() {
         viewModelScope.launch {
-            getRecentTracksUseCase(limit = 6).collect { tracks ->
+            getRecentTracksUseCase().collect { tracks ->
                 _topTracks.value = tracks
             }
         }
