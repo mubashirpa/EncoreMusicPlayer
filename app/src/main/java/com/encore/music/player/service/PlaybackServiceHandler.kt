@@ -91,6 +91,15 @@ class PlaybackServiceHandler(
         _playbackState.update { PlaybackState.Playing(false) }
     }
 
+    private fun findMediaItemIndex(mediaItem: MediaItem): Int {
+        for (i in 0 until exoPlayer.mediaItemCount) {
+            if (exoPlayer.getMediaItemAt(i).mediaId == mediaItem.mediaId) {
+                return i
+            }
+        }
+        return -1
+    }
+
     // Public methods
 
     fun setMediaItem(mediaItem: MediaItem) {
@@ -104,17 +113,25 @@ class PlaybackServiceHandler(
     }
 
     fun addMediaItem(mediaItem: MediaItem) {
-        exoPlayer.addMediaItem(mediaItem)
+        val songIndex = findMediaItemIndex(mediaItem)
+
+        if (songIndex != -1) {
+            val lastIndex = exoPlayer.mediaItemCount - 1
+            exoPlayer.moveMediaItem(songIndex, lastIndex + 1)
+        } else {
+            exoPlayer.addMediaItem(mediaItem)
+        }
     }
 
     fun addMediaItemNext(mediaItem: MediaItem) {
-        val index = exoPlayer.currentMediaItemIndex + 1
-        exoPlayer.addMediaItem(index, mediaItem)
-    }
+        val currentIndex = exoPlayer.currentMediaItemIndex
+        val songIndex = findMediaItemIndex(mediaItem)
 
-    fun moveMediaItemNext(currentIndex: Int) {
-        val index = exoPlayer.currentMediaItemIndex + 1
-        exoPlayer.moveMediaItem(currentIndex, index)
+        if (songIndex != -1) {
+            exoPlayer.moveMediaItem(songIndex, currentIndex + 1)
+        } else {
+            exoPlayer.addMediaItem(currentIndex + 1, mediaItem)
+        }
     }
 
     fun onPlayerEvents(

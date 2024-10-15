@@ -8,10 +8,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.HasUserUseCase
+import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
 import com.encore.music.player.service.PlaybackServiceHandler
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeUnit
 class MainViewModel(
     hasUserUseCase: HasUserUseCase,
     private val playbackServiceHandler: PlaybackServiceHandler,
+    private val insertRecentTrackUseCase: InsertRecentTrackUseCase,
 ) : ViewModel() {
     var isLoggedIn = false
     private var currentMediaItemIndex = 0
@@ -115,12 +118,19 @@ class MainViewModel(
 
                     is PlaybackState.CurrentPlaying -> {
                         currentMediaItemIndex = playbackState.mediaItemIndex
+                        val previousSelectedAudioId = currentSelectedAudio.value?.id
+
                         if (trackList.value!!.isNotEmpty()) {
                             if (playbackState.mediaItemIndex >= trackList.value!!.size) {
                                 currentSelectedAudio.value = null
                             } else {
                                 currentSelectedAudio.value =
                                     trackList.value!![playbackState.mediaItemIndex]
+
+                                // Insert the track into the recent tracks list
+                                if (previousSelectedAudioId != currentSelectedAudio.value?.id) {
+                                    insertRecentTrack(currentSelectedAudio.value!!)
+                                }
                             }
                         }
                     }
@@ -166,26 +176,63 @@ class MainViewModel(
         )
     }
 
+    // Add a media item to the end of the playlist (for "Add to Queue")
     private fun addToPlaylist(track: Track) {
-        if (trackList.value!!.contains(track)) return
         if (track.mediaUrl == null) return
+        if (trackList.value!![currentMediaItemIndex].id == track.id) return
 
-        trackList.value!!.add(track)
+        val songIndex = findTrackItemIndex(track)
+
+        if (songIndex != -1) {
+            // If the song is already in the playlist, move it to the end
+            moveTrackItem(songIndex, trackList.value!!.size)
+        } else {
+            // Add the media item to the end
+            trackList.value?.add(track)
+            // Trigger LiveData update
+            trackList.value = trackList.value
+        }
+
         playbackServiceHandler.addMediaItem(track.toMediaItem())
     }
 
+    // Add a media item to play next (for "Play Next")
     private fun addNextInPlaylist(track: Track) {
         if (track.mediaUrl == null) return
+        if (trackList.value!![currentMediaItemIndex].id == track.id) return
 
-        val index = trackList.value!!.indexOfFirst { it.id == track.id }
-        if (index != -1) {
-            trackList.value!!.removeAt(index)
-            trackList.value!!.add(currentMediaItemIndex + 1, track)
-            playbackServiceHandler.moveMediaItemNext(index)
+        val songIndex = findTrackItemIndex(track)
+
+        if (songIndex != -1) {
+            // If the song is already in the playlist, move it to the next position
+            moveTrackItem(songIndex, currentMediaItemIndex + 1)
         } else {
-            trackList.value!!.add(currentMediaItemIndex + 1, track)
-            playbackServiceHandler.addMediaItemNext(track.toMediaItem())
+            // Add the media item right after the currently playing song
+            trackList.value?.add(currentMediaItemIndex + 1, track)
+            // Trigger LiveData update
+            trackList.value = trackList.value
         }
+
+        playbackServiceHandler.addMediaItemNext(track.toMediaItem())
+    }
+
+    private fun findTrackItemIndex(track: Track): Int = trackList.value?.indexOfFirst { it.id == track.id } ?: -1
+
+    private fun moveTrackItem(
+        fromIndex: Int,
+        toIndex: Int,
+    ) {
+        trackList.value?.let {
+            val item = it[fromIndex]
+            it.add(toIndex, item)
+            it.removeAt(fromIndex)
+            // Trigger LiveData update
+            trackList.value = it
+        }
+    }
+
+    private fun insertRecentTrack(track: Track) {
+        insertRecentTrackUseCase(track).launchIn(viewModelScope)
     }
 
     private fun Track.toMediaItem(): MediaItem =
