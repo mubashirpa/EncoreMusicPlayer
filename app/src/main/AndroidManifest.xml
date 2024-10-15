@@ -35,16 +35,25 @@
             </intent-filter>
         </activity>
 
+        <!-- https://developer.android.com/media/media3/session/background-playback#service-declaration -->
         <service
             android:name=".player.service.PlaybackService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback"
-            android:permission="com.encore.music.permission.BIND_PLAYBACK_SERVICE">
+            android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+
+        <!-- https://developer.android.com/media/media3/session/background-playback#buttons -->
+        <receiver
+            android:name="androidx.media3.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
