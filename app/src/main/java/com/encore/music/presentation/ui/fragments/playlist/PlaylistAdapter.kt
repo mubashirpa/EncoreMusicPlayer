@@ -17,6 +17,8 @@ import com.encore.music.domain.model.tracks.Track
 
 class PlaylistAdapter(
     private val context: Context,
+    private val onShuffleClicked: () -> Unit,
+    private val onPlayClicked: () -> Unit,
     private val onTrackClicked: (Track) -> Unit,
     private val onTrackMoreClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -38,6 +40,14 @@ class PlaylistAdapter(
                 val description = item.playlist.description.orEmpty()
                 subtitle.text = description
                 subtitle.isVisible = description.isNotBlank()
+
+                shuffleButton.setOnClickListener {
+                    onShuffleClicked()
+                }
+
+                playButton.setOnClickListener {
+                    onPlayClicked()
+                }
             }
         }
     }

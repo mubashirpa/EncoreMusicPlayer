@@ -17,6 +17,8 @@ import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
+import com.encore.music.presentation.ui.activities.MainUiEvent
+import com.encore.music.presentation.ui.activities.MainViewModel
 import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
@@ -24,7 +26,9 @@ import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment : Fragment() {
@@ -33,6 +37,7 @@ class PlaylistFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
     private val viewModel: PlaylistViewModel by viewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -168,10 +173,14 @@ class PlaylistFragment : Fragment() {
         val playlistAdapter =
             PlaylistAdapter(
                 context = requireContext(),
+                onShuffleClicked = {
+                    playPlaylist(true)
+                },
+                onPlayClicked = {
+                    playPlaylist(false)
+                },
                 onTrackClicked = { track ->
-                    track.id?.let { id ->
-                        navController.navigateToPlayer(id)
-                    }
+                    playTrack(track)
                 },
                 onTrackMoreClicked = { track ->
                     showTrackMenuBottomSheet(track)
@@ -262,13 +271,15 @@ class PlaylistFragment : Fragment() {
             .setOnMenuItemClickListener { _, id ->
                 when (id) {
                     0 -> {
-                        track.id?.let { navController.navigateToPlayer(it) }
+                        playTrack(track)
                     }
 
-                    1 -> { // TODO
+                    1 -> {
+                        mainViewModel.onEvent(MainUiEvent.AddNextInPlaylist(track))
                     }
 
-                    2 -> { // TODO
+                    2 -> {
+                        mainViewModel.onEvent(MainUiEvent.AddToPlaylist(track))
                     }
 
                     3 -> {
@@ -328,5 +339,33 @@ class PlaylistFragment : Fragment() {
                 childFragmentManager,
                 CreatePlaylistBottomSheet.TAG,
             )
+    }
+
+    private fun playTrack(track: Track) {
+        if (viewModel.uiState.value is PlaylistUiState.Success) {
+            if (track.id != null) {
+                val tracks =
+                    (viewModel.uiState.value as PlaylistUiState.Success).playlist.tracks!!
+                mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks, track.id))
+                navController.navigateToPlayer(track.id)
+            } else {
+                showMessage(getString(R.string.error_unexpected))
+            }
+        }
+    }
+
+    private fun playPlaylist(shuffle: Boolean) {
+        if (viewModel.uiState.value is PlaylistUiState.Success) {
+            val tracks =
+                (viewModel.uiState.value as PlaylistUiState.Success).playlist.tracks
+            if (!tracks.isNullOrEmpty()) {
+                mainViewModel.onEvent(MainUiEvent.ChangeShuffleModeEnabled(shuffle))
+                mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks))
+            }
+        }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }
