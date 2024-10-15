@@ -18,6 +18,7 @@ import com.encore.music.domain.model.tracks.Track
 class ArtistAdapter(
     private val context: Context,
     private val onFollowArtistClicked: (artist: Artist, isFollowed: Boolean) -> Unit,
+    private val onPlayClicked: () -> Unit,
     private val onTrackClicked: (Track) -> Unit,
     private val onTrackMoreClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -43,6 +44,10 @@ class ArtistAdapter(
 
                 followButton.setOnClickListener {
                     onFollowArtistClicked(item.artist, item.isFollowed)
+                }
+
+                playButton.setOnClickListener {
+                    onPlayClicked()
                 }
             }
         }

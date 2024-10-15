@@ -11,14 +11,17 @@ import androidx.navigation.fragment.findNavController
 import com.encore.music.R
 import com.encore.music.databinding.FragmentArtistBinding
 import com.encore.music.domain.model.tracks.Track
-import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToPlayer
+import com.encore.music.presentation.ui.activities.MainUiEvent
+import com.encore.music.presentation.ui.activities.MainViewModel
 import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
 import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.PaddingValues
 import com.encore.music.presentation.utils.VerticalItemDecoration
+import com.google.android.material.snackbar.Snackbar
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ArtistFragment : Fragment() {
@@ -27,6 +30,7 @@ class ArtistFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
     private val viewModel: ArtistViewModel by viewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -119,8 +123,11 @@ class ArtistFragment : Fragment() {
                         viewModel.followArtist(artist)
                     }
                 },
-                onTrackClicked = {
-                    navController.navigateToPlayer()
+                onPlayClicked = {
+                    playPlaylist()
+                },
+                onTrackClicked = { track ->
+                    playTrack(track)
                 },
                 onTrackMoreClicked = { track ->
                     showTrackMenuBottomSheet(track)
@@ -153,7 +160,6 @@ class ArtistFragment : Fragment() {
     }
 
     private fun showTrackMenuBottomSheet(track: Track) {
-        val artist = track.artists?.firstOrNull()
         val items =
             listOf(
                 MenuItem(
@@ -176,35 +182,24 @@ class ArtistFragment : Fragment() {
                     title = getString(R.string.add_to_playlist),
                     icon = R.drawable.baseline_playlist_add_24,
                 ),
-                MenuItem(
-                    id = 4,
-                    title =
-                        getString(
-                            R.string.more_from_,
-                            artist?.name.orEmpty(),
-                        ),
-                    icon = R.drawable.baseline_person_search_24,
-                ),
             )
         TrackMenuBottomSheet(track, items)
             .setOnMenuItemClickListener { _, id ->
                 when (id) {
                     0 -> {
-                        track.id?.let { navController.navigateToPlayer() }
+                        playTrack(track)
                     }
 
-                    1 -> { // TODO
+                    1 -> {
+                        mainViewModel.onEvent(MainUiEvent.AddNextInPlaylist(track))
                     }
 
-                    2 -> { // TODO
+                    2 -> {
+                        mainViewModel.onEvent(MainUiEvent.AddToPlaylist(track))
                     }
 
                     3 -> {
                         showAddToPlaylistBottomSheet(track)
-                    }
-
-                    4 -> {
-                        artist?.id?.let { navController.navigateToArtist(it) }
                     }
                 }
             }.show(
@@ -239,5 +234,33 @@ class ArtistFragment : Fragment() {
                 childFragmentManager,
                 CreatePlaylistBottomSheet.TAG,
             )
+    }
+
+    private fun playTrack(track: Track) {
+        if (viewModel.uiState.value is ArtistUiState.Success) {
+            if (track.id != null && track.mediaUrl != null) {
+                val tracks =
+                    (viewModel.uiState.value as ArtistUiState.Success).artist.tracks!!
+                mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks, track.id))
+                navController.navigateToPlayer()
+            } else {
+                showMessage(getString(R.string.error_unexpected))
+            }
+        }
+    }
+
+    private fun playPlaylist() {
+        if (viewModel.uiState.value is ArtistUiState.Success) {
+            val tracks =
+                (viewModel.uiState.value as ArtistUiState.Success).artist.tracks
+            if (!tracks.isNullOrEmpty()) {
+                mainViewModel.onEvent(MainUiEvent.ChangeShuffleModeEnabled(false))
+                mainViewModel.onEvent(MainUiEvent.AddPlaylist(tracks))
+            }
+        }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }
