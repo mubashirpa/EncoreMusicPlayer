@@ -195,8 +195,9 @@ fun NavController.navigateToArtist(artistId: String) {
     navigate(route = Screen.Artist(id = artistId))
 }
 
+// TODO: Remove track id
 fun NavController.navigateToPlayer(trackId: String) {
-    navigate(route = Screen.Player(id = trackId)) {
+    navigate(route = Screen.Player) {
         launchSingleTop = true
     }
 }

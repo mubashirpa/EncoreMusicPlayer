@@ -38,9 +38,7 @@ sealed class Screen {
     ) : Screen()
 
     @Serializable
-    data class Player(
-        val id: String,
-    ) : Screen()
+    data object Player : Screen()
 
     @Serializable
     data object Profile : Screen()
