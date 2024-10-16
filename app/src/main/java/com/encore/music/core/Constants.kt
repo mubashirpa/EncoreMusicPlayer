@@ -25,6 +25,7 @@ object Encore {
     const val ENDPOINT_GET_SEARCH = "search"
 
     object Parameters {
+        const val ADDITIONAL_TYPES = "additional_types"
         const val INCLUDE_EXTERNAL = "include_external"
         const val LIMIT = "limit"
         const val LOCALE = "locale"

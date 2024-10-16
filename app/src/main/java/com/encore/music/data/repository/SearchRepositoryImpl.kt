@@ -2,7 +2,6 @@ package com.encore.music.data.repository
 
 import com.encore.music.core.Encore
 import com.encore.music.data.remote.dto.search.SearchDto
-import com.encore.music.domain.model.search.IncludeExternal
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.SearchRepository
 import io.ktor.client.HttpClient
@@ -22,7 +21,7 @@ class SearchRepositoryImpl(
         market: String?,
         limit: Int,
         offset: Int,
-        includeExternal: IncludeExternal?,
+        includeExternal: String?,
     ): SearchDto =
         httpClient
             .get(Encore.API_BASE_URL) {
@@ -34,10 +33,7 @@ class SearchRepositoryImpl(
                     parameters.append(Encore.Parameters.LIMIT, limit.toString())
                     parameters.append(Encore.Parameters.OFFSET, offset.toString())
                     includeExternal?.let {
-                        parameters.append(
-                            Encore.Parameters.INCLUDE_EXTERNAL,
-                            it.name.lowercase(),
-                        )
+                        parameters.append(Encore.Parameters.INCLUDE_EXTERNAL, includeExternal)
                     }
                 }
                 header(HttpHeaders.Authorization, accessToken)

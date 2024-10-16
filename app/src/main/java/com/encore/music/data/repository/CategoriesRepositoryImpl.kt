@@ -23,7 +23,7 @@ class CategoriesRepositoryImpl(
             .get(Encore.API_BASE_URL) {
                 url {
                     appendPathSegments(Encore.ENDPOINT_GET_CATEGORIES)
-                    locale?.let { parameters.append(Encore.Parameters.LOCALE, it) }
+                    locale?.let { parameters.append(Encore.Parameters.LOCALE, locale) }
                     parameters.append(Encore.Parameters.LIMIT, limit.toString())
                     parameters.append(Encore.Parameters.OFFSET, offset.toString())
                 }

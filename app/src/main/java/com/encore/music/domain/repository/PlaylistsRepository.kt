@@ -8,6 +8,8 @@ interface PlaylistsRepository {
     suspend fun getPlaylist(
         accessToken: String,
         playlistId: String,
+        market: String? = null,
+        additionalTypes: String? = null,
     ): Playlist
 
     suspend fun getCategoryPlaylists(
@@ -17,5 +19,10 @@ interface PlaylistsRepository {
         offset: Int = 0,
     ): PlaylistsDto
 
-    suspend fun getHomePlaylists(accessToken: String): List<HomePlaylistDto>
+    suspend fun getHomePlaylists(
+        accessToken: String,
+        locale: String? = null,
+        limit: Int = 20,
+        offset: Int = 0,
+    ): List<HomePlaylistDto>
 }

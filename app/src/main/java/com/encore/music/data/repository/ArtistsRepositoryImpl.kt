@@ -27,7 +27,7 @@ class ArtistsRepositoryImpl(
                             artistId,
                         ),
                     )
-                    market?.let { parameters.append(Encore.Parameters.MARKET, it) }
+                    market?.let { parameters.append(Encore.Parameters.MARKET, market) }
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.body()

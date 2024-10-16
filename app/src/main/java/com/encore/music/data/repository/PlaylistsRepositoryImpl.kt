@@ -18,6 +18,8 @@ class PlaylistsRepositoryImpl(
     override suspend fun getPlaylist(
         accessToken: String,
         playlistId: String,
+        market: String?,
+        additionalTypes: String?,
     ): Playlist =
         httpClient
             .get(Encore.API_BASE_URL) {
@@ -28,6 +30,10 @@ class PlaylistsRepositoryImpl(
                             playlistId,
                         ),
                     )
+                    market?.let { parameters.append(Encore.Parameters.MARKET, market) }
+                    additionalTypes?.let {
+                        parameters.append(Encore.Parameters.ADDITIONAL_TYPES, additionalTypes)
+                    }
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.body()
@@ -53,11 +59,19 @@ class PlaylistsRepositoryImpl(
                 header(HttpHeaders.Authorization, accessToken)
             }.body()
 
-    override suspend fun getHomePlaylists(accessToken: String): List<HomePlaylistDto> =
+    override suspend fun getHomePlaylists(
+        accessToken: String,
+        locale: String?,
+        limit: Int,
+        offset: Int,
+    ): List<HomePlaylistDto> =
         httpClient
             .get(Encore.API_BASE_URL) {
                 url {
                     appendPathSegments(Encore.ENDPOINT_GET_HOME_PLAYLISTS)
+                    locale?.let { parameters.append(Encore.Parameters.LOCALE, locale) }
+                    parameters.append(Encore.Parameters.LIMIT, limit.toString())
+                    parameters.append(Encore.Parameters.OFFSET, offset.toString())
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.body()
