@@ -162,9 +162,9 @@ class MainViewModel(
 
     private fun addPlaylist(
         tracks: List<Track>,
-        selectedTrackId: String?,
+        selectedTrackId: String? = null,
     ) {
-        if (currentSelectedAudio.value?.id == selectedTrackId) return
+        if (selectedTrackId != null && currentSelectedAudio.value?.id == selectedTrackId) return
 
         trackList.value = tracks.filter { it.mediaUrl != null }.toMutableList()
         val selectedAudioIndex = trackList.value!!.indexOfFirst { it.id == selectedTrackId }
@@ -181,6 +181,11 @@ class MainViewModel(
     // Add a media item to the end of the playlist (for "Add to Queue")
     private fun addToPlaylist(track: Track) {
         if (track.mediaUrl == null) return
+
+        if (trackList.value!!.isEmpty()) {
+            addPlaylist(listOf(track), track.id)
+            return
+        }
 
         val songIndex = findTrackItemIndex(track)
 
@@ -202,6 +207,11 @@ class MainViewModel(
     // Add a media item to play next (for "Play Next")
     private fun addNextInPlaylist(track: Track) {
         if (track.mediaUrl == null) return
+
+        if (trackList.value!!.isEmpty()) {
+            addPlaylist(listOf(track), track.id)
+            return
+        }
 
         val songIndex = findTrackItemIndex(track)
 
