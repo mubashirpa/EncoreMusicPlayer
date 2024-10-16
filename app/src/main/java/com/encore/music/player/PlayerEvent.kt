@@ -1,6 +1,10 @@
 package com.encore.music.player
 
 sealed class PlayerEvent {
+    data class ChangeRepeatMode(
+        val repeatMode: RepeatMode,
+    ) : PlayerEvent()
+
     data class ChangeShuffleModeEnabled(
         val shuffleModeEnabled: Boolean,
     ) : PlayerEvent()
@@ -22,6 +26,4 @@ sealed class PlayerEvent {
     data object SeekToPrevious : PlayerEvent()
 
     data object SelectedAudioChange : PlayerEvent()
-
-    data object Stop : PlayerEvent()
 }

@@ -5,6 +5,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
+import com.encore.music.player.RepeatMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,6 +32,7 @@ class PlaybackServiceHandler(
     // Player event listener
 
     override fun onPlaybackStateChanged(playbackState: Int) {
+        super.onPlaybackStateChanged(playbackState)
         when (playbackState) {
             ExoPlayer.STATE_BUFFERING -> {
                 _playbackState.update { PlaybackState.Buffering(exoPlayer.currentPosition) }
@@ -45,6 +47,7 @@ class PlaybackServiceHandler(
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
+        super.onIsPlayingChanged(isPlaying)
         _playbackState.update { PlaybackState.Playing(isPlaying) }
         if (isPlaying) {
             startProgressUpdate()
@@ -57,9 +60,25 @@ class PlaybackServiceHandler(
         mediaItem: MediaItem?,
         reason: Int,
     ) {
-        _playbackState.update { PlaybackState.CurrentPlaying(exoPlayer.currentMediaItemIndex) }
+        super.onMediaItemTransition(mediaItem, reason)
         _playbackState.update { PlaybackState.Ready(exoPlayer.duration) }
-        _playbackState.update { PlaybackState.Playing(exoPlayer.isPlaying) }
+        _playbackState.update { PlaybackState.CurrentPlaying(exoPlayer.currentMediaItemIndex) }
+    }
+
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+        _playbackState.update { PlaybackState.ShuffleMode(shuffleModeEnabled) }
+    }
+
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        super.onRepeatModeChanged(repeatMode)
+        val playerRepeatMode =
+            when (repeatMode) {
+                Player.REPEAT_MODE_ONE -> RepeatMode.REPEAT_MODE_ONE
+                Player.REPEAT_MODE_ALL -> RepeatMode.REPEAT_MODE_ALL
+                else -> RepeatMode.REPEAT_MODE_OFF
+            }
+        _playbackState.update { PlaybackState.RepeatMode(playerRepeatMode) }
     }
 
     // Private methods
@@ -67,11 +86,8 @@ class PlaybackServiceHandler(
     private fun playOrPause() {
         if (exoPlayer.isPlaying) {
             exoPlayer.pause()
-            stopProgressUpdate()
         } else {
             exoPlayer.play()
-            _playbackState.update { PlaybackState.Playing(true) }
-            startProgressUpdate()
         }
     }
 
@@ -88,7 +104,6 @@ class PlaybackServiceHandler(
 
     private fun stopProgressUpdate() {
         job?.cancel()
-        _playbackState.update { PlaybackState.Playing(false) }
     }
 
     private fun findMediaItemIndex(mediaItem: MediaItem): Int {
@@ -144,6 +159,14 @@ class PlaybackServiceHandler(
                 exoPlayer.seekBack()
             }
 
+            is PlayerEvent.ChangeRepeatMode -> {
+                when (event.repeatMode) {
+                    RepeatMode.REPEAT_MODE_OFF -> exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
+                    RepeatMode.REPEAT_MODE_ONE -> exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
+                    RepeatMode.REPEAT_MODE_ALL -> exoPlayer.repeatMode = Player.REPEAT_MODE_ALL
+                }
+            }
+
             is PlayerEvent.ChangeShuffleModeEnabled -> {
                 exoPlayer.shuffleModeEnabled = event.shuffleModeEnabled
             }
@@ -175,14 +198,8 @@ class PlaybackServiceHandler(
                     playOrPause()
                 } else {
                     exoPlayer.seekToDefaultPosition(selectedAudioIndex)
-                    _playbackState.update { PlaybackState.Playing(true) }
                     exoPlayer.playWhenReady = true
-                    startProgressUpdate()
                 }
-            }
-
-            PlayerEvent.Stop -> {
-                stopProgressUpdate()
             }
 
             is PlayerEvent.UpdateProgress -> {
