@@ -17,7 +17,7 @@ class UnfollowArtistUseCase(
             try {
                 emit(Result.Loading())
                 val artistId = artist.id!!
-                songsRepository.updateFollowedArtist(artist.toArtistEntity(followAt = null))
+                songsRepository.updateFollowedArtist(artist.toArtistEntity(followedAt = null))
                 emit(Result.Success(artistId))
             } catch (e: Exception) {
                 emit(Result.Error(UiText.StringResource(R.string.error_unexpected)))

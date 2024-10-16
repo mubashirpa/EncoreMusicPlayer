@@ -20,7 +20,7 @@ class FollowArtistUseCase(
                 val artistId = artist.id!!
                 songsRepository.insertFollowedArtist(
                     artist.toArtistEntity(
-                        followAt = Clock.System.now().toEpochMilliseconds(),
+                        followedAt = Clock.System.now().toEpochMilliseconds(),
                     ),
                 )
                 emit(Result.Success(artistId))

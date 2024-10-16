@@ -18,10 +18,10 @@ fun Artist.toArtistDomainModel(): ArtistDomainModel =
 
 // Entities
 
-fun ArtistDomainModel.toArtistEntity(followAt: Long? = null): ArtistEntity =
+fun ArtistDomainModel.toArtistEntity(followedAt: Long? = null): ArtistEntity =
     ArtistEntity(
         artistId = id!!,
-        followedAt = followAt,
+        followedAt = followedAt,
         followers = followers,
         image = image,
         name = name,
