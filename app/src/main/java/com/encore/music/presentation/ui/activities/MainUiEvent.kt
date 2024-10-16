@@ -32,6 +32,8 @@ sealed class MainUiEvent {
         val newProgress: Float,
     ) : MainUiEvent()
 
+    data object ChangeRepeatMode : MainUiEvent()
+
     data object PlayPause : MainUiEvent()
 
     data object SeekToNext : MainUiEvent()

@@ -6,6 +6,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -19,6 +22,7 @@ import com.encore.music.presentation.navigation.findNavController
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.setupWithNavController
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
@@ -48,27 +52,30 @@ class MainActivity : AppCompatActivity() {
             binding.playerControls.progressCircular.progress = progress.toInt()
         }
 
-        viewModel.isPlaying.observe(this) { isPlaying ->
-            val iconRes =
-                if (isPlaying) R.drawable.baseline_pause_24 else R.drawable.baseline_play_arrow_24
-            (binding.playerControls.playButton as MaterialButton).setIconResource(iconRes)
-        }
-
-        viewModel.currentSelectedAudio.observe(this) { track ->
-            isTrackNotNull = track != null
-            binding.playerControls.apply {
-                root.isVisible = isTrackNotNull && !isPlayerVisible
-                if (isTrackNotNull) {
-                    media.load(track.image) {
-                        crossfade(true)
-                        placeholder(R.drawable.bg_placeholder)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.playerUiState.collect { playerUiState ->
+                    val track = playerUiState.currentPlayingTrack
+                    isTrackNotNull = track != null
+                    binding.playerControls.apply {
+                        root.isVisible = isTrackNotNull && !isPlayerVisible
+                        if (isTrackNotNull) {
+                            media.load(track!!.image) {
+                                crossfade(true)
+                                placeholder(R.drawable.bg_placeholder)
+                            }
+                            title.text = track.name.orEmpty()
+                            subtitle.text =
+                                track.artists
+                                    ?.firstOrNull()
+                                    ?.name
+                                    .orEmpty()
+                        }
                     }
-                    title.text = track.name.orEmpty()
-                    subtitle.text =
-                        track.artists
-                            ?.firstOrNull()
-                            ?.name
-                            .orEmpty()
+
+                    val playIcon =
+                        if (playerUiState.isPlaying) R.drawable.baseline_pause_24 else R.drawable.baseline_play_arrow_24
+                    (binding.playerControls.playButton as MaterialButton).setIconResource(playIcon)
                 }
             }
         }

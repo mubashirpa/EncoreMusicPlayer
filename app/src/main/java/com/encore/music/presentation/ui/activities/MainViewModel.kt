@@ -11,9 +11,14 @@ import com.encore.music.domain.usecase.authentication.HasUserUseCase
 import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
 import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
+import com.encore.music.player.RepeatMode
 import com.encore.music.player.service.PlaybackServiceHandler
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -24,27 +29,20 @@ class MainViewModel(
     private val insertRecentTrackUseCase: InsertRecentTrackUseCase,
 ) : ViewModel() {
     var isLoggedIn = false
-    private var currentMediaItemIndex = 0
 
     val duration: MutableLiveData<Long> by lazy { MutableLiveData<Long>(0L) }
     val progress: MutableLiveData<Float> by lazy { MutableLiveData<Float>(0f) }
     val progressString: MutableLiveData<String> by lazy { MutableLiveData<String>("00:00") }
-    val isPlaying: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>(false) }
-    val currentSelectedAudio: MutableLiveData<Track> by lazy { MutableLiveData<Track>(null) }
-    val trackList: MutableLiveData<MutableList<Track>> by lazy {
+    private val trackList: MutableLiveData<MutableList<Track>> by lazy {
         MutableLiveData<MutableList<Track>>(mutableListOf())
     }
+
+    private val _playerUiState = MutableStateFlow(PlayerUiState())
+    val playerUiState: StateFlow<PlayerUiState> = _playerUiState.asStateFlow()
 
     init {
         isLoggedIn = hasUserUseCase()
         collectPlaybackState()
-    }
-
-    override fun onCleared() {
-        viewModelScope.launch {
-            playbackServiceHandler.onPlayerEvents(PlayerEvent.Stop)
-        }
-        super.onCleared()
     }
 
     fun onEvent(event: MainUiEvent) {
@@ -59,6 +57,16 @@ class MainViewModel(
 
             is MainUiEvent.AddToPlaylist -> {
                 addToPlaylist(event.track)
+            }
+
+            is MainUiEvent.ChangeRepeatMode -> {
+                val repeatMode =
+                    when (playerUiState.value.repeatMode) {
+                        RepeatMode.REPEAT_MODE_OFF -> RepeatMode.REPEAT_MODE_ALL
+                        RepeatMode.REPEAT_MODE_ALL -> RepeatMode.REPEAT_MODE_ONE
+                        RepeatMode.REPEAT_MODE_ONE -> RepeatMode.REPEAT_MODE_OFF
+                    }
+                playbackServiceHandler.onPlayerEvents(PlayerEvent.ChangeRepeatMode(repeatMode))
             }
 
             is MainUiEvent.ChangeShuffleModeEnabled -> {
@@ -102,41 +110,62 @@ class MainViewModel(
         viewModelScope.launch {
             playbackServiceHandler.playbackState.collectLatest { playbackState ->
                 when (playbackState) {
-                    PlaybackState.Initial -> {}
-
                     is PlaybackState.Buffering -> {
                         calculateProgressValue(playbackState.progress)
                     }
 
+                    is PlaybackState.CurrentPlaying -> {
+                        if (trackList.value!!.isNotEmpty()) {
+                            if (playbackState.mediaItemIndex >= trackList.value!!.size) {
+                                _playerUiState.update {
+                                    it.copy(
+                                        currentTrackIndex = 0,
+                                        currentPlayingTrack = null,
+                                    )
+                                }
+                            } else {
+                                val previousSelectedAudioId =
+                                    playerUiState.value.currentPlayingTrack?.id
+                                val currentPlayingTrack =
+                                    trackList.value!![playbackState.mediaItemIndex]
+
+                                _playerUiState.update {
+                                    it.copy(
+                                        currentTrackIndex = playbackState.mediaItemIndex,
+                                        currentPlayingTrack = currentPlayingTrack,
+                                    )
+                                }
+
+                                // Insert the track into the recent tracks list
+                                if (previousSelectedAudioId != currentPlayingTrack.id) {
+                                    insertRecentTrack(currentPlayingTrack)
+                                }
+                            }
+                        }
+                    }
+
+                    PlaybackState.Initial -> {
+                        // TODO
+                    }
+
                     is PlaybackState.Playing -> {
-                        isPlaying.value = playbackState.isPlaying
+                        _playerUiState.update { it.copy(isPlaying = playbackState.isPlaying) }
                     }
 
                     is PlaybackState.Progress -> {
                         calculateProgressValue(playbackState.progress)
                     }
 
-                    is PlaybackState.CurrentPlaying -> {
-                        currentMediaItemIndex = playbackState.mediaItemIndex
-                        val previousSelectedAudioId = currentSelectedAudio.value?.id
-
-                        if (trackList.value!!.isNotEmpty()) {
-                            if (playbackState.mediaItemIndex >= trackList.value!!.size) {
-                                currentSelectedAudio.value = null
-                            } else {
-                                currentSelectedAudio.value =
-                                    trackList.value!![playbackState.mediaItemIndex]
-
-                                // Insert the track into the recent tracks list
-                                if (previousSelectedAudioId != currentSelectedAudio.value?.id) {
-                                    insertRecentTrack(currentSelectedAudio.value!!)
-                                }
-                            }
-                        }
-                    }
-
                     is PlaybackState.Ready -> {
                         duration.value = playbackState.duration
+                    }
+
+                    is PlaybackState.RepeatMode -> {
+                        _playerUiState.update { it.copy(repeatMode = playbackState.repeatMode) }
+                    }
+
+                    is PlaybackState.ShuffleMode -> {
+                        _playerUiState.update { it.copy(shuffleModeEnabled = playbackState.isEnabled) }
                     }
                 }
             }
@@ -164,7 +193,7 @@ class MainViewModel(
         tracks: List<Track>,
         selectedTrackId: String? = null,
     ) {
-        if (selectedTrackId != null && currentSelectedAudio.value?.id == selectedTrackId) return
+        if (selectedTrackId != null && playerUiState.value.currentPlayingTrack?.id == selectedTrackId) return
 
         trackList.value = tracks.filter { it.mediaUrl != null }.toMutableList()
         val selectedAudioIndex = trackList.value!!.indexOfFirst { it.id == selectedTrackId }
@@ -190,7 +219,7 @@ class MainViewModel(
         val songIndex = findTrackItemIndex(track)
 
         if (songIndex != -1) {
-            if (songIndex <= currentMediaItemIndex) return
+            if (songIndex <= playerUiState.value.currentTrackIndex) return
 
             // If the song is already in the playlist, move it to the end
             moveTrackItem(songIndex, trackList.value!!.size)
@@ -214,15 +243,16 @@ class MainViewModel(
         }
 
         val songIndex = findTrackItemIndex(track)
+        val currentTrackIndex = playerUiState.value.currentTrackIndex
 
         if (songIndex != -1) {
-            if (songIndex <= currentMediaItemIndex) return
+            if (songIndex <= currentTrackIndex) return
 
             // If the song is already in the playlist, move it to the next position
-            moveTrackItem(songIndex, currentMediaItemIndex + 1)
+            moveTrackItem(songIndex, currentTrackIndex + 1)
         } else {
             // Add the media item right after the currently playing song
-            trackList.value?.add(currentMediaItemIndex + 1, track)
+            trackList.value?.add(currentTrackIndex + 1, track)
             // Trigger LiveData update
             trackList.value = trackList.value
         }
