@@ -12,9 +12,9 @@ import com.encore.music.core.UiText
 import com.encore.music.domain.model.artists.Artist
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.usecase.artists.GetArtistsTopTracksUseCase
-import com.encore.music.domain.usecase.songs.FollowArtistUseCase
-import com.encore.music.domain.usecase.songs.GetFollowedArtistUseCase
-import com.encore.music.domain.usecase.songs.UnfollowArtistUseCase
+import com.encore.music.domain.usecase.songs.artists.FollowArtistUseCase
+import com.encore.music.domain.usecase.songs.artists.GetFollowedArtistUseCase
+import com.encore.music.domain.usecase.songs.artists.UnfollowArtistUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase

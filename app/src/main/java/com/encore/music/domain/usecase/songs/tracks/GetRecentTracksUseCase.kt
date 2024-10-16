@@ -1,4 +1,4 @@
-package com.encore.music.domain.usecase.songs
+package com.encore.music.domain.usecase.songs.tracks
 
 import com.encore.music.core.mapper.toTrackDomainModel
 import com.encore.music.domain.model.tracks.Track

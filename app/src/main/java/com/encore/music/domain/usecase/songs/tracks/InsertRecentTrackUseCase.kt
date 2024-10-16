@@ -1,4 +1,4 @@
-package com.encore.music.domain.usecase.songs
+package com.encore.music.domain.usecase.songs.tracks
 
 import com.encore.music.R
 import com.encore.music.core.Result

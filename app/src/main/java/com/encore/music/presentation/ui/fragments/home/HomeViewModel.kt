@@ -11,7 +11,7 @@ import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
-import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
+import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksUseCase
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

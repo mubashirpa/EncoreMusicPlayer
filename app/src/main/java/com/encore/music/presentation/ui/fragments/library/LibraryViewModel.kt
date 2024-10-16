@@ -9,11 +9,11 @@ import com.encore.music.domain.model.authentication.User
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
-import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
-import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
+import com.encore.music.domain.usecase.songs.artists.GetFollowedArtistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksUseCase
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 

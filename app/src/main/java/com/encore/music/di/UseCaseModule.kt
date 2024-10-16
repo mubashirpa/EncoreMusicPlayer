@@ -17,12 +17,10 @@ import com.encore.music.domain.usecase.playlists.GetCategoryPlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.search.SearchItemUseCase
-import com.encore.music.domain.usecase.songs.FollowArtistUseCase
-import com.encore.music.domain.usecase.songs.GetFollowedArtistUseCase
-import com.encore.music.domain.usecase.songs.GetFollowedArtistsUseCase
-import com.encore.music.domain.usecase.songs.GetRecentTracksUseCase
-import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
-import com.encore.music.domain.usecase.songs.UnfollowArtistUseCase
+import com.encore.music.domain.usecase.songs.artists.FollowArtistUseCase
+import com.encore.music.domain.usecase.songs.artists.GetFollowedArtistUseCase
+import com.encore.music.domain.usecase.songs.artists.GetFollowedArtistsUseCase
+import com.encore.music.domain.usecase.songs.artists.UnfollowArtistUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.DeletePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.DeleteTrackFromPlaylistUseCase
@@ -31,6 +29,8 @@ import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistWithTracksAndArtistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksUseCase
+import com.encore.music.domain.usecase.songs.tracks.InsertRecentTrackUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
 import com.encore.music.domain.usecase.validation.ValidatePassword

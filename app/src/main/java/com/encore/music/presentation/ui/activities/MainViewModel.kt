@@ -8,7 +8,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.HasUserUseCase
-import com.encore.music.domain.usecase.songs.InsertRecentTrackUseCase
+import com.encore.music.domain.usecase.songs.tracks.InsertRecentTrackUseCase
 import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
 import com.encore.music.player.RepeatMode
