@@ -1,10 +1,16 @@
 package com.encore.music.presentation.ui.activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +28,8 @@ import com.encore.music.presentation.navigation.findNavController
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.setupWithNavController
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,6 +45,42 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                if (!isGranted) {
+                    showMessage(getString(R.string.notification_permission_denied))
+                }
+            }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission is granted
+                }
+
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) -> {
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.dialog_title_notification_permission)
+                        .setMessage(R.string.dialog_message_permission_notification)
+                        .setNegativeButton(resources.getString(R.string.decline)) { _, _ ->
+                            showMessage(getString(R.string.notification_permission_denied))
+                        }.setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
+                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }.show()
+                }
+
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        }
 
         startPlaybackService()
 
@@ -101,5 +145,9 @@ class MainActivity : AppCompatActivity() {
             startForegroundService(intent)
             isServiceRunning = true
         }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.navHost, message, Snackbar.LENGTH_LONG).show()
     }
 }
