@@ -39,10 +39,10 @@ interface PlaylistsDao {
     @Query("SELECT * FROM playlists WHERE playlistId = :id")
     fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists?>
 
-    @Query("SELECT * FROM playlists")
+    @Query("SELECT * FROM playlists ORDER BY addedAt DESC")
     fun getPlaylists(): Flow<List<PlaylistEntity>>
 
-    @Query("SELECT * FROM playlists WHERE isLocal = 1")
+    @Query("SELECT * FROM playlists WHERE isLocal = 1 ORDER BY addedAt DESC")
     fun getLocalPlaylists(): Flow<List<PlaylistEntity>>
 
     @Delete

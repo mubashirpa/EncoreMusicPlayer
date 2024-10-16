@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.datetime.Clock
 import com.encore.music.domain.model.playlists.Playlist as PlaylistDomainModel
 
 class InsertPlaylistUseCase(
@@ -55,7 +56,10 @@ class InsertPlaylistUseCase(
                 }
 
                 songsRepository.insertPlaylist(
-                    playlist = playlist.toPlaylistEntity(),
+                    playlist =
+                        playlist.toPlaylistEntity(
+                            addedAt = Clock.System.now().toEpochMilliseconds(),
+                        ),
                     tracks = trackEntities,
                     artists = artistEntities,
                     playlistTrackCrossRef = playlistTrackCrossRefs,

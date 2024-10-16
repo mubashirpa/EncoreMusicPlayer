@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.datetime.Clock
 import java.util.UUID
 import com.encore.music.data.local.entity.playlists.PlaylistEntity as PlaylistEntity
 
@@ -35,6 +36,7 @@ class CreatePlaylistUseCase(
                     val playlistEntity =
                         PlaylistEntity(
                             playlistId = playlist.id ?: UUID.randomUUID().toString(),
+                            addedAt = Clock.System.now().toEpochMilliseconds(),
                             description = playlist.description?.ifBlank { null },
                             isLocal = playlist.isLocal ?: true,
                             image = playlist.image,

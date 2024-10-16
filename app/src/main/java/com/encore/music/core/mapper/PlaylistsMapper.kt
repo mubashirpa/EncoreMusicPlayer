@@ -22,9 +22,10 @@ fun Playlist.toPlaylistDomainModel(): PlaylistDomainModel =
 
 // Entities
 
-fun PlaylistDomainModel.toPlaylistEntity(): PlaylistEntity =
+fun PlaylistDomainModel.toPlaylistEntity(addedAt: Long? = null): PlaylistEntity =
     PlaylistEntity(
         playlistId = id!!,
+        addedAt = addedAt,
         description = description,
         image = image,
         isLocal = isLocal,
