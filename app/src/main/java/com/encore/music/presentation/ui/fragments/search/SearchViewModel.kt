@@ -8,10 +8,14 @@ import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.domain.model.authentication.User
+import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.categories.GetCategoriesUseCase
 import com.encore.music.domain.usecase.search.SearchItemUseCase
+import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
+import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
+import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -19,9 +23,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
+    private val createPlaylistUseCase: CreatePlaylistUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getSavedLocalPlaylistsUseCase: GetSavedLocalPlaylistsUseCase,
     private val searchItemUseCase: SearchItemUseCase,
+    private val insertPlaylistUseCase: InsertPlaylistUseCase,
 ) : ViewModel() {
     private val _uiState = MutableLiveData<CategoriesUiState>()
     val uiState: LiveData<CategoriesUiState> = _uiState
@@ -32,12 +39,36 @@ class SearchViewModel(
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> = _currentUser
 
+    private val _savedPlaylists = MutableLiveData<List<Playlist>>()
+    val savedPlaylists: LiveData<List<Playlist>> = _savedPlaylists
+
     var searchType = SearchType.TRACK
     private var searchItemUseCaseJob: Job? = null
 
     init {
         getCurrentUser()
         getCategories()
+        getSavedLocalPlaylists()
+    }
+
+    fun onEvent(event: SearchUiEvent) {
+        when (event) {
+            is SearchUiEvent.OnCreatePlaylist -> {
+                createPlaylist(event.playlist)
+            }
+
+            is SearchUiEvent.OnInsertTrackToLocalPlaylist -> {
+                savePlaylist(event.playlist)
+            }
+
+            SearchUiEvent.OnRetry -> {
+                getCategories()
+            }
+
+            is SearchUiEvent.OnSearch -> {
+                search(event.query, event.searchType, event.delay)
+            }
+        }
     }
 
     private fun getCurrentUser() {
@@ -48,7 +79,7 @@ class SearchViewModel(
         }
     }
 
-    fun getCategories() {
+    private fun getCategories() {
         getCategoriesUseCase()
             .onEach { result ->
                 when (result) {
@@ -72,7 +103,7 @@ class SearchViewModel(
             }.launchIn(viewModelScope)
     }
 
-    fun search(
+    private fun search(
         query: String,
         type: SearchType,
         delay: Long = 0,
@@ -168,5 +199,22 @@ class SearchViewModel(
                     }
                 }.launchIn(this)
             }
+    }
+
+    // Fetched to add track to playlist
+    private fun getSavedLocalPlaylists() {
+        viewModelScope.launch {
+            getSavedLocalPlaylistsUseCase().collect {
+                _savedPlaylists.value = it
+            }
+        }
+    }
+
+    private fun createPlaylist(playlist: Playlist) {
+        createPlaylistUseCase(playlist).launchIn(viewModelScope)
+    }
+
+    private fun savePlaylist(playlist: Playlist) {
+        insertPlaylistUseCase(playlist).launchIn(viewModelScope)
     }
 }

@@ -9,17 +9,27 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.encore.music.R
 import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.FragmentSearchBinding
 import com.encore.music.domain.model.search.SearchType
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.presentation.navigation.navigateToArtist
 import com.encore.music.presentation.navigation.navigateToCategory
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.navigation.navigateToProfile
+import com.encore.music.presentation.ui.activities.MainUiEvent
+import com.encore.music.presentation.ui.activities.MainViewModel
+import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
+import com.encore.music.presentation.ui.fragments.dialog.MenuItem
+import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.SpanCount
+import com.google.android.material.snackbar.Snackbar
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -28,6 +38,7 @@ class SearchFragment : Fragment() {
 
     private val navController by lazy { findNavController() }
     private val viewModel: SearchViewModel by viewModel()
+    private val mainViewModel: MainViewModel by activityViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,7 +92,7 @@ class SearchFragment : Fragment() {
                         errorText.text = uiState.message.asString(requireContext())
                         retryButton.visibility = View.VISIBLE
                         retryButton.setOnClickListener {
-                            viewModel.getCategories()
+                            viewModel.onEvent(SearchUiEvent.OnRetry)
                         }
                     }
                 }
@@ -145,10 +156,11 @@ class SearchFragment : Fragment() {
                         errorText.text = uiState.message.asString(requireContext())
                         retryButton.visibility = View.VISIBLE
                         retryButton.setOnClickListener {
-                            viewModel.search(
-                                binding.searchView.text.toString(),
-                                viewModel.searchType,
-                                0,
+                            viewModel.onEvent(
+                                SearchUiEvent.OnSearch(
+                                    binding.searchView.text.toString(),
+                                    viewModel.searchType,
+                                ),
                             )
                         }
                     }
@@ -200,11 +212,22 @@ class SearchFragment : Fragment() {
                     binding.artistsFilter.id -> SearchType.ARTIST
                     else -> SearchType.TRACK
                 }
-            viewModel.search(binding.searchView.text.toString(), viewModel.searchType, 0)
+            viewModel.onEvent(
+                SearchUiEvent.OnSearch(
+                    binding.searchView.text.toString(),
+                    viewModel.searchType,
+                ),
+            )
         }
 
         binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
-            viewModel.search(text.toString(), viewModel.searchType, 500)
+            viewModel.onEvent(
+                SearchUiEvent.OnSearch(
+                    text.toString(),
+                    viewModel.searchType,
+                    500,
+                ),
+            )
         }
     }
 
@@ -217,23 +240,27 @@ class SearchFragment : Fragment() {
         val searchAdapter =
             SearchAdapter(
                 context = requireContext(),
-                onArtistClick = { artist ->
+                onArtistClicked = { artist ->
                     artist.id?.let {
                         binding.searchView.setVisible(false)
                         navController.navigateToArtist(it)
                     }
                 },
-                onPlaylistClick = { playlist ->
+                onPlaylistClicked = { playlist ->
                     playlist.id?.let {
                         binding.searchView.setVisible(false)
                         navController.navigateToPlaylist(it, playlist.isLocal == true)
                     }
                 },
-                onTrackClick = { track ->
-                    track.id?.let {
+                onTrackClicked = { track ->
+                    if (track.id != null && track.mediaUrl != null) {
                         binding.searchView.setVisible(false)
-                        navController.navigateToPlayer()
                     }
+                    showMessage(track.mediaUrl.orEmpty())
+                    playTrack(track)
+                },
+                onTrackMoreClicked = { track ->
+                    showTrackMenuBottomSheet(track)
                 },
             )
         binding.searchRecyclerView.apply {
@@ -241,5 +268,108 @@ class SearchFragment : Fragment() {
             adapter = searchAdapter
         }
         return searchAdapter
+    }
+
+    private fun showTrackMenuBottomSheet(track: Track) {
+        val artist = track.artists?.firstOrNull()
+        val items =
+            listOf(
+                MenuItem(
+                    id = 0,
+                    title = getString(R.string.play_now),
+                    icon = R.drawable.baseline_play_arrow_24,
+                ),
+                MenuItem(
+                    id = 1,
+                    title = getString(R.string.play_next),
+                    icon = R.drawable.baseline_skip_next_24,
+                ),
+                MenuItem(
+                    id = 2,
+                    title = getString(R.string.add_to_queue),
+                    icon = R.drawable.baseline_add_to_queue_24,
+                ),
+                MenuItem(
+                    id = 3,
+                    title = getString(R.string.add_to_playlist),
+                    icon = R.drawable.baseline_playlist_add_24,
+                ),
+                MenuItem(
+                    id = 4,
+                    title =
+                        getString(
+                            R.string.more_from_,
+                            artist?.name.orEmpty(),
+                        ),
+                    icon = R.drawable.baseline_person_search_24,
+                ),
+            )
+        TrackMenuBottomSheet(track, items)
+            .setOnMenuItemClickListener { _, id ->
+                when (id) {
+                    0 -> {
+                        playTrack(track)
+                    }
+
+                    1 -> {
+                        mainViewModel.onEvent(MainUiEvent.AddNextInPlaylist(track))
+                    }
+
+                    2 -> {
+                        mainViewModel.onEvent(MainUiEvent.AddToPlaylist(track))
+                    }
+
+                    3 -> {
+                        showAddToPlaylistBottomSheet(track)
+                    }
+
+                    4 -> {
+                        artist?.id?.let { navController.navigateToArtist(it) }
+                    }
+                }
+            }.show(
+                childFragmentManager,
+                TrackMenuBottomSheet.TAG,
+            )
+    }
+
+    private fun showAddToPlaylistBottomSheet(track: Track) {
+        val playlists = viewModel.savedPlaylists.value.orEmpty()
+        AddToPlaylistBottomSheet(track, playlists)
+            .setOnCreatePlaylistClickListener { dialog, playlistTrack ->
+                showCreatePlaylistBottomSheet(playlistTrack)
+                dialog.dismiss()
+            }.setOnAddToPlaylistClickListener { dialog, playlist ->
+                viewModel.onEvent(SearchUiEvent.OnInsertTrackToLocalPlaylist(playlist))
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                AddToPlaylistBottomSheet.TAG,
+            )
+    }
+
+    private fun showCreatePlaylistBottomSheet(track: Track) {
+        CreatePlaylistBottomSheet()
+            .setTracks(listOf(track))
+            .setOnCreatePlaylistClickListener { dialog, playlist ->
+                viewModel.onEvent(SearchUiEvent.OnCreatePlaylist(playlist))
+                dialog.dismiss()
+            }.show(
+                childFragmentManager,
+                CreatePlaylistBottomSheet.TAG,
+            )
+    }
+
+    private fun playTrack(track: Track) {
+        if (track.id != null && track.mediaUrl != null) {
+            mainViewModel.onEvent(MainUiEvent.AddPlaylist(listOf(track), track.id))
+            navController.navigateToPlayer()
+        } else {
+            showMessage(getString(R.string.error_unexpected))
+        }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }

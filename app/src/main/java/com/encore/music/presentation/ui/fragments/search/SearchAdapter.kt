@@ -15,9 +15,10 @@ import com.encore.music.domain.model.tracks.Track
 
 class SearchAdapter(
     private val context: Context,
-    private val onArtistClick: (Artist) -> Unit = {},
-    private val onPlaylistClick: (Playlist) -> Unit = {},
-    private val onTrackClick: (Track) -> Unit = {},
+    private val onArtistClicked: (Artist) -> Unit = {},
+    private val onPlaylistClicked: (Playlist) -> Unit = {},
+    private val onTrackClicked: (Track) -> Unit = {},
+    private val onTrackMoreClicked: (Track) -> Unit,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var items: List<SearchListItem> = emptyList()
 
@@ -33,7 +34,7 @@ class SearchAdapter(
                 title.text = item.name
 
                 root.setOnClickListener {
-                    onArtistClick(item)
+                    onArtistClicked(item)
                 }
             }
         }
@@ -52,7 +53,7 @@ class SearchAdapter(
                 subtitle.text = item.owner
 
                 root.setOnClickListener {
-                    onPlaylistClick(item)
+                    onPlaylistClicked(item)
                 }
             }
         }
@@ -71,7 +72,11 @@ class SearchAdapter(
                 supportingText.text = item.artists?.joinToString { it.name.orEmpty() }
 
                 root.setOnClickListener {
-                    onTrackClick(item)
+                    onTrackClicked(item)
+                }
+
+                menuButton.setOnClickListener {
+                    onTrackMoreClicked(item)
                 }
             }
         }
