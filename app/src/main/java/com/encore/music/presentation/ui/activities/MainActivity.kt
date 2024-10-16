@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModel()
     private var isServiceRunning = false
+    private var isTrackNotNull = false
     private var isPlayerVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,10 +55,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.currentSelectedAudio.observe(this) { track ->
-            val isTrackNull = track == null
+            isTrackNotNull = track != null
             binding.playerControls.apply {
-                root.isVisible = !isTrackNull && !isPlayerVisible
-                if (!isTrackNull) {
+                root.isVisible = isTrackNotNull && !isPlayerVisible
+                if (isTrackNotNull) {
                     media.load(track.image) {
                         crossfade(true)
                         placeholder(R.drawable.bg_placeholder)
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             isPlayerVisible = destination.hierarchy.any { it.hasRoute(Screen.Player::class) }
-            binding.playerControls.root.isVisible = !isPlayerVisible
+            binding.playerControls.root.isVisible = !isPlayerVisible && isTrackNotNull
         }
     }
 

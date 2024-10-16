@@ -236,6 +236,11 @@ class SearchFragment : Fragment() {
         _binding = null
     }
 
+    override fun onStop() {
+        binding.searchView.setVisible(false)
+        super.onStop()
+    }
+
     private fun initSearchAdapter(): SearchAdapter {
         val searchAdapter =
             SearchAdapter(
@@ -253,10 +258,6 @@ class SearchFragment : Fragment() {
                     }
                 },
                 onTrackClicked = { track ->
-                    if (track.id != null && track.mediaUrl != null) {
-                        binding.searchView.setVisible(false)
-                    }
-                    showMessage(track.mediaUrl.orEmpty())
                     playTrack(track)
                 },
                 onTrackMoreClicked = { track ->
@@ -324,7 +325,10 @@ class SearchFragment : Fragment() {
                     }
 
                     4 -> {
-                        artist?.id?.let { navController.navigateToArtist(it) }
+                        artist?.id?.let {
+                            binding.searchView.setVisible(false)
+                            navController.navigateToArtist(it)
+                        }
                     }
                 }
             }.show(
@@ -362,6 +366,7 @@ class SearchFragment : Fragment() {
 
     private fun playTrack(track: Track) {
         if (track.id != null && track.mediaUrl != null) {
+            binding.searchView.setVisible(false)
             mainViewModel.onEvent(MainUiEvent.AddPlaylist(listOf(track), track.id))
             navController.navigateToPlayer()
         } else {
