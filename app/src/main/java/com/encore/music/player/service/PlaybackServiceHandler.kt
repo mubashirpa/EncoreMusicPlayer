@@ -84,10 +84,20 @@ class PlaybackServiceHandler(
     // Private methods
 
     private fun playOrPause() {
-        if (exoPlayer.isPlaying) {
-            exoPlayer.pause()
-        } else {
-            exoPlayer.play()
+        exoPlayer.run {
+            when {
+                isPlaying -> {
+                    pause()
+                }
+
+                exoPlayer.playbackState == Player.STATE_ENDED -> {
+                    seekToDefaultPosition(0)
+                }
+
+                else -> {
+                    play()
+                }
+            }
         }
     }
 
