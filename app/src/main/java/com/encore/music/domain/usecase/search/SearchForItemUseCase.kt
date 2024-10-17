@@ -3,7 +3,6 @@ package com.encore.music.domain.usecase.search
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.core.mapper.toSearchDomainModel
-import com.encore.music.domain.model.search.IncludeExternal
 import com.encore.music.domain.model.search.Search
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.AuthenticationRepository
@@ -11,7 +10,7 @@ import com.encore.music.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class SearchItemUseCase(
+class SearchForItemUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val searchRepository: SearchRepository,
 ) {
@@ -21,7 +20,7 @@ class SearchItemUseCase(
         market: String? = null,
         limit: Int = 20,
         offset: Int = 0,
-        includeExternal: IncludeExternal? = null,
+        includeExternal: String? = null,
     ): Flow<Result<Search>> =
         flow {
             try {

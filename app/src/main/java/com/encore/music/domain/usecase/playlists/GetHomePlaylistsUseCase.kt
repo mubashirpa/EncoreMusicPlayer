@@ -13,13 +13,19 @@ class GetHomePlaylistsUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val encoreRepository: PlaylistsRepository,
 ) {
-    operator fun invoke(): Flow<Result<List<HomePlaylist>>> =
+    operator fun invoke(
+        locale: String? = null,
+        limit: Int = 20,
+        offset: Int = 0,
+    ): Flow<Result<List<HomePlaylist>>> =
         flow {
             try {
                 emit(Result.Loading())
                 val idToken = authenticationRepository.getIdToken().orEmpty()
                 val playlists =
-                    encoreRepository.getHomePlaylists(idToken).map { it.toHomePlaylistModel() }
+                    encoreRepository
+                        .getHomePlaylists(idToken, locale, limit, offset)
+                        .map { it.toHomePlaylistModel() }
                 emit(Result.Success(playlists))
             } catch (e: Exception) {
                 emit(Result.Error(UiText.DynamicString(e.message.toString())))

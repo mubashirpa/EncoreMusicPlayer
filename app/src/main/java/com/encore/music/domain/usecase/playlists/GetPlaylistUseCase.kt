@@ -13,13 +13,19 @@ class GetPlaylistUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val encoreRepository: PlaylistsRepository,
 ) {
-    operator fun invoke(playlistId: String): Flow<Result<Playlist>> =
+    operator fun invoke(
+        playlistId: String,
+        market: String? = null,
+        additionalTypes: String? = null,
+    ): Flow<Result<Playlist>> =
         flow {
             try {
                 emit(Result.Loading())
                 val idToken = authenticationRepository.getIdToken().orEmpty()
                 val playlists =
-                    encoreRepository.getPlaylist(idToken, playlistId).toPlaylistDomainModel()
+                    encoreRepository
+                        .getPlaylist(idToken, playlistId, market, additionalTypes)
+                        .toPlaylistDomainModel()
                 emit(Result.Success(playlists))
             } catch (e: Exception) {
                 emit(Result.Error(UiText.DynamicString(e.message.toString())))

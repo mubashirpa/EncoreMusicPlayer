@@ -12,7 +12,7 @@ import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.categories.GetCategoriesUseCase
-import com.encore.music.domain.usecase.search.SearchItemUseCase
+import com.encore.music.domain.usecase.search.SearchForItemUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedLocalPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
@@ -27,7 +27,7 @@ class SearchViewModel(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getSavedLocalPlaylistsUseCase: GetSavedLocalPlaylistsUseCase,
-    private val searchItemUseCase: SearchItemUseCase,
+    private val searchForItemUseCase: SearchForItemUseCase,
     private val insertPlaylistUseCase: InsertPlaylistUseCase,
 ) : ViewModel() {
     private val _uiState = MutableLiveData<CategoriesUiState>()
@@ -118,7 +118,7 @@ class SearchViewModel(
         searchItemUseCaseJob =
             viewModelScope.launch {
                 delay(delay)
-                searchItemUseCase(
+                searchForItemUseCase(
                     query = query.trim(),
                     type = listOf(type),
                 ).onEach { result ->

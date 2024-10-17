@@ -13,13 +13,19 @@ class GetCategoriesUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val repository: CategoriesRepository,
 ) {
-    operator fun invoke(): Flow<Result<List<Category>>> =
+    operator fun invoke(
+        locale: String? = null,
+        limit: Int = 20,
+        offset: Int = 0,
+    ): Flow<Result<List<Category>>> =
         flow {
             try {
                 emit(Result.Loading())
                 val idToken = authenticationRepository.getIdToken().orEmpty()
                 val playlists =
-                    repository.getCategories(idToken).toCategoryDomainModelList()
+                    repository
+                        .getCategories(idToken, locale, limit, offset)
+                        .toCategoryDomainModelList()
                 emit(Result.Success(playlists))
             } catch (e: Exception) {
                 emit(Result.Error(UiText.DynamicString(e.message.toString())))

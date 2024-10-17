@@ -16,7 +16,7 @@ import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
 import com.encore.music.domain.usecase.playlists.GetCategoryPlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
-import com.encore.music.domain.usecase.search.SearchItemUseCase
+import com.encore.music.domain.usecase.search.SearchForItemUseCase
 import com.encore.music.domain.usecase.songs.artists.FollowArtistUseCase
 import com.encore.music.domain.usecase.songs.artists.GetFollowedArtistUseCase
 import com.encore.music.domain.usecase.songs.artists.GetFollowedArtistsUseCase
@@ -59,7 +59,7 @@ val useCaseModule =
         singleOf(::GetSavedPlaylistsUseCase)
         single { InsertPlaylistUseCase(songsRepository = get()) }
         single { InsertRecentTrackUseCase(songsRepository = get()) }
-        singleOf(::SearchItemUseCase)
+        singleOf(::SearchForItemUseCase)
         singleOf(::UnfollowArtistUseCase)
 
         // Authentication
