@@ -26,6 +26,7 @@ room = "2.6.1"
 ksp = "2.0.20-1.0.25"
 kotlinx-datetime = "0.6.1"
 legacy-support-v4 = "1.0.0"
+coreSplashscreen = "1.1.0-rc01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,7 @@ palette = { group = "androidx.palette", name = "palette", version.ref = "palette
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 
 [bundles]
 fragment = [

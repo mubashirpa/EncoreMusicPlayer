@@ -92,7 +92,8 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.datastore.preferences)
     implementation(libs.palette)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-    implementation(libs.kotlinx.datetime)
 }
