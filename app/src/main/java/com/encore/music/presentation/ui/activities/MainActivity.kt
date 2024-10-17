@@ -36,7 +36,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModel()
-    private var isServiceRunning = false
     private var isTrackNotNull = false
     private var isPlayerVisible = false
 
@@ -82,8 +81,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        startPlaybackService()
-
         val navController =
             findNavController(
                 viewId = binding.navHost.id,
@@ -98,28 +95,42 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playerUiState.collect { playerUiState ->
-                    val track = playerUiState.currentPlayingTrack
-                    isTrackNotNull = track != null
-                    binding.playerControls.apply {
-                        root.isVisible = isTrackNotNull && !isPlayerVisible
-                        if (isTrackNotNull) {
-                            media.load(track!!.image) {
-                                crossfade(true)
-                                placeholder(R.drawable.bg_placeholder)
+                launch {
+                    viewModel.uiEvent.collect { event ->
+                        when (event) {
+                            MainEvent.StartService -> {
+                                startPlaybackService()
                             }
-                            title.text = track.name.orEmpty()
-                            subtitle.text =
-                                track.artists
-                                    ?.firstOrNull()
-                                    ?.name
-                                    .orEmpty()
                         }
                     }
+                }
 
-                    val playIcon =
-                        if (playerUiState.isPlaying) R.drawable.baseline_pause_24 else R.drawable.baseline_play_arrow_24
-                    (binding.playerControls.playButton as MaterialButton).setIconResource(playIcon)
+                launch {
+                    viewModel.playerUiState.collect { playerUiState ->
+                        val track = playerUiState.currentPlayingTrack
+                        isTrackNotNull = track != null
+                        binding.playerControls.apply {
+                            root.isVisible = isTrackNotNull && !isPlayerVisible
+                            if (isTrackNotNull) {
+                                media.load(track!!.image) {
+                                    crossfade(true)
+                                    placeholder(R.drawable.bg_placeholder)
+                                }
+                                title.text = track.name.orEmpty()
+                                subtitle.text =
+                                    track.artists
+                                        ?.firstOrNull()
+                                        ?.name
+                                        .orEmpty()
+                            }
+                        }
+
+                        val playIcon =
+                            if (playerUiState.isPlaying) R.drawable.baseline_pause_24 else R.drawable.baseline_play_arrow_24
+                        (binding.playerControls.playButton as MaterialButton).setIconResource(
+                            playIcon,
+                        )
+                    }
                 }
             }
         }
@@ -140,11 +151,7 @@ class MainActivity : AppCompatActivity() {
 
     @OptIn(UnstableApi::class)
     private fun startPlaybackService() {
-        if (!isServiceRunning) {
-            val intent = Intent(this, PlaybackService::class.java)
-            startForegroundService(intent)
-            isServiceRunning = true
-        }
+        startForegroundService(Intent(this, PlaybackService::class.java))
     }
 
     private fun showMessage(message: String) {

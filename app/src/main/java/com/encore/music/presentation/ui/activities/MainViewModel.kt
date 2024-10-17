@@ -13,7 +13,9 @@ import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
 import com.encore.music.player.RepeatMode
 import com.encore.music.player.service.PlaybackServiceHandler
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -28,7 +30,14 @@ class MainViewModel(
     private val playbackServiceHandler: PlaybackServiceHandler,
     private val insertRecentTrackUseCase: InsertRecentTrackUseCase,
 ) : ViewModel() {
+    private val _playerUiState = MutableStateFlow(PlayerUiState())
+    val playerUiState: StateFlow<PlayerUiState> = _playerUiState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<MainEvent>()
+    val uiEvent: SharedFlow<MainEvent> = _uiEvent
+
     var isLoggedIn = false
+    private var isServiceRunning = false
 
     val duration: MutableLiveData<Long> by lazy { MutableLiveData<Long>(0L) }
     val progress: MutableLiveData<Float> by lazy { MutableLiveData<Float>(0f) }
@@ -36,9 +45,6 @@ class MainViewModel(
     private val trackList: MutableLiveData<MutableList<Track>> by lazy {
         MutableLiveData<MutableList<Track>>(mutableListOf())
     }
-
-    private val _playerUiState = MutableStateFlow(PlayerUiState())
-    val playerUiState: StateFlow<PlayerUiState> = _playerUiState.asStateFlow()
 
     init {
         isLoggedIn = hasUserUseCase()
@@ -144,9 +150,7 @@ class MainViewModel(
                         }
                     }
 
-                    PlaybackState.Initial -> {
-                        // TODO
-                    }
+                    PlaybackState.Initial -> Unit
 
                     is PlaybackState.Playing -> {
                         _playerUiState.update { it.copy(isPlaying = playbackState.isPlaying) }
@@ -193,6 +197,13 @@ class MainViewModel(
         tracks: List<Track>,
         selectedTrackId: String? = null,
     ) {
+        if (!isServiceRunning) {
+            viewModelScope.launch {
+                _uiEvent.emit(MainEvent.StartService)
+                isServiceRunning = true
+            }
+        }
+
         if (selectedTrackId != null && playerUiState.value.currentPlayingTrack?.id == selectedTrackId) return
 
         trackList.value = tracks.filter { it.mediaUrl != null }.toMutableList()
