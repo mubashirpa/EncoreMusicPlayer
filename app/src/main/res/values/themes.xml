@@ -53,6 +53,13 @@
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.Encore.BottomSheetDialog</item>
     </style>
 
+    <style name="Theme.Encore.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#31111D</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.Encore</item>
+    </style>
+
     <style name="ProgressDialog" parent="MaterialAlertDialog.Material3">
         <item name="android:windowMinWidthMajor">0%</item>
         <item name="android:windowMinWidthMinor">0%</item>
