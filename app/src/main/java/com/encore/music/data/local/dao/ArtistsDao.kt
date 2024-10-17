@@ -18,6 +18,6 @@ interface ArtistsDao {
     @Query("SELECT * FROM artists WHERE artistId = :artistId AND followedAt IS NOT NULL")
     fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?>
 
-    @Query("SELECT * FROM artists WHERE followedAt IS NOT NULL ORDER BY followedAt DESC")
-    fun getFollowedArtists(): Flow<List<ArtistEntity>>
+    @Query("SELECT * FROM artists WHERE followedAt IS NOT NULL ORDER BY followedAt DESC LIMIT :limit")
+    fun getFollowedArtists(limit: Int = 20): Flow<List<ArtistEntity>>
 }

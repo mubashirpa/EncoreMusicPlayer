@@ -30,7 +30,7 @@ class SongsRepositoryImpl(
         artistsDao.updateFollowedArtist(artist)
     }
 
-    override fun getFollowedArtists(): Flow<List<ArtistEntity>> = artistsDao.getFollowedArtists()
+    override fun getFollowedArtists(limit: Int): Flow<List<ArtistEntity>> = artistsDao.getFollowedArtists(limit)
 
     override fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?> = artistsDao.getFollowedArtistById(artistId)
 
@@ -59,9 +59,9 @@ class SongsRepositoryImpl(
     override fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists?> =
         playlistsDao.getPlaylistWithTracksAndArtistsById(id)
 
-    override fun getPlaylists(): Flow<List<PlaylistEntity>> = playlistsDao.getPlaylists()
+    override fun getPlaylists(limit: Int): Flow<List<PlaylistEntity>> = playlistsDao.getPlaylists(limit)
 
-    override fun getLocalPlaylists(): Flow<List<PlaylistEntity>> = playlistsDao.getLocalPlaylists()
+    override fun getLocalPlaylists(limit: Int): Flow<List<PlaylistEntity>> = playlistsDao.getLocalPlaylists(limit)
 
     override suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity) {
         playlistsDao.deletePlaylistWithCrossRefs(playlist)

@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 class GetSavedPlaylistsUseCase(
     private val songsRepository: SongsRepository,
 ) {
-    operator fun invoke(): Flow<List<Playlist>> =
-        songsRepository.getPlaylists().map { playlists ->
+    operator fun invoke(limit: Int = 20): Flow<List<Playlist>> =
+        songsRepository.getPlaylists(limit).map { playlists ->
             playlists.map { it.toPlaylistDomainModel() }
         }
 }

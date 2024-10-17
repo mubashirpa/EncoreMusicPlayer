@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.map
 class GetFollowedArtistsUseCase(
     private val songsRepository: SongsRepository,
 ) {
-    operator fun invoke(): Flow<List<Artist>> =
-        songsRepository.getFollowedArtists().map { artists ->
+    operator fun invoke(limit: Int = 20): Flow<List<Artist>> =
+        songsRepository.getFollowedArtists(limit).map { artists ->
             artists.map { it.toArtistDomainModel() }
         }
 }

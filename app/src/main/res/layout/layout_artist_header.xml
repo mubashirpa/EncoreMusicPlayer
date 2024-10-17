@@ -80,6 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/more"
+        android:visibility="invisible"
         app:icon="@drawable/baseline_more_vert_24"
         app:iconTint="?attr/colorOnSurface"
         app:layout_constraintStart_toEndOf="@+id/follow_button"

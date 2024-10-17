@@ -18,7 +18,7 @@ interface SongsRepository {
 
     suspend fun updateFollowedArtist(artist: ArtistEntity)
 
-    fun getFollowedArtists(): Flow<List<ArtistEntity>>
+    fun getFollowedArtists(limit: Int = 20): Flow<List<ArtistEntity>>
 
     fun getFollowedArtistById(artistId: String): Flow<ArtistEntity?>
 
@@ -38,9 +38,9 @@ interface SongsRepository {
 
     fun getPlaylistWithTracksAndArtistsById(id: String): Flow<PlaylistWithTracksAndArtists?>
 
-    fun getPlaylists(): Flow<List<PlaylistEntity>>
+    fun getPlaylists(limit: Int = 20): Flow<List<PlaylistEntity>>
 
-    fun getLocalPlaylists(): Flow<List<PlaylistEntity>>
+    fun getLocalPlaylists(limit: Int = 20): Flow<List<PlaylistEntity>>
 
     suspend fun deletePlaylistWithCrossRefs(playlist: PlaylistEntity)
 
