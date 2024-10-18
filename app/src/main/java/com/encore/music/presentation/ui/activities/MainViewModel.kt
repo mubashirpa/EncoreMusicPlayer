@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.encore.music.domain.model.tracks.Track
+import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.authentication.HasUserUseCase
 import com.encore.music.domain.usecase.songs.tracks.InsertRecentTrackUseCase
 import com.encore.music.player.PlaybackState
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit
 
 class MainViewModel(
     hasUserUseCase: HasUserUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val playbackServiceHandler: PlaybackServiceHandler,
     private val insertRecentTrackUseCase: InsertRecentTrackUseCase,
 ) : ViewModel() {
@@ -48,6 +50,7 @@ class MainViewModel(
 
     init {
         isLoggedIn = hasUserUseCase()
+        getCurrentUser()
         collectPlaybackState()
     }
 
@@ -108,6 +111,17 @@ class MainViewModel(
             is MainUiEvent.UpdateProgress -> {
                 playbackServiceHandler.onPlayerEvents(PlayerEvent.UpdateProgress(event.newProgress))
                 progress.value = event.newProgress
+            }
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            getCurrentUserUseCase().collect { user ->
+                if (user == null) {
+                    playbackServiceHandler.onPlayerEvents(PlayerEvent.Stop)
+                    clearPlayerData()
+                }
             }
         }
     }
@@ -288,6 +302,14 @@ class MainViewModel(
 
     private fun insertRecentTrack(track: Track) {
         insertRecentTrackUseCase(track).launchIn(viewModelScope)
+    }
+
+    private fun clearPlayerData() {
+        _playerUiState.update { PlayerUiState() }
+        duration.value = 0L
+        progress.value = 0f
+        progressString.value = "00:00"
+        trackList.value = mutableListOf()
     }
 
     private fun Track.toMediaItem(): MediaItem =

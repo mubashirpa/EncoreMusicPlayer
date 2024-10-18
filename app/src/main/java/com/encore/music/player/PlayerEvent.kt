@@ -26,4 +26,6 @@ sealed class PlayerEvent {
     data object SeekToPrevious : PlayerEvent()
 
     data object SelectedAudioChange : PlayerEvent()
+
+    data object Stop : PlayerEvent()
 }

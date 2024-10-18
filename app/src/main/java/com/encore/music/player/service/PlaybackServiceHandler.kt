@@ -90,6 +90,10 @@ class PlaybackServiceHandler(
                     pause()
                 }
 
+                exoPlayer.playbackState == Player.STATE_IDLE -> {
+                    prepare()
+                }
+
                 exoPlayer.playbackState == Player.STATE_ENDED -> {
                     seekToDefaultPosition(0)
                 }
@@ -210,6 +214,11 @@ class PlaybackServiceHandler(
                     exoPlayer.seekToDefaultPosition(selectedAudioIndex)
                     exoPlayer.playWhenReady = true
                 }
+            }
+
+            PlayerEvent.Stop -> {
+                exoPlayer.stop()
+                exoPlayer.clearMediaItems()
             }
 
             is PlayerEvent.UpdateProgress -> {
