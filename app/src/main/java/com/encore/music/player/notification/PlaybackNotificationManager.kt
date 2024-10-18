@@ -3,7 +3,9 @@ package com.encore.music.player.notification
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -13,6 +15,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
 import com.encore.music.R
+import com.encore.music.presentation.ui.activities.MainActivity
 
 private const val NOTIFICATION_ID = 101
 private const val NOTIFICATION_CHANNEL_NAME = "Playback"
@@ -56,7 +59,7 @@ class PlaybackNotificationManager(
             ).setMediaDescriptionAdapter(
                 PlaybackNotificationAdapter(
                     context = context,
-                    pendingIntent = mediaSession.sessionActivity,
+                    pendingIntent = getPendingIntent(),
                 ),
             ).setSmallIconResourceId(R.drawable.ic_launcher_foreground)
             .build()
@@ -78,5 +81,18 @@ class PlaybackNotificationManager(
                 NotificationManager.IMPORTANCE_LOW,
             )
         notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun getPendingIntent(): PendingIntent {
+        val intent =
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+        return PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
     }
 }
