@@ -28,6 +28,7 @@ kotlinxDatetime = "0.6.1"
 legacySupportV4 = "1.0.0"
 coreSplashscreen = "1.1.0-rc01"
 firebaseCrashlytics = "3.0.2"
+paging = "3.3.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -67,6 +68,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 
 [bundles]
 fragment = [

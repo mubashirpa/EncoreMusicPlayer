@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.palette)
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.paging.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 }
