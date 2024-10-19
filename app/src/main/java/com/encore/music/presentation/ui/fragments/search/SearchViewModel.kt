@@ -68,6 +68,10 @@ class SearchViewModel(
             is SearchUiEvent.OnSearch -> {
                 search(event.query, event.searchType, event.delay)
             }
+
+            SearchUiEvent.OnSearchOpened -> {
+                _searchState.value = SearchUiState.Empty(null)
+            }
         }
     }
 
@@ -111,8 +115,7 @@ class SearchViewModel(
         searchItemUseCaseJob?.cancel()
         searchItemUseCaseJob = null
         if (query.isBlank()) {
-            _searchState.value =
-                SearchUiState.Empty(null)
+            _searchState.value = SearchUiState.Empty(null)
             return
         }
         searchItemUseCaseJob =

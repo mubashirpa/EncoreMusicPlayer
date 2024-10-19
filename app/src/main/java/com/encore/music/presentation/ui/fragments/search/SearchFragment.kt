@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -28,6 +29,7 @@ import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.SpanCount
+import com.google.android.material.search.SearchView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -141,20 +143,21 @@ class SearchFragment : Fragment() {
                 is SearchUiState.Empty -> {
                     binding.searchProgressCircular.visibility = View.GONE
                     binding.searchRecyclerView.visibility = View.GONE
-                    uiState.message?.let { message ->
-                        binding.searchErrorView.apply {
-                            root.visibility = View.VISIBLE
-                            errorText.text = message.asString(requireContext())
-                        }
+
+                    binding.searchErrorView.apply {
+                        root.isVisible = uiState.message != null
+                        uiState.message?.let { errorText.text = it.asString(requireContext()) }
                     }
                 }
 
                 is SearchUiState.Error -> {
                     binding.searchProgressCircular.visibility = View.GONE
+
                     binding.searchErrorView.apply {
                         root.visibility = View.VISIBLE
                         errorText.text = uiState.message.asString(requireContext())
                         retryButton.visibility = View.VISIBLE
+
                         retryButton.setOnClickListener {
                             viewModel.onEvent(
                                 SearchUiEvent.OnSearch(
@@ -195,6 +198,7 @@ class SearchFragment : Fragment() {
                             if (itemDecorationCount >= 1) removeItemDecorationAt(0)
                         }
                     }
+
                     binding.searchProgressCircular.visibility = View.GONE
                     binding.searchRecyclerView.visibility = View.VISIBLE
                 }
@@ -218,6 +222,12 @@ class SearchFragment : Fragment() {
                     viewModel.searchType,
                 ),
             )
+        }
+
+        binding.searchView.addTransitionListener { _, _, newState ->
+            if (newState == SearchView.TransitionState.SHOWING) {
+                viewModel.onEvent(SearchUiEvent.OnSearchOpened)
+            }
         }
 
         binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
