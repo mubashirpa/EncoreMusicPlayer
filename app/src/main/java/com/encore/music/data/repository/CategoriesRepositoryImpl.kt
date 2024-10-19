@@ -1,10 +1,10 @@
 package com.encore.music.data.repository
 
 import com.encore.music.core.Encore
+import com.encore.music.core.utils.toResult
 import com.encore.music.data.remote.dto.categories.CategoriesDto
 import com.encore.music.domain.repository.CategoriesRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -28,5 +28,5 @@ class CategoriesRepositoryImpl(
                     parameters.append(Encore.Parameters.OFFSET, offset.toString())
                 }
                 header(HttpHeaders.Authorization, accessToken)
-            }.body()
+            }.toResult()
 }

@@ -114,6 +114,7 @@
     <!-- Errors -->
     <string name="error_unexpected">An unexpected error occurred.</string>
     <string name="error_unknown">Something wrong happened. Please try again.</string>
+    <string name="error_connect">A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
 
     <!-- Authentication errors -->
     <string name="auth_network_exception">An unknown network error has occurred.</string>

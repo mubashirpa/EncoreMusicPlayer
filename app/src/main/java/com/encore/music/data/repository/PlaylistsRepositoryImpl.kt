@@ -1,12 +1,12 @@
 package com.encore.music.data.repository
 
 import com.encore.music.core.Encore
+import com.encore.music.core.utils.toResult
 import com.encore.music.data.remote.dto.home.HomePlaylistDto
 import com.encore.music.data.remote.dto.playlists.Playlist
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
 import com.encore.music.domain.repository.PlaylistsRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -36,7 +36,7 @@ class PlaylistsRepositoryImpl(
                     }
                 }
                 header(HttpHeaders.Authorization, accessToken)
-            }.body()
+            }.toResult()
 
     override suspend fun getCategoryPlaylists(
         accessToken: String,
@@ -57,7 +57,7 @@ class PlaylistsRepositoryImpl(
                     parameters.append(Encore.Parameters.OFFSET, offset.toString())
                 }
                 header(HttpHeaders.Authorization, accessToken)
-            }.body()
+            }.toResult()
 
     override suspend fun getHomePlaylists(
         accessToken: String,
@@ -74,5 +74,5 @@ class PlaylistsRepositoryImpl(
                     parameters.append(Encore.Parameters.OFFSET, offset.toString())
                 }
                 header(HttpHeaders.Authorization, accessToken)
-            }.body()
+            }.toResult()
 }

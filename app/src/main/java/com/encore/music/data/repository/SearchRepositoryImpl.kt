@@ -1,11 +1,11 @@
 package com.encore.music.data.repository
 
 import com.encore.music.core.Encore
+import com.encore.music.core.utils.toResult
 import com.encore.music.data.remote.dto.search.SearchDto
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.SearchRepository
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
@@ -37,5 +37,5 @@ class SearchRepositoryImpl(
                     }
                 }
                 header(HttpHeaders.Authorization, accessToken)
-            }.body()
+            }.toResult()
 }

@@ -1,14 +1,17 @@
 package com.encore.music.domain.usecase.search
 
+import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.core.mapper.toSearchDomainModel
+import com.encore.music.core.utils.NetworkException
 import com.encore.music.domain.model.search.Search
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.net.ConnectException
 
 class SearchForItemUseCase(
     private val authenticationRepository: AuthenticationRepository,
@@ -38,8 +41,12 @@ class SearchForItemUseCase(
                             includeExternal = includeExternal,
                         ).toSearchDomainModel()
                 emit(Result.Success(search))
-            } catch (e: Exception) {
+            } catch (e: ConnectException) {
+                emit(Result.Error(UiText.StringResource(R.string.error_connect)))
+            } catch (e: NetworkException) {
                 emit(Result.Error(UiText.DynamicString(e.message.toString())))
+            } catch (e: Exception) {
+                emit(Result.Error(UiText.StringResource(R.string.error_unknown)))
             }
         }
 }
