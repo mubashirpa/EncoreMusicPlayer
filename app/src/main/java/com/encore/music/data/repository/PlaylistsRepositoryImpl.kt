@@ -1,16 +1,22 @@
 package com.encore.music.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.encore.music.core.Encore
 import com.encore.music.core.utils.toResult
 import com.encore.music.data.remote.dto.home.HomePlaylistDto
 import com.encore.music.data.remote.dto.playlists.Playlist
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
+import com.encore.music.data.remote.dto.tracks.Track
+import com.encore.music.data.remote.paging.TracksPagingSource
 import com.encore.music.domain.repository.PlaylistsRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.http.appendPathSegments
+import kotlinx.coroutines.flow.Flow
 
 class PlaylistsRepositoryImpl(
     private val httpClient: HttpClient,
@@ -75,4 +81,28 @@ class PlaylistsRepositoryImpl(
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.toResult()
+
+    override fun getPlaylistTracks(
+        accessToken: String,
+        playlistId: String,
+        market: String?,
+        fields: String?,
+        limit: Int,
+        offset: Int,
+        additionalTypes: String?,
+    ): Flow<PagingData<Track>> =
+        Pager(
+            config = PagingConfig(pageSize = limit, initialLoadSize = limit),
+            pagingSourceFactory = {
+                TracksPagingSource(
+                    httpClient = httpClient,
+                    accessToken = accessToken,
+                    playlistId = playlistId,
+                    market = market,
+                    fields = fields,
+                    offset = offset,
+                    additionalTypes = additionalTypes,
+                )
+            },
+        ).flow
 }
