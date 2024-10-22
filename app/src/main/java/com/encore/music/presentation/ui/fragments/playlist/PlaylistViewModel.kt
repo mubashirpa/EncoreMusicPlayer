@@ -6,14 +6,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.domain.model.playlists.Playlist
-import com.encore.music.domain.model.tracks.Track
-import com.encore.music.domain.usecase.playlists.GetPlaylistTracksUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.CreatePlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.DeletePlaylistUseCase
@@ -25,7 +21,6 @@ import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
 import com.encore.music.presentation.navigation.Screen
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -35,7 +30,6 @@ class PlaylistViewModel(
     private val createPlaylistUseCase: CreatePlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
     private val deleteTrackFromPlaylistUseCase: DeleteTrackFromPlaylistUseCase,
-    private val getPlaylistTracksUseCase: GetPlaylistTracksUseCase,
     private val getPlaylistUseCase: GetPlaylistUseCase,
     private val getSavedLocalPlaylistsUseCase: GetSavedLocalPlaylistsUseCase,
     private val getSavedPlaylistUseCase: GetSavedPlaylistUseCase,
@@ -58,15 +52,11 @@ class PlaylistViewModel(
     private val _savedPlaylists = MutableLiveData<List<Playlist>>()
     val savedPlaylists: LiveData<List<Playlist>> = _savedPlaylists
 
-    private val _playlistTracks = MutableLiveData<PagingData<Track>>()
-    val playlistTracks: LiveData<PagingData<Track>> = _playlistTracks
-
     init {
         if (isLocal) {
             getPlaylistWithTracksAndArtists(playlistId)
         } else {
             getPlaylist(playlistId)
-            // getPlaylistTracks(playlistId) Currently up to 100 tracks are fetched along with playlist
             getSavedPlaylist(playlistId)
         }
         getSavedLocalPlaylists()
@@ -196,16 +186,6 @@ class PlaylistViewModel(
             getSavedLocalPlaylistsUseCase().collect {
                 _savedPlaylists.value = it
             }
-        }
-    }
-
-    private fun getPlaylistTracks(playlistId: String) {
-        viewModelScope.launch {
-            getPlaylistTracksUseCase(playlistId, limit = 20, offset = 21)
-                .cachedIn(this)
-                .collectLatest {
-                    _playlistTracks.value = it
-                }
         }
     }
 }

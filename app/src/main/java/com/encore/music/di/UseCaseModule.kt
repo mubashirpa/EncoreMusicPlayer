@@ -15,7 +15,6 @@ import com.encore.music.domain.usecase.categories.GetCategoriesUseCase
 import com.encore.music.domain.usecase.datastore.GetLoginPreferencesUseCase
 import com.encore.music.domain.usecase.playlists.GetCategoryPlaylistsUseCase
 import com.encore.music.domain.usecase.playlists.GetHomePlaylistsUseCase
-import com.encore.music.domain.usecase.playlists.GetPlaylistTracksUseCase
 import com.encore.music.domain.usecase.playlists.GetPlaylistUseCase
 import com.encore.music.domain.usecase.search.SearchForItemPagingUseCase
 import com.encore.music.domain.usecase.search.SearchForItemUseCase
@@ -53,7 +52,6 @@ val useCaseModule =
         singleOf(::GetFollowedArtistsUseCase)
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
-        singleOf(::GetPlaylistTracksUseCase)
         singleOf(::GetPlaylistUseCase)
         singleOf(::GetRecentTracksUseCase)
         singleOf(::GetSavedLocalPlaylistsUseCase)

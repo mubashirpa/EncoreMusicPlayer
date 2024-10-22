@@ -16,18 +16,16 @@ object PreferencesKeys {
 }
 
 object Encore {
-    const val API_BASE_URL = "http://192.168.220.33:8080/v1"
+    const val API_BASE_URL = "http://192.168.220.34:8080/v1"
     const val ENDPOINT_GET_ARTIST_TOP_TRACKS = "artists/{artist_id}/top-tracks"
     const val ENDPOINT_GET_CATEGORIES = "categories"
     const val ENDPOINT_GET_CATEGORY_PLAYLISTS = "categories/{category_id}/playlists"
     const val ENDPOINT_GET_HOME_PLAYLISTS = "home-playlists"
     const val ENDPOINT_GET_PLAYLIST = "playlists/{playlist_id}"
-    const val ENDPOINT_GET_PLAYLIST_TRACKS = "playlists/{playlist_id}/tracks"
     const val ENDPOINT_GET_SEARCH = "search"
 
     object Parameters {
         const val ADDITIONAL_TYPES = "additional_types"
-        const val FIELDS = "fields"
         const val INCLUDE_EXTERNAL = "include_external"
         const val LIMIT = "limit"
         const val LOCALE = "locale"

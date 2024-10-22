@@ -13,4 +13,6 @@ sealed class PlaylistListItem(
     data class TracksItem(
         val track: Track,
     ) : PlaylistListItem(track.id.orEmpty())
+
+    data object EmptyTracksItem : PlaylistListItem("empty")
 }

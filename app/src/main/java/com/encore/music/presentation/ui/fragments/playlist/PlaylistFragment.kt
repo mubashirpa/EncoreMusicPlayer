@@ -11,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ConcatAdapter
 import com.encore.music.R
 import com.encore.music.databinding.FragmentPlaylistBinding
 import com.encore.music.domain.model.playlists.Playlist
@@ -55,9 +54,7 @@ class PlaylistFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = initRecyclerView()
-        val playlistAdapter = adapter.adapters[0] as PlaylistAdapter
-        val playlistTracksAdapter = adapter.adapters[1] as PlaylistTracksAdapter
+        val playlistAdapter = initRecyclerView()
 
         if (viewModel.isLocal) {
             binding.topAppBar.menu.setGroupVisible(R.id.local_playlist, true)
@@ -85,11 +82,14 @@ class PlaylistFragment : Fragment() {
                         buildList {
                             add(PlaylistListItem.HeaderItem(uiState.playlist))
                             uiState.playlist.tracks?.let { tracks ->
-                                addAll(tracks.map { PlaylistListItem.TracksItem(it) })
+                                if (tracks.isEmpty()) {
+                                    add(PlaylistListItem.EmptyTracksItem)
+                                } else {
+                                    addAll(tracks.map { PlaylistListItem.TracksItem(it) })
+                                }
                             }
-                        }.toMutableList()
+                        }
                     playlistAdapter.items = items
-                    playlistAdapter.notifyItemRangeInserted(0, items.size)
                 }
 
                 PlaylistUiState.Loading -> {
@@ -110,12 +110,6 @@ class PlaylistFragment : Fragment() {
                     .findItem(R.id.save_playlist)
                     .setIcon(R.drawable.baseline_favorite_border_24)
                     .isVisible = true
-            }
-        }
-
-        viewModel.playlistTracks.observe(viewLifecycleOwner) { tracks ->
-            viewLifecycleOwner.lifecycleScope.launch {
-                playlistTracksAdapter.submitData(tracks)
             }
         }
 
@@ -175,8 +169,7 @@ class PlaylistFragment : Fragment() {
         _binding = null
     }
 
-    private fun initRecyclerView(): ConcatAdapter {
-        // TODO: Add pagination loading and empty item if tracks are empty
+    private fun initRecyclerView(): PlaylistAdapter {
         val playlistAdapter =
             PlaylistAdapter(
                 context = requireContext(),
@@ -193,17 +186,6 @@ class PlaylistFragment : Fragment() {
                     showTrackMenuBottomSheet(track)
                 },
             )
-        val playlistTracksAdapter =
-            PlaylistTracksAdapter(
-                onTrackClicked = { track ->
-                    playTrack(track)
-                },
-                onTrackMoreClicked = { track ->
-                    showTrackMenuBottomSheet(track)
-                },
-            )
-        val concatAdapter = ConcatAdapter(playlistAdapter, playlistTracksAdapter)
-
         binding.recyclerView.apply {
             ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
                 val insets =
@@ -225,9 +207,9 @@ class PlaylistFragment : Fragment() {
                 }
                 WindowInsetsCompat.CONSUMED
             }
-            adapter = concatAdapter
+            adapter = playlistAdapter
         }
-        return concatAdapter
+        return playlistAdapter
     }
 
     private fun showTrackMenuBottomSheet(track: Track) {
