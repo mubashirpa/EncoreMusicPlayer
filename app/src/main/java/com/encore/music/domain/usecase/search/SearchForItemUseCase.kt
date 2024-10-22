@@ -4,7 +4,7 @@ import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.core.mapper.toSearchDomainModel
-import com.encore.music.core.utils.NetworkException
+import com.encore.music.core.utils.KtorException
 import com.encore.music.domain.model.search.Search
 import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.AuthenticationRepository
@@ -43,8 +43,8 @@ class SearchForItemUseCase(
                 emit(Result.Success(search))
             } catch (e: ConnectException) {
                 emit(Result.Error(UiText.StringResource(R.string.error_connect)))
-            } catch (e: NetworkException) {
-                emit(Result.Error(UiText.DynamicString(e.message.toString())))
+            } catch (e: KtorException) {
+                emit(Result.Error(e.localizedMessage))
             } catch (e: Exception) {
                 emit(Result.Error(UiText.StringResource(R.string.error_unknown)))
             }

@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.encore.music.R
 import com.encore.music.core.PagingSourceException
 import com.encore.music.core.UiText
-import com.encore.music.core.utils.NetworkException
+import com.encore.music.core.utils.KtorException
 import com.encore.music.data.remote.dto.search.SearchItem
 import com.encore.music.data.repository.AuthenticationRepositoryImpl
 import com.encore.music.data.repository.SearchRepositoryImpl
@@ -100,11 +100,11 @@ class SearchPagingSource(
                     localizedMessage = UiText.StringResource(R.string.error_connect),
                 ),
             )
-        } catch (e: NetworkException) {
+        } catch (e: KtorException) {
             LoadResult.Error(
                 PagingSourceException(
                     message = e.message,
-                    localizedMessage = UiText.DynamicString(e.message.toString()),
+                    localizedMessage = e.localizedMessage,
                 ),
             )
         } catch (e: Exception) {

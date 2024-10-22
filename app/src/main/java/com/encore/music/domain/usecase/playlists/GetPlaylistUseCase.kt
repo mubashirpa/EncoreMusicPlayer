@@ -4,7 +4,7 @@ import com.encore.music.R
 import com.encore.music.core.Result
 import com.encore.music.core.UiText
 import com.encore.music.core.mapper.toPlaylistDomainModel
-import com.encore.music.core.utils.NetworkException
+import com.encore.music.core.utils.KtorException
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.PlaylistsRepository
@@ -32,8 +32,8 @@ class GetPlaylistUseCase(
                 emit(Result.Success(playlists))
             } catch (e: ConnectException) {
                 emit(Result.Error(UiText.StringResource(R.string.error_connect)))
-            } catch (e: NetworkException) {
-                emit(Result.Error(UiText.DynamicString(e.message.toString())))
+            } catch (e: KtorException) {
+                emit(Result.Error(e.localizedMessage))
             } catch (e: Exception) {
                 emit(Result.Error(UiText.StringResource(R.string.error_unknown)))
             }

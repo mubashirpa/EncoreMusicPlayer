@@ -116,6 +116,12 @@
     <string name="error_unknown">Something wrong happened. Please try again.</string>
     <string name="error_connect">A network error (such as timeout, interrupted connection or unreachable host) has occurred.</string>
 
+    <!-- Ktor errors -->
+    <string name="error_ktor_bad_request">Check your credentials and try again!</string>
+    <string name="error_ktor_unauthorized">Authorization Failed! Try Logging In again.</string>
+    <string name="error_ktor_server_error">Server Disruption! We are on fixing it.</string>
+    <string name="error_ktor_gateway_timeout">Too much load at this time, try again later!</string>
+
     <!-- Authentication errors -->
     <string name="auth_network_exception">An unknown network error has occurred.</string>
     <string name="auth_unknown_exception">An unknown error has occurred.</string>

@@ -1,18 +1,40 @@
 package com.encore.music.core.utils
 
+import com.encore.music.R
+import com.encore.music.core.UiText
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 
 suspend inline fun <reified T : Any> HttpResponse.toResult(): T =
     when (status.value) {
         200 -> body<T>()
-        400 -> throw NetworkException("Check your credentials and try again!")
-        401 -> throw NetworkException("Authorization Failed! Try Logging In again.")
-        500, 503 -> throw NetworkException("Server Disruption! We are on fixing it.")
-        504 -> throw NetworkException("Too much load at this time, try again later!")
-        else -> throw NetworkException("Something went wrong! Please try again or contact support.")
+        400 -> throw KtorException(
+            status.description,
+            UiText.StringResource(R.string.error_ktor_bad_request),
+        )
+
+        401 -> throw KtorException(
+            status.description,
+            UiText.StringResource(R.string.error_ktor_unauthorized),
+        )
+
+        500, 503 -> throw KtorException(
+            status.description,
+            UiText.StringResource(R.string.error_ktor_server_error),
+        )
+
+        504 -> throw KtorException(
+            status.description,
+            UiText.StringResource(R.string.error_ktor_gateway_timeout),
+        )
+
+        else -> throw KtorException(
+            status.description,
+            UiText.StringResource(R.string.error_unknown),
+        )
     }
 
-class NetworkException(
-    message: String,
+class KtorException(
+    message: String?,
+    val localizedMessage: UiText,
 ) : Exception(message)
