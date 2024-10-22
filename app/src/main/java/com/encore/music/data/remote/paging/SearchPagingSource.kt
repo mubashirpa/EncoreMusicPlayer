@@ -2,6 +2,10 @@ package com.encore.music.data.remote.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.encore.music.R
+import com.encore.music.core.PagingSourceException
+import com.encore.music.core.UiText
+import com.encore.music.core.utils.NetworkException
 import com.encore.music.data.remote.dto.search.SearchItem
 import com.encore.music.data.repository.AuthenticationRepositoryImpl
 import com.encore.music.data.repository.SearchRepositoryImpl
@@ -9,6 +13,7 @@ import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.SearchRepository
 import org.koin.java.KoinJavaComponent.inject
+import java.net.ConnectException
 
 class SearchPagingSource(
     private val query: String,
@@ -88,7 +93,26 @@ class SearchPagingSource(
                 prevKey = prevKey,
                 nextKey = nextKey,
             )
+        } catch (e: ConnectException) {
+            LoadResult.Error(
+                PagingSourceException(
+                    message = e.message,
+                    localizedMessage = UiText.StringResource(R.string.error_connect),
+                ),
+            )
+        } catch (e: NetworkException) {
+            LoadResult.Error(
+                PagingSourceException(
+                    message = e.message,
+                    localizedMessage = UiText.DynamicString(e.message.toString()),
+                ),
+            )
         } catch (e: Exception) {
-            LoadResult.Error(e)
+            LoadResult.Error(
+                PagingSourceException(
+                    message = e.message,
+                    localizedMessage = UiText.StringResource(R.string.error_unknown),
+                ),
+            )
         }
 }

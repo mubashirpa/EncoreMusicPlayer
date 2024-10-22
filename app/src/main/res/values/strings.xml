@@ -81,6 +81,11 @@
     <string name="no_playlists_found">No playlists found</string>
     <string name="create_playlist">Create playlist</string>
     <string name="no_results_for_">No results for %1$s</string>
+    <string name="dialog_message_permission_notification">Enable notifications to receive updates on new songs, playlists, and special offers. Stay in sync with your favorite tunes, even when you\'re not in the app!</string>
+    <string name="dialog_title_notification_permission">Stay Tuned with Music Alerts!</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+    <string name="notification_permission_denied">Notification permission denied</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
@@ -101,12 +106,7 @@
     <string name="label_player_screen">Player</string>
     <string name="label_profile_screen">Profile</string>
     <string name="label_category_screen">Category</string>
-    <string name="failed_to_save_image">Failed to save image</string>
-    <string name="dialog_message_permission_notification">Enable notifications to receive updates on new songs, playlists, and special offers. Stay in sync with your favorite tunes, even when you\'re not in the app!</string>
-    <string name="dialog_title_notification_permission">Stay Tuned with Music Alerts!</string>
-    <string name="decline">Decline</string>
-    <string name="accept">Accept</string>
-    <string name="notification_permission_denied">Notification permission denied</string>
+    <string name="label_search_items_screen">Search Items</string>
 
     <!-- Success -->
     <string name="success_send_password_reset_email">We sent an email to %1$s with a link to get back into your account.</string>

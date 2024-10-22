@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
 import androidx.navigation.navigation
 import com.encore.music.R
+import com.encore.music.domain.model.search.SearchType
 import com.encore.music.presentation.ui.fragments.artist.ArtistFragment
 import com.encore.music.presentation.ui.fragments.category.CategoryFragment
 import com.encore.music.presentation.ui.fragments.home.HomeFragment
@@ -21,6 +22,7 @@ import com.encore.music.presentation.ui.fragments.playlist.PlaylistFragment
 import com.encore.music.presentation.ui.fragments.profile.ProfileFragment
 import com.encore.music.presentation.ui.fragments.resetPassword.ResetPasswordFragment
 import com.encore.music.presentation.ui.fragments.search.SearchFragment
+import com.encore.music.presentation.ui.fragments.searchItems.SearchItemsFragment
 import com.encore.music.presentation.ui.fragments.signIn.SignInFragment
 import com.encore.music.presentation.ui.fragments.signUp.SignUpFragment
 import com.google.android.material.navigation.NavigationBarView
@@ -74,6 +76,9 @@ fun AppCompatActivity.findNavController(
             }
             fragment<CategoryFragment, Screen.Category> {
                 label = getString(R.string.label_category_screen)
+            }
+            fragment<SearchItemsFragment, Screen.SearchItems> {
+                label = getString(R.string.label_search_items_screen)
             }
         }
 
@@ -210,4 +215,11 @@ fun NavController.navigateToCategory(
     title: String,
 ) {
     navigate(route = Screen.Category(id = categoryId, title = title))
+}
+
+fun NavController.navigateToSearchItems(
+    query: String,
+    type: SearchType,
+) {
+    navigate(route = Screen.SearchItems(query = query, type = type))
 }

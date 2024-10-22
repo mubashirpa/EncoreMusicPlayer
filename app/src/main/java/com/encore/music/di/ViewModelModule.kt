@@ -9,6 +9,7 @@ import com.encore.music.presentation.ui.fragments.playlist.PlaylistViewModel
 import com.encore.music.presentation.ui.fragments.profile.ProfileViewModel
 import com.encore.music.presentation.ui.fragments.resetPassword.ResetPasswordViewModel
 import com.encore.music.presentation.ui.fragments.search.SearchViewModel
+import com.encore.music.presentation.ui.fragments.searchItems.SearchItemsViewModel
 import com.encore.music.presentation.ui.fragments.signIn.SignInViewModel
 import com.encore.music.presentation.ui.fragments.signUp.SignUpViewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -24,6 +25,7 @@ val viewModelModule =
         viewModelOf(::PlaylistViewModel)
         viewModelOf(::ProfileViewModel)
         viewModelOf(::ResetPasswordViewModel)
+        viewModelOf(::SearchItemsViewModel)
         viewModelOf(::SearchViewModel)
         viewModelOf(::SignInViewModel)
         viewModelOf(::SignUpViewModel)

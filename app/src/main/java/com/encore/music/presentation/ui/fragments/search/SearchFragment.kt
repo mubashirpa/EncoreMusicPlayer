@@ -20,6 +20,7 @@ import com.encore.music.presentation.navigation.navigateToCategory
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.navigation.navigateToProfile
+import com.encore.music.presentation.navigation.navigateToSearchItems
 import com.encore.music.presentation.ui.activities.MainUiEvent
 import com.encore.music.presentation.ui.activities.MainViewModel
 import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
@@ -239,6 +240,17 @@ class SearchFragment : Fragment() {
                 ),
             )
         }
+
+        binding.searchView
+            .editText
+            .setOnEditorActionListener { _, _, _ ->
+                binding.searchView.setVisible(false)
+                navController.navigateToSearchItems(
+                    binding.searchView.text.toString(),
+                    viewModel.searchType,
+                )
+                false
+            }
     }
 
     override fun onDestroyView() {
