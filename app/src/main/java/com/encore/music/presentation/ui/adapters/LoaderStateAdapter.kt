@@ -8,21 +8,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.encore.music.databinding.LayoutPagingLoaderBinding
 
 class LoaderStateAdapter(
-    private val onRetry: () -> Unit = {},
+    private val onRetry: (() -> Unit)? = null,
 ) : LoadStateAdapter<LoaderStateAdapter.LoaderViewHolder>() {
     inner class LoaderViewHolder(
         private val binding: LayoutPagingLoaderBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(loadState: LoadState) {
             binding.apply {
-                if (loadState is LoadState.Loading) {
-                    motionLayout.transitionToEnd()
-                } else {
-                    motionLayout.transitionToStart()
+                when (loadState) {
+                    is LoadState.Loading -> motionLayout.transitionToEnd()
+                    else -> motionLayout.transitionToStart()
                 }
 
                 retryButton.setOnClickListener {
-                    onRetry()
+                    onRetry?.invoke()
                 }
             }
         }

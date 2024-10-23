@@ -80,64 +80,73 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
             when (uiState) {
                 is HomeUiState.Error -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.errorView.apply {
-                        root.visibility = View.VISIBLE
-                        errorText.text = uiState.message.asString(requireContext())
-                        retryButton.visibility = View.VISIBLE
-                        retryButton.setOnClickListener {
-                            viewModel.retry()
+                    binding.apply {
+                        progressCircular.visibility = View.GONE
+                        errorView.apply {
+                            root.visibility = View.VISIBLE
+                            errorText.text = uiState.message.asString(requireContext())
+                            retryButton.apply {
+                                visibility = View.VISIBLE
+                                setOnClickListener { viewModel.retry() }
+                            }
                         }
                     }
                 }
 
                 is HomeUiState.Success -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.apply {
+                        progressCircular.visibility = View.GONE
+                        recyclerView.visibility = View.VISIBLE
 
-                    homeAdapter.items.addAll(
-                        uiState.playlists
-                            .map {
+                        val newItems =
+                            uiState.playlists.map {
                                 HomeListItem.PlaylistsItem(
                                     title = it.title,
                                     playlists = it.playlists,
                                 )
-                            }.toMutableList(),
-                    )
+                            }
 
-                    binding.recyclerView.apply {
-                        addItemDecoration(
-                            VerticalItemDecoration(
-                                contentPadding =
-                                    PaddingValues(
-                                        start = 0,
-                                        top = 12,
-                                        end = 0,
-                                        bottom = 12,
-                                    ),
-                                verticalSpacing = 16,
-                            ),
-                        )
-
-                        adapter = homeAdapter
+                        homeAdapter.items.addAll(newItems)
+                        recyclerView.apply {
+                            addItemDecoration(
+                                VerticalItemDecoration(
+                                    contentPadding =
+                                        PaddingValues(
+                                            start = 0,
+                                            top = 12,
+                                            end = 0,
+                                            bottom = 12,
+                                        ),
+                                    verticalSpacing = 16,
+                                ),
+                            )
+                            adapter = homeAdapter
+                        }
                     }
                 }
 
                 HomeUiState.Loading -> {
-                    binding.errorView.root.visibility = View.GONE
-                    binding.progressCircular.visibility = View.VISIBLE
+                    binding.apply {
+                        errorView.root.visibility = View.GONE
+                        progressCircular.visibility = View.VISIBLE
+                    }
                 }
             }
         }
 
         viewModel.topTracks.observe(viewLifecycleOwner) { tracks ->
             if (tracks.isNotEmpty()) {
-                if (homeAdapter.items.firstOrNull() is HomeListItem.TopTracksItem) {
-                    homeAdapter.items[0] = HomeListItem.TopTracksItem(tracks.take(6))
-                    homeAdapter.notifyItemChanged(0)
-                } else {
-                    homeAdapter.items.add(0, HomeListItem.TopTracksItem(tracks.take(6)))
-                    homeAdapter.notifyItemInserted(0)
+                val newItem = HomeListItem.TopTracksItem(tracks.take(6))
+                when (homeAdapter.items.firstOrNull()) {
+                    is HomeListItem.TopTracksItem -> {
+                        homeAdapter.items[0] = newItem
+                        homeAdapter.notifyItemChanged(0)
+                    }
+
+                    else -> {
+                        homeAdapter.items.add(0, newItem)
+                        homeAdapter.notifyItemInserted(0)
+                    }
                 }
             }
         }

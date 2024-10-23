@@ -13,6 +13,7 @@ import com.encore.music.R
 import com.encore.music.databinding.FragmentProfileBinding
 import com.encore.music.presentation.navigation.navigateToOnboarding
 import com.encore.music.presentation.navigation.navigateToPlaylist
+import com.encore.music.presentation.ui.adapters.PlaylistsAdapter
 import com.encore.music.presentation.utils.HorizontalItemDecoration
 import com.encore.music.presentation.utils.ImageUtils
 import com.encore.music.presentation.utils.PaddingValues
@@ -82,7 +83,7 @@ class ProfileFragment : Fragment() {
         viewModel.createdPlaylists.observe(viewLifecycleOwner) { playlists ->
             if (playlists.isNotEmpty()) {
                 binding.errorView.root.visibility = View.GONE
-                playlistAdapter.items = playlists
+                playlistAdapter.submitList(playlists)
                 binding.recyclerView.visibility = View.VISIBLE
             } else {
                 binding.recyclerView.visibility = View.GONE

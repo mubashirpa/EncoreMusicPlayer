@@ -10,6 +10,7 @@ import com.encore.music.databinding.LayoutHomePlaylistsBinding
 import com.encore.music.databinding.LayoutHomeTopTracksBinding
 import com.encore.music.domain.model.playlists.Playlist
 import com.encore.music.domain.model.tracks.Track
+import com.encore.music.presentation.ui.adapters.PlaylistsAdapter
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.HorizontalItemDecoration
 import com.encore.music.presentation.utils.PaddingValues
@@ -17,15 +18,16 @@ import com.encore.music.presentation.utils.PaddingValues
 class HomeAdapter(
     private val context: Context,
     var items: MutableList<HomeListItem>,
-    private val onTrackClicked: (Track) -> Unit,
-    private val onPlaylistClicked: (Playlist) -> Unit,
+    private val onTrackClicked: ((Track) -> Unit)? = null,
+    private val onPlaylistClicked: ((Playlist) -> Unit)? = null,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     inner class TopTracksViewHolder(
         private val binding: LayoutHomeTopTracksBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.TopTracksItem) {
             val topTracksAdapter = TopTracksAdapter(onTrackClicked)
-            topTracksAdapter.items = item.tracks
+            topTracksAdapter.submitList(item.tracks)
+
             binding.recyclerView.apply {
                 if (itemDecorationCount == 0) {
                     addItemDecoration(AdaptiveSpacingItemDecoration(10.dpToPx(context), false))
@@ -40,8 +42,9 @@ class HomeAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HomeListItem.PlaylistsItem) {
             val playlistsAdapter = PlaylistsAdapter(onPlaylistClicked)
-            playlistsAdapter.items = item.playlists
-            binding.run {
+            playlistsAdapter.submitList(item.playlists)
+
+            binding.apply {
                 title.text = item.title
                 recyclerView.apply {
                     if (itemDecorationCount == 0) {
@@ -92,7 +95,7 @@ class HomeAdapter(
             else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
-    override fun getItemCount(): Int = items.count()
+    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,

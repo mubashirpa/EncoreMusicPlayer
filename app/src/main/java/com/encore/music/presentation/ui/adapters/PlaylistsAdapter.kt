@@ -1,10 +1,10 @@
-package com.encore.music.presentation.ui.fragments.profile
+package com.encore.music.presentation.ui.adapters
 
 import android.view.LayoutInflater
-import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -12,16 +12,29 @@ import com.encore.music.databinding.ListItemPlaylistsBinding
 import com.encore.music.domain.model.playlists.Playlist
 
 class PlaylistsAdapter(
-    private val onPlaylistClicked: (Playlist) -> Unit,
-) : RecyclerView.Adapter<PlaylistsAdapter.ViewHolder>() {
-    private val differ: AsyncListDiffer<Playlist> = AsyncListDiffer(this, DIFF_CALLBACK)
-    var items: List<Playlist>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
+    private val onPlaylistClicked: ((Playlist) -> Unit)? = null,
+) : ListAdapter<Playlist, PlaylistsAdapter.ViewHolder>(DIFF_CALLBACK) {
+    inner class ViewHolder(
+        private val binding: ListItemPlaylistsBinding,
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Playlist) {
+            binding.apply {
+                media.load(item.image) {
+                    crossfade(true)
+                    placeholder(R.drawable.bg_placeholder)
+                }
+                title.apply {
+                    maxLines = 2
+                    text = item.name
+                }
+                subtitle.visibility = GONE
 
-    class ViewHolder(
-        val binding: ListItemPlaylistsBinding,
-    ) : RecyclerView.ViewHolder(binding.root)
+                root.setOnClickListener {
+                    onPlaylistClicked?.invoke(item)
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -32,24 +45,11 @@ class PlaylistsAdapter(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = items.count()
-
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.binding.run {
-            media.load(items[position].image) {
-                crossfade(true)
-                placeholder(R.drawable.bg_placeholder)
-            }
-            title.text = items[position].name
-            subtitle.visibility = View.GONE
-
-            root.setOnClickListener {
-                onPlaylistClicked(items[position])
-            }
-        }
+        holder.bind(getItem(position))
     }
 
     companion object {
