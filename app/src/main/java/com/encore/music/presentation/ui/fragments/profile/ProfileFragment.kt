@@ -81,15 +81,17 @@ class ProfileFragment : Fragment() {
         }
 
         viewModel.createdPlaylists.observe(viewLifecycleOwner) { playlists ->
-            if (playlists.isNotEmpty()) {
-                binding.errorView.root.visibility = View.GONE
-                playlistAdapter.submitList(playlists)
-                binding.recyclerView.visibility = View.VISIBLE
-            } else {
-                binding.recyclerView.visibility = View.GONE
-                binding.errorView.apply {
-                    errorText.text = getString(R.string.no_playlists_found)
-                    root.visibility = View.VISIBLE
+            binding.apply {
+                if (playlists.isNotEmpty()) {
+                    errorView.root.visibility = View.GONE
+                    playlistAdapter.submitList(playlists)
+                    recyclerView.visibility = View.VISIBLE
+                } else {
+                    recyclerView.visibility = View.GONE
+                    errorView.apply {
+                        errorText.text = getString(R.string.no_playlists_found)
+                        root.visibility = View.VISIBLE
+                    }
                 }
             }
         }
