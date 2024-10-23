@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -42,16 +41,13 @@ class ResetPasswordFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val emailObserver =
-            Observer<String> { email ->
-                if (binding.emailField.editText
-                        ?.text
-                        .toString() != email
-                ) {
-                    binding.emailField.editText?.setText(email)
-                }
+        val emailField = binding.emailField.editText
+
+        viewModel.email.observe(viewLifecycleOwner) { email ->
+            if (emailField?.text.toString() != email) {
+                emailField?.setText(email)
             }
-        viewModel.email.observe(viewLifecycleOwner, emailObserver)
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -79,9 +75,7 @@ class ResetPasswordFragment : Fragment() {
                             if (progressDialog.isAdded) progressDialog.dismiss()
                             navController.setNavigationResult(
                                 Navigation.Args.RESET_PASSWORD_EMAIL,
-                                binding.emailField.editText
-                                    ?.text
-                                    .toString(),
+                                emailField?.text.toString(),
                             )
                             navController.navigateUp()
                         }
@@ -90,18 +84,12 @@ class ResetPasswordFragment : Fragment() {
             }
         }
 
-        binding.emailField.editText?.doOnTextChanged { text, _, _, _ ->
+        emailField?.doOnTextChanged { text, _, _, _ ->
             viewModel.onEvent(ResetPasswordUiEvent.OnEmailValueChange(text.toString()))
         }
 
         binding.resetPasswordButton.setOnClickListener {
-            viewModel.onEvent(
-                ResetPasswordUiEvent.ResetPassword(
-                    binding.emailField.editText
-                        ?.text
-                        .toString(),
-                ),
-            )
+            viewModel.onEvent(ResetPasswordUiEvent.ResetPassword(emailField?.text.toString()))
         }
     }
 

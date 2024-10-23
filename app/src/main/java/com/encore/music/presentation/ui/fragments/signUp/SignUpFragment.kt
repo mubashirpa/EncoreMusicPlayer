@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -45,37 +44,27 @@ class SignUpFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        val nameObserver =
-            Observer<String> { email ->
-                if (binding.nameField.editText
-                        ?.text
-                        .toString() != email
-                ) {
-                    binding.nameField.editText?.setText(email)
-                }
-            }
-        val emailObserver =
-            Observer<String> { email ->
-                if (binding.emailField.editText
-                        ?.text
-                        .toString() != email
-                ) {
-                    binding.emailField.editText?.setText(email)
-                }
-            }
-        val passwordObserver =
-            Observer<String> { password ->
-                if (binding.passwordField.editText
-                        ?.text
-                        .toString() != password
-                ) {
-                    binding.passwordField.editText?.setText(password)
-                }
-            }
+        val nameField = binding.nameField.editText
+        val emailField = binding.emailField.editText
+        val passwordField = binding.passwordField.editText
 
-        viewModel.name.observe(viewLifecycleOwner, nameObserver)
-        viewModel.email.observe(viewLifecycleOwner, emailObserver)
-        viewModel.password.observe(viewLifecycleOwner, passwordObserver)
+        viewModel.name.observe(viewLifecycleOwner) { name ->
+            if (nameField?.text.toString() != name) {
+                nameField?.setText(name)
+            }
+        }
+
+        viewModel.email.observe(viewLifecycleOwner) { email ->
+            if (emailField?.text.toString() != email) {
+                emailField?.setText(email)
+            }
+        }
+
+        viewModel.password.observe(viewLifecycleOwner) { password ->
+            if (passwordField?.text.toString() != password) {
+                passwordField?.setText(password)
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -117,33 +106,24 @@ class SignUpFragment : Fragment() {
             }
         }
 
-        binding.nameField.editText?.doOnTextChanged { text, _, _, _ ->
+        nameField?.doOnTextChanged { text, _, _, _ ->
             viewModel.onEvent(SignUpUiEvent.OnNameValueChange(text.toString()))
         }
 
-        binding.emailField.editText?.doOnTextChanged { text, _, _, _ ->
+        emailField?.doOnTextChanged { text, _, _, _ ->
             viewModel.onEvent(SignUpUiEvent.OnEmailValueChange(text.toString()))
         }
 
-        binding.passwordField.editText?.doOnTextChanged { text, _, _, _ ->
+        passwordField?.doOnTextChanged { text, _, _, _ ->
             viewModel.onEvent(SignUpUiEvent.OnPasswordValueChange(text.toString()))
         }
 
         binding.signUpButton.setOnClickListener {
             viewModel.onEvent(
                 SignUpUiEvent.SignUp(
-                    name =
-                        binding.nameField.editText!!
-                            .text
-                            .toString(),
-                    email =
-                        binding.emailField.editText!!
-                            .text
-                            .toString(),
-                    password =
-                        binding.passwordField.editText!!
-                            .text
-                            .toString(),
+                    name = nameField?.text.toString(),
+                    email = emailField?.text.toString(),
+                    password = passwordField?.text.toString(),
                 ),
             )
         }

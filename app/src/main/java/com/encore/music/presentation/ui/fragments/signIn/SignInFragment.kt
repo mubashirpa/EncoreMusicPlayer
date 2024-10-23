@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -48,6 +47,10 @@ class SignInFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        val emailField = binding.emailField.editText
+        val passwordField = binding.passwordField.editText
+        val rememberSwitch = binding.rememberSwitch
+
         navController.getNavigationResult<String>(
             viewLifecycleOwner,
             Navigation.Args.RESET_PASSWORD_EMAIL,
@@ -55,34 +58,23 @@ class SignInFragment : Fragment() {
             showMessage(getString(Strings.success_send_password_reset_email, email))
         }
 
-        val emailObserver =
-            Observer<String> { email ->
-                if (binding.emailField.editText
-                        ?.text
-                        .toString() != email
-                ) {
-                    binding.emailField.editText?.setText(email)
-                }
+        viewModel.email.observe(viewLifecycleOwner) { email ->
+            if (emailField?.text.toString() != email) {
+                emailField?.setText(email)
             }
-        val passwordObserver =
-            Observer<String> { password ->
-                if (binding.passwordField.editText
-                        ?.text
-                        .toString() != password
-                ) {
-                    binding.passwordField.editText?.setText(password)
-                }
-            }
-        val rememberObserver =
-            Observer<Boolean> { isChecked ->
-                if (binding.rememberSwitch.isChecked != isChecked) {
-                    binding.rememberSwitch.isChecked = isChecked
-                }
-            }
+        }
 
-        viewModel.email.observe(viewLifecycleOwner, emailObserver)
-        viewModel.password.observe(viewLifecycleOwner, passwordObserver)
-        viewModel.remember.observe(viewLifecycleOwner, rememberObserver)
+        viewModel.password.observe(viewLifecycleOwner) { password ->
+            if (passwordField?.text.toString() != password) {
+                passwordField?.setText(password)
+            }
+        }
+
+        viewModel.remember.observe(viewLifecycleOwner) { isChecked ->
+            if (rememberSwitch.isChecked != isChecked) {
+                rememberSwitch.isChecked = isChecked
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -120,41 +112,30 @@ class SignInFragment : Fragment() {
             }
         }
 
-        binding.emailField.editText?.doOnTextChanged { text, _, _, _ ->
+        emailField?.doOnTextChanged { text, _, _, _ ->
             viewModel.onEvent(SignInUiEvent.OnEmailValueChange(text.toString()))
         }
 
-        binding.passwordField.editText?.doOnTextChanged { text, _, _, _ ->
+        passwordField?.doOnTextChanged { text, _, _, _ ->
             viewModel.onEvent(SignInUiEvent.OnPasswordValueChange(text.toString()))
         }
 
-        binding.rememberSwitch.setOnCheckedChangeListener { _, isChecked ->
+        rememberSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onEvent(SignInUiEvent.OnRememberSwitchCheckedChange(isChecked))
         }
 
         binding.signInButton.setOnClickListener {
             viewModel.onEvent(
                 SignInUiEvent.SignIn(
-                    email =
-                        binding.emailField.editText
-                            ?.text
-                            .toString(),
-                    password =
-                        binding.passwordField.editText
-                            ?.text
-                            .toString(),
-                    remember = binding.rememberSwitch.isChecked,
+                    email = emailField?.text.toString(),
+                    password = passwordField?.text.toString(),
+                    remember = rememberSwitch.isChecked,
                 ),
             )
         }
 
         binding.forgotPassword.setOnClickListener {
-            navController.navigateToResetPassword(
-                binding.emailField.editText
-                    ?.text
-                    ?.toString()
-                    .orEmpty(),
-            )
+            navController.navigateToResetPassword(emailField?.text?.toString().orEmpty())
         }
 
         binding.googleLoginButton.setOnClickListener {
