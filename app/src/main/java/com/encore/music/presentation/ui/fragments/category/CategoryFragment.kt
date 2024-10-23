@@ -4,17 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.encore.music.R
+import com.encore.music.core.PagingSourceException
 import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.FragmentCategoryBinding
 import com.encore.music.presentation.navigation.navigateToPlaylist
+import com.encore.music.presentation.ui.components.LoaderStateAdapter
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.SpanCount
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CategoryFragment : Fragment() {
@@ -30,13 +36,6 @@ class CategoryFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentCategoryBinding.inflate(inflater, container, false)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
-            insets
-        }
-
         return binding.root
     }
 
@@ -48,41 +47,61 @@ class CategoryFragment : Fragment() {
 
         binding.topAppBar.title = viewModel.title
 
-        val playlistAdapter = initRecyclerView()
+        val adapter = initRecyclerView()
 
-        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
-            when (uiState) {
-                is CategoryUiState.Error -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.errorView.apply {
-                        root.visibility = View.VISIBLE
-                        errorText.text = uiState.message.asString(requireContext())
-                        retryButton.visibility = View.VISIBLE
-                        retryButton.setOnClickListener {
-                            viewModel.retry()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                adapter.loadStateFlow.collectLatest { loadStates ->
+                    when (loadStates.refresh) {
+                        is LoadState.Loading -> {
+                            binding.apply {
+                                if (adapter.itemCount == 0) {
+                                    progressCircular.visibility = View.VISIBLE
+                                }
+                                errorView.root.visibility = View.GONE
+                                recyclerView.visibility = View.GONE
+                            }
+                        }
+
+                        is LoadState.Error -> {
+                            binding.apply {
+                                progressCircular.visibility = View.GONE
+                                errorView.apply {
+                                    val error =
+                                        (loadStates.refresh as LoadState.Error).error as PagingSourceException
+                                    errorText.text =
+                                        error.localizedMessage.asString(requireContext())
+                                    retryButton.visibility = View.VISIBLE
+                                    root.visibility = View.VISIBLE
+
+                                    retryButton.setOnClickListener {
+                                        adapter.refresh()
+                                    }
+                                }
+                            }
+                        }
+
+                        is LoadState.NotLoading -> {
+                            binding.apply {
+                                progressCircular.visibility = View.GONE
+                                if (adapter.itemCount == 0) {
+                                    recyclerView.visibility = View.GONE
+                                    errorView.errorText.text =
+                                        getString(R.string.no_playlists_found)
+                                    errorView.root.visibility = View.VISIBLE
+                                } else {
+                                    errorView.root.visibility = View.GONE
+                                    recyclerView.visibility = View.VISIBLE
+                                }
+                            }
                         }
                     }
                 }
-
-                is CategoryUiState.Success -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    playlistAdapter.items = uiState.playlists
-                }
-
-                CategoryUiState.Empty -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.errorView.apply {
-                        root.visibility = View.VISIBLE
-                        errorText.text = getString(R.string.no_playlists_found)
-                    }
-                }
-
-                CategoryUiState.Loading -> {
-                    binding.errorView.root.visibility = View.GONE
-                    binding.progressCircular.visibility = View.VISIBLE
-                }
             }
+        }
+
+        viewModel.playlists.observe(viewLifecycleOwner) {
+            adapter.submitData(viewLifecycleOwner.lifecycle, it)
         }
 
         binding.topAppBar.setNavigationOnClickListener {
@@ -107,19 +126,34 @@ class CategoryFragment : Fragment() {
                     }
                 },
             )
+        val loaderStateAdapter =
+            LoaderStateAdapter {
+                categoryAdapter.retry()
+            }
+        val concatAdapter = categoryAdapter.withLoadStateFooter(loaderStateAdapter)
+        val gridLayoutManager =
+            GridLayoutManager(
+                requireContext(),
+                SpanCount.adaptive(requireContext(), 120),
+            )
+        gridLayoutManager.spanSizeLookup =
+            object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int =
+                    when (concatAdapter.getItemViewType(position)) {
+                        1 -> gridLayoutManager.spanCount
+                        else -> 1
+                    }
+            }
+
         binding.recyclerView.apply {
-            layoutManager =
-                GridLayoutManager(
-                    requireContext(),
-                    SpanCount.adaptive(requireContext(), 120),
-                )
+            layoutManager = gridLayoutManager
             addItemDecoration(
                 AdaptiveSpacingItemDecoration(
                     size = 12.dpToPx(requireContext()),
                     edgeEnabled = true,
                 ),
             )
-            adapter = categoryAdapter
+            adapter = concatAdapter
         }
         return categoryAdapter
     }

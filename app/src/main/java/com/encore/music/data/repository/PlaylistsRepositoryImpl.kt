@@ -1,16 +1,21 @@
 package com.encore.music.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.encore.music.core.Encore
 import com.encore.music.core.utils.toResult
 import com.encore.music.data.remote.dto.home.HomePlaylistDto
 import com.encore.music.data.remote.dto.playlists.Playlist
 import com.encore.music.data.remote.dto.playlists.PlaylistsDto
+import com.encore.music.data.remote.paging.CategoryPlaylistsPagingSource
 import com.encore.music.domain.repository.PlaylistsRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.http.appendPathSegments
+import kotlinx.coroutines.flow.Flow
 
 class PlaylistsRepositoryImpl(
     private val httpClient: HttpClient,
@@ -58,6 +63,21 @@ class PlaylistsRepositoryImpl(
                 }
                 header(HttpHeaders.Authorization, accessToken)
             }.toResult()
+
+    override fun getCategoryPlaylists(
+        categoryId: String,
+        limit: Int,
+        offset: Int,
+    ): Flow<PagingData<Playlist>> =
+        Pager(
+            config = PagingConfig(pageSize = limit, initialLoadSize = limit),
+            pagingSourceFactory = {
+                CategoryPlaylistsPagingSource(
+                    categoryId = categoryId,
+                    offset = offset,
+                )
+            },
+        ).flow
 
     override suspend fun getHomePlaylists(
         accessToken: String,

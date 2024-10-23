@@ -1,41 +1,27 @@
 package com.encore.music.domain.usecase.playlists
 
-import com.encore.music.R
-import com.encore.music.core.Result
-import com.encore.music.core.UiText
-import com.encore.music.core.mapper.toPlaylistList
-import com.encore.music.core.utils.KtorException
+import androidx.paging.PagingData
+import androidx.paging.map
+import com.encore.music.core.mapper.toPlaylistDomainModel
 import com.encore.music.domain.model.playlists.Playlist
-import com.encore.music.domain.repository.AuthenticationRepository
 import com.encore.music.domain.repository.PlaylistsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import java.net.ConnectException
+import kotlinx.coroutines.flow.map
 
 class GetCategoryPlaylistsUseCase(
-    private val authenticationRepository: AuthenticationRepository,
-    private val encoreRepository: PlaylistsRepository,
+    private val playlistsRepository: PlaylistsRepository,
 ) {
     operator fun invoke(
         categoryId: String,
         limit: Int = 20,
         offset: Int = 0,
-    ): Flow<Result<List<Playlist>>> =
-        flow {
-            try {
-                emit(Result.Loading())
-                val idToken = authenticationRepository.getIdToken().orEmpty()
-                val playlists =
-                    encoreRepository
-                        .getCategoryPlaylists(idToken, categoryId, limit, offset)
-                        .toPlaylistList()
-                emit(Result.Success(playlists))
-            } catch (e: ConnectException) {
-                emit(Result.Error(UiText.StringResource(R.string.error_connect)))
-            } catch (e: KtorException) {
-                emit(Result.Error(e.localizedMessage))
-            } catch (e: Exception) {
-                emit(Result.Error(UiText.StringResource(R.string.error_unknown)))
+    ): Flow<PagingData<Playlist>> =
+        playlistsRepository
+            .getCategoryPlaylists(
+                categoryId = categoryId,
+                limit = limit,
+                offset = offset,
+            ).map { pagingData ->
+                pagingData.map { it.toPlaylistDomainModel() }
             }
-        }
 }

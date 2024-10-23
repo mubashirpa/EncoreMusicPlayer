@@ -1,4 +1,4 @@
-package com.encore.music.presentation.ui.fragments.searchItems
+package com.encore.music.presentation.ui.components
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
