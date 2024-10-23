@@ -88,6 +88,8 @@ dependencies {
     implementation(libs.bundles.ktor)
     implementation(libs.bundles.media3)
     implementation(libs.bundles.firebase)
+    implementation(libs.bundles.room)
+    ksp(libs.room.compiler)
 
     implementation(libs.koin.android)
     implementation(libs.coil)
@@ -96,6 +98,4 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.paging.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
 }
