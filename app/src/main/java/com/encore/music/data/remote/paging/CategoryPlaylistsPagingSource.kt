@@ -27,8 +27,8 @@ class CategoryPlaylistsPagingSource(
 
     override fun getRefreshKey(state: PagingState<Int, Playlist>): Int? =
         state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
         }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Playlist> =
