@@ -11,16 +11,30 @@ import com.encore.music.databinding.ListItemArtistsBinding
 import com.encore.music.domain.model.artists.Artist
 
 class ArtistsAdapter(
-    private val onArtistClicked: (Artist) -> Unit,
+    private val onArtistClicked: (Artist) -> Unit = {},
 ) : RecyclerView.Adapter<ArtistsAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Artist> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Artist>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class ViewHolder(
+    inner class ViewHolder(
         val binding: ListItemArtistsBinding,
-    ) : RecyclerView.ViewHolder(binding.root)
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Artist) {
+            binding.run {
+                media.load(item.image) {
+                    crossfade(true)
+                    placeholder(R.drawable.bg_placeholder)
+                }
+                title.text = item.name
+
+                root.setOnClickListener {
+                    onArtistClicked(item)
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,17 +51,7 @@ class ArtistsAdapter(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.binding.run {
-            media.load(items[position].image) {
-                crossfade(true)
-                placeholder(R.drawable.bg_placeholder)
-            }
-            title.text = items[position].name
-
-            root.setOnClickListener {
-                onArtistClicked(items[position])
-            }
-        }
+        holder.bind(items[position])
     }
 
     companion object {

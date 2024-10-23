@@ -11,17 +11,36 @@ import com.encore.music.databinding.ListItemTracksDetailedBinding
 import com.encore.music.domain.model.tracks.Track
 
 class TracksAdapter(
-    private val onTrackClicked: (Track) -> Unit,
-    private val onTrackMoreClicked: (Track) -> Unit,
+    private val onTrackClicked: (Track) -> Unit = {},
+    private val onTrackMoreClicked: (Track) -> Unit = {},
 ) : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Track> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Track>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class ViewHolder(
+    inner class ViewHolder(
         val binding: ListItemTracksDetailedBinding,
-    ) : RecyclerView.ViewHolder(binding.root)
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Track) {
+            binding.run {
+                leadingImage.load(item.image) {
+                    crossfade(true)
+                    placeholder(R.drawable.bg_placeholder)
+                }
+                headlineText.text = item.name
+                supportingText.text = item.artists?.joinToString { it.name.orEmpty() }
+
+                menuButton.setOnClickListener {
+                    onTrackMoreClicked(item)
+                }
+
+                root.setOnClickListener {
+                    onTrackClicked(item)
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -42,22 +61,7 @@ class TracksAdapter(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.binding.run {
-            leadingImage.load(items[position].image) {
-                crossfade(true)
-                placeholder(R.drawable.bg_placeholder)
-            }
-            headlineText.text = items[position].name
-            supportingText.text = items[position].artists?.joinToString { it.name.orEmpty() }
-
-            menuButton.setOnClickListener {
-                onTrackMoreClicked(items[position])
-            }
-
-            root.setOnClickListener {
-                onTrackClicked(items[position])
-            }
-        }
+        holder.bind(items[position])
     }
 
     companion object {

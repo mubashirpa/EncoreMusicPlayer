@@ -11,16 +11,31 @@ import com.encore.music.databinding.ListItemPlaylistsBinding
 import com.encore.music.domain.model.playlists.Playlist
 
 class PlaylistsAdapter(
-    private val onPlaylistClicked: (Playlist) -> Unit,
+    private val onPlaylistClicked: (Playlist) -> Unit = {},
 ) : RecyclerView.Adapter<PlaylistsAdapter.ViewHolder>() {
     private val differ: AsyncListDiffer<Playlist> = AsyncListDiffer(this, DIFF_CALLBACK)
     var items: List<Playlist>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class ViewHolder(
+    inner class ViewHolder(
         val binding: ListItemPlaylistsBinding,
-    ) : RecyclerView.ViewHolder(binding.root)
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Playlist) {
+            binding.run {
+                media.load(item.image) {
+                    crossfade(true)
+                    placeholder(R.drawable.bg_placeholder)
+                }
+                title.text = item.name
+                subtitle.text = item.owner
+
+                root.setOnClickListener {
+                    onPlaylistClicked(item)
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,18 +52,7 @@ class PlaylistsAdapter(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.binding.run {
-            media.load(items[position].image) {
-                crossfade(true)
-                placeholder(R.drawable.bg_placeholder)
-            }
-            title.text = items[position].name
-            subtitle.text = items[position].owner
-
-            root.setOnClickListener {
-                onPlaylistClicked(items[position])
-            }
-        }
+        holder.bind(items[position])
     }
 
     companion object {
