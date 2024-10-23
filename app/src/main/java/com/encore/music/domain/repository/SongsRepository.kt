@@ -1,5 +1,6 @@
 package com.encore.music.domain.repository
 
+import androidx.paging.PagingData
 import com.encore.music.data.local.entity.artist.ArtistEntity
 import com.encore.music.data.local.entity.playlists.PlaylistEntity
 import com.encore.music.data.local.entity.playlists.PlaylistTrackCrossRef
@@ -60,4 +61,6 @@ interface SongsRepository {
     )
 
     fun getRecentTracks(limit: Int = 20): Flow<List<TrackWithArtists>>
+
+    fun getRecentTracksPaging(limit: Int = 20): Flow<PagingData<TrackWithArtists>>
 }

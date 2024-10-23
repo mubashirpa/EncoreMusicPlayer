@@ -30,6 +30,7 @@ import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistWithTracksAndArtistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
+import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksPagingUseCase
 import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksUseCase
 import com.encore.music.domain.usecase.songs.tracks.InsertRecentTrackUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
@@ -53,6 +54,7 @@ val useCaseModule =
         singleOf(::GetHomePlaylistsUseCase)
         singleOf(::GetLoginPreferencesUseCase)
         singleOf(::GetPlaylistUseCase)
+        singleOf(::GetRecentTracksPagingUseCase)
         singleOf(::GetRecentTracksUseCase)
         singleOf(::GetSavedLocalPlaylistsUseCase)
         singleOf(::GetSavedPlaylistUseCase)

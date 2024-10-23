@@ -1,5 +1,8 @@
 package com.encore.music.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.encore.music.data.local.dao.ArtistsDao
 import com.encore.music.data.local.dao.PlaylistsDao
 import com.encore.music.data.local.dao.TracksDao
@@ -89,4 +92,12 @@ class SongsRepositoryImpl(
     }
 
     override fun getRecentTracks(limit: Int): Flow<List<TrackWithArtists>> = tracksDao.getRecentTracks(limit)
+
+    override fun getRecentTracksPaging(limit: Int): Flow<PagingData<TrackWithArtists>> =
+        Pager(
+            config = PagingConfig(pageSize = limit, initialLoadSize = limit),
+            pagingSourceFactory = {
+                tracksDao.getRecentTracksPaging()
+            },
+        ).flow
 }

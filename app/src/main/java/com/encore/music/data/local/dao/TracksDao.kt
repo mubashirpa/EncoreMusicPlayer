@@ -1,5 +1,6 @@
 package com.encore.music.data.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -26,4 +27,9 @@ interface TracksDao {
     @Transaction
     @Query("SELECT * FROM tracks WHERE lastPlayed IS NOT NULL ORDER BY lastPlayed DESC LIMIT :limit")
     fun getRecentTracks(limit: Int = 20): Flow<List<TrackWithArtists>>
+
+    // TODO: Remove if not working
+    @Transaction
+    @Query("SELECT * FROM tracks WHERE lastPlayed IS NOT NULL ORDER BY lastPlayed DESC")
+    fun getRecentTracksPaging(): PagingSource<Int, TrackWithArtists>
 }
