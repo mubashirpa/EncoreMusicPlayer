@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +23,7 @@ import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.ui.activities.MainUiEvent
 import com.encore.music.presentation.ui.activities.MainViewModel
+import com.encore.music.presentation.ui.components.LoaderStateAdapter
 import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
@@ -51,13 +50,6 @@ class SearchItemsFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentSearchItemsBinding.inflate(inflater, container, false)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, 0, 0, systemBars.bottom)
-            insets
-        }
-
         return binding.root
     }
 
@@ -161,24 +153,36 @@ class SearchItemsFragment : Fragment() {
             LoaderStateAdapter {
                 searchItemsAdapter.retry()
             }
+        val concatAdapter = searchItemsAdapter.withLoadStateFooter(loaderStateAdapter)
 
         binding.recyclerView.apply {
             layoutManager =
                 if (viewModel.searchType == SearchType.PLAYLIST) {
+                    val gridLayoutManager =
+                        GridLayoutManager(
+                            requireContext(),
+                            SpanCount.adaptive(requireContext(), 160),
+                        )
+                    gridLayoutManager.spanSizeLookup =
+                        object : GridLayoutManager.SpanSizeLookup() {
+                            override fun getSpanSize(position: Int): Int =
+                                when (concatAdapter.getItemViewType(position)) {
+                                    0 -> 1
+                                    else -> gridLayoutManager.spanCount
+                                }
+                        }
+
                     addItemDecoration(
                         AdaptiveSpacingItemDecoration(
                             size = 12.dpToPx(requireContext()),
                             edgeEnabled = true,
                         ),
                     )
-                    GridLayoutManager(
-                        requireContext(),
-                        SpanCount.adaptive(requireContext(), 160),
-                    )
+                    gridLayoutManager
                 } else {
                     LinearLayoutManager(requireContext())
                 }
-            adapter = searchItemsAdapter.withLoadStateFooter(loaderStateAdapter)
+            adapter = concatAdapter
         }
         return searchItemsAdapter
     }

@@ -90,7 +90,7 @@ class SearchItemsAdapter(
         viewType: Int,
     ): RecyclerView.ViewHolder =
         when (viewType) {
-            0 -> {
+            1 -> {
                 val binding =
                     ListItemArtistsHorizontalBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -100,7 +100,7 @@ class SearchItemsAdapter(
                 ArtistsViewHolder(binding)
             }
 
-            1 -> {
+            2 -> {
                 val binding =
                     ListItemCategoryPlaylistsBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -110,7 +110,7 @@ class SearchItemsAdapter(
                 PlaylistsViewHolder(binding)
             }
 
-            2 -> {
+            3 -> {
                 val binding =
                     ListItemTracksDetailedBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -138,9 +138,9 @@ class SearchItemsAdapter(
 
     override fun getItemViewType(position: Int): Int =
         when (getItem(position)) {
-            is SearchItem.ArtistItem -> 0
-            is SearchItem.PlaylistItem -> 1
-            is SearchItem.TrackItem -> 2
+            is SearchItem.ArtistItem -> 1
+            is SearchItem.PlaylistItem -> 2
+            is SearchItem.TrackItem -> 3
             null -> -1
         }
 
