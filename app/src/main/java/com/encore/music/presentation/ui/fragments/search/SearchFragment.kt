@@ -244,12 +244,15 @@ class SearchFragment : Fragment() {
         binding.searchView
             .editText
             .setOnEditorActionListener { _, _, _ ->
-                binding.searchView.setVisible(false)
-                navController.navigateToSearchItems(
-                    binding.searchView.text.toString(),
-                    viewModel.searchType,
-                )
-                false
+                val query = binding.searchView.text.toString()
+                if (query.isNotBlank()) {
+                    binding.searchView.setVisible(false)
+                    navController.navigateToSearchItems(
+                        binding.searchView.text.toString(),
+                        viewModel.searchType,
+                    )
+                }
+                true
             }
     }
 
