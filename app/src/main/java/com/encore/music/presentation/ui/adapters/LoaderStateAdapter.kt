@@ -1,4 +1,4 @@
-package com.encore.music.presentation.ui.components
+package com.encore.music.presentation.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.encore.music.databinding.LayoutPagingLoaderBinding
 
 class LoaderStateAdapter(
-    private val onRetry: () -> Unit,
+    private val onRetry: () -> Unit = {},
 ) : LoadStateAdapter<LoaderStateAdapter.LoaderViewHolder>() {
     inner class LoaderViewHolder(
         private val binding: LayoutPagingLoaderBinding,

@@ -23,7 +23,7 @@ import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.navigateToPlaylist
 import com.encore.music.presentation.ui.activities.MainUiEvent
 import com.encore.music.presentation.ui.activities.MainViewModel
-import com.encore.music.presentation.ui.components.LoaderStateAdapter
+import com.encore.music.presentation.ui.adapters.LoaderStateAdapter
 import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem

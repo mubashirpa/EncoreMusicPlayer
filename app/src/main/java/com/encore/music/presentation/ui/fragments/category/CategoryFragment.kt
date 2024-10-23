@@ -16,7 +16,7 @@ import com.encore.music.core.PagingSourceException
 import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.FragmentCategoryBinding
 import com.encore.music.presentation.navigation.navigateToPlaylist
-import com.encore.music.presentation.ui.components.LoaderStateAdapter
+import com.encore.music.presentation.ui.adapters.LoaderStateAdapter
 import com.encore.music.presentation.utils.AdaptiveSpacingItemDecoration
 import com.encore.music.presentation.utils.SpanCount
 import kotlinx.coroutines.flow.collectLatest
