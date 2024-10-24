@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavOptions
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
@@ -161,65 +162,107 @@ private fun NavController.navigateFromNavigationBar(screen: Screen) {
     }
 }
 
+private val defaultNavOptions =
+    NavOptions
+        .Builder()
+        .setEnterAnim(android.R.anim.slide_in_left)
+        .setExitAnim(android.R.anim.slide_out_right)
+        .setPopEnterAnim(android.R.anim.slide_in_left)
+        .setPopExitAnim(android.R.anim.slide_out_right)
+
+private val graphNavOptions =
+    NavOptions
+        .Builder()
+        .setEnterAnim(R.anim.pop_in)
+        .setExitAnim(R.anim.pop_out)
+        .setPopEnterAnim(R.anim.pop_in)
+        .setPopExitAnim(R.anim.pop_out)
+
+private val loginNavOptions =
+    NavOptions
+        .Builder()
+        .setPopUpTo(Screen.Onboarding, false)
+        .setLaunchSingleTop(true)
+        .setLaunchSingleTop(true)
+        .setEnterAnim(R.anim.fade_in)
+        .setExitAnim(R.anim.fade_out)
+        .setPopEnterAnim(R.anim.fade_in)
+        .setPopExitAnim(R.anim.fade_out)
+
 fun NavController.navigateToMain() {
     popBackStack(Graph.Onboarding, true)
-    navigate(Graph.Main)
+    navigate(route = Graph.Main, navOptions = graphNavOptions.build())
 }
 
 fun NavController.navigateToOnboarding() {
     popBackStack(Graph.Main, true)
-    navigate(Graph.Onboarding)
+    navigate(route = Graph.Onboarding, navOptions = graphNavOptions.build())
 }
 
 fun NavController.navigateToSignIn() {
-    navigate(Screen.SignIn) {
-        popUpTo(Screen.SignUp) { inclusive = true }
-        launchSingleTop = true
-    }
+    navigate(route = Screen.SignIn, navOptions = loginNavOptions.build())
 }
 
 fun NavController.navigateToSignUp() {
-    navigate(Screen.SignUp) {
-        popUpTo(Screen.SignIn) { inclusive = true }
-        launchSingleTop = true
-    }
+    navigate(route = Screen.SignUp, navOptions = loginNavOptions.build())
 }
 
 fun NavController.navigateToResetPassword(email: String) {
-    navigate(route = Screen.ResetPassword(email = email))
+    navigate(
+        route = Screen.ResetPassword(email = email),
+        navOptions = defaultNavOptions.build(),
+    )
 }
 
 fun NavController.navigateToPlaylist(
     playlistId: String,
     isLocal: Boolean,
 ) {
-    navigate(route = Screen.Playlist(id = playlistId, isLocal = isLocal))
+    navigate(
+        route = Screen.Playlist(id = playlistId, isLocal = isLocal),
+        navOptions = defaultNavOptions.build(),
+    )
 }
 
 fun NavController.navigateToArtist(artistId: String) {
-    navigate(route = Screen.Artist(id = artistId))
+    navigate(
+        route = Screen.Artist(id = artistId),
+        navOptions = defaultNavOptions.build(),
+    )
 }
 
 fun NavController.navigateToPlayer() {
-    navigate(route = Screen.Player) {
-        launchSingleTop = true
-    }
+    val navOptions =
+        NavOptions
+            .Builder()
+            .setLaunchSingleTop(true)
+            .setEnterAnim(R.anim.slide_in_bottom)
+            .setExitAnim(R.anim.slide_out_bottom)
+            .setPopEnterAnim(R.anim.slide_in_bottom)
+            .setPopExitAnim(R.anim.slide_out_bottom)
+    navigate(route = Screen.Player, navOptions = navOptions.build())
 }
 
 fun NavController.navigateToProfile() {
-    navigate(Screen.Profile)
+    navigate(route = Screen.Profile, navOptions = defaultNavOptions.build())
 }
 
 fun NavController.navigateToCategory(
     categoryId: String,
     title: String,
 ) {
-    navigate(route = Screen.Category(id = categoryId, title = title))
+    navigate(
+        route = Screen.Category(id = categoryId, title = title),
+        navOptions = defaultNavOptions.build(),
+    )
 }
 
 fun NavController.navigateToSearchItems(
     query: String,
     type: SearchType,
 ) {
-    navigate(route = Screen.SearchItems(query = query, type = type))
+    navigate(
+        route = Screen.SearchItems(query = query, type = type),
+        navOptions = defaultNavOptions.build(),
+    )
 }
