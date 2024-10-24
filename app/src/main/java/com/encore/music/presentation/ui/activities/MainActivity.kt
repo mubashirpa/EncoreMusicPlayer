@@ -29,6 +29,7 @@ import com.encore.music.presentation.navigation.findNavController
 import com.encore.music.presentation.navigation.navigateToPlayer
 import com.encore.music.presentation.navigation.setupWithNavController
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+        DynamicColors.applyToActivityIfAvailable(this)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
