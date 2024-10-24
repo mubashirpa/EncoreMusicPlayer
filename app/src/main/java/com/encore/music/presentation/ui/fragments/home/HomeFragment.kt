@@ -47,7 +47,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val homeAdapter =
             HomeAdapter(
                 context = requireContext(),
-                items = mutableListOf(),
                 onTrackClicked = { track ->
                     playTrack(track)
                 },

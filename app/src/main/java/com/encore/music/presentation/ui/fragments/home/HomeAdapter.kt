@@ -17,10 +17,11 @@ import com.encore.music.presentation.utils.PaddingValues
 
 class HomeAdapter(
     private val context: Context,
-    var items: MutableList<HomeListItem>,
     private val onTrackClicked: ((Track) -> Unit)? = null,
     private val onPlaylistClicked: ((Playlist) -> Unit)? = null,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var items: MutableList<HomeListItem> = mutableListOf()
+
     inner class TopTracksViewHolder(
         private val binding: LayoutHomeTopTracksBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
