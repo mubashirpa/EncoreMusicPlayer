@@ -30,11 +30,11 @@ class SearchViewModel(
     private val searchForItemUseCase: SearchForItemUseCase,
     private val insertPlaylistUseCase: InsertPlaylistUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableLiveData<CategoriesUiState>()
-    val uiState: LiveData<CategoriesUiState> = _uiState
+    private val _categoriesUiState = MutableLiveData<CategoriesUiState>()
+    val categoriesUiState: LiveData<CategoriesUiState> = _categoriesUiState
 
-    private val _searchState = MutableLiveData<SearchUiState>()
-    val searchState: LiveData<SearchUiState> = _searchState
+    private val _searchUiState = MutableLiveData<SearchUiState>()
+    val searchUiState: LiveData<SearchUiState> = _searchUiState
 
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> = _currentUser
@@ -68,10 +68,6 @@ class SearchViewModel(
             is SearchUiEvent.OnSearch -> {
                 search(event.query, event.searchType, event.delay)
             }
-
-            SearchUiEvent.OnSearchOpened -> {
-                _searchState.value = SearchUiState.Empty(null)
-            }
         }
     }
 
@@ -90,15 +86,15 @@ class SearchViewModel(
                     is Result.Empty -> Unit
 
                     is Result.Error -> {
-                        _uiState.value = CategoriesUiState.Error(result.message!!)
+                        _categoriesUiState.value = CategoriesUiState.Error(result.message!!)
                     }
 
                     is Result.Loading -> {
-                        _uiState.value = CategoriesUiState.Loading
+                        _categoriesUiState.value = CategoriesUiState.Loading
                     }
 
                     is Result.Success -> {
-                        _uiState.value = result.data?.let { categories ->
+                        _categoriesUiState.value = result.data?.let { categories ->
                             CategoriesUiState.Success(categories)
                         }
                             ?: CategoriesUiState.Error(UiText.StringResource(R.string.error_unexpected))
@@ -115,7 +111,6 @@ class SearchViewModel(
         searchItemUseCaseJob?.cancel()
         searchItemUseCaseJob = null
         if (query.isBlank()) {
-            _searchState.value = SearchUiState.Empty(null)
             return
         }
         searchItemUseCaseJob =
@@ -129,15 +124,15 @@ class SearchViewModel(
                         is Result.Empty -> Unit
 
                         is Result.Error -> {
-                            _searchState.value = SearchUiState.Error(result.message!!)
+                            _searchUiState.value = SearchUiState.Error(result.message!!)
                         }
 
                         is Result.Loading -> {
-                            _searchState.value = SearchUiState.Loading
+                            _searchUiState.value = SearchUiState.Loading
                         }
 
                         is Result.Success -> {
-                            _searchState.value = result.data?.let { search ->
+                            _searchUiState.value = result.data?.let { search ->
                                 when (type) {
                                     SearchType.ARTIST -> {
                                         val artists =
@@ -147,7 +142,7 @@ class SearchViewModel(
                                                 }.orEmpty()
 
                                         if (artists.isNotEmpty()) {
-                                            SearchUiState.Success(artists, false)
+                                            SearchUiState.Success(artists)
                                         } else {
                                             SearchUiState.Empty(
                                                 UiText.StringResource(
@@ -166,7 +161,7 @@ class SearchViewModel(
                                                 }.orEmpty()
 
                                         if (playlists.isNotEmpty()) {
-                                            SearchUiState.Success(playlists, true)
+                                            SearchUiState.Success(playlists)
                                         } else {
                                             SearchUiState.Empty(
                                                 UiText.StringResource(
@@ -185,7 +180,7 @@ class SearchViewModel(
                                                 }.orEmpty()
 
                                         if (tracks.isNotEmpty()) {
-                                            SearchUiState.Success(tracks, false)
+                                            SearchUiState.Success(tracks)
                                         } else {
                                             SearchUiState.Empty(
                                                 UiText.StringResource(

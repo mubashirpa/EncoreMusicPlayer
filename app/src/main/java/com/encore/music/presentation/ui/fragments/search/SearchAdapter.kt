@@ -3,6 +3,8 @@ package com.encore.music.presentation.ui.fragments.search
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -15,13 +17,11 @@ import com.encore.music.domain.model.tracks.Track
 
 class SearchAdapter(
     private val context: Context,
-    private val onArtistClicked: (Artist) -> Unit = {},
-    private val onPlaylistClicked: (Playlist) -> Unit = {},
-    private val onTrackClicked: (Track) -> Unit = {},
-    private val onTrackMoreClicked: (Track) -> Unit,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var items: List<SearchListItem> = emptyList()
-
+    private val onArtistClicked: ((Artist) -> Unit)? = null,
+    private val onPlaylistClicked: ((Playlist) -> Unit)? = null,
+    private val onTrackClicked: ((Track) -> Unit)? = null,
+    private val onTrackMoreClicked: ((Track) -> Unit)? = null,
+) : ListAdapter<SearchListItem, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
     inner class ArtistsViewHolder(
         private val binding: ListItemArtistsHorizontalBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -34,7 +34,7 @@ class SearchAdapter(
                 title.text = item.name
 
                 root.setOnClickListener {
-                    onArtistClicked(item)
+                    onArtistClicked?.invoke(item)
                 }
             }
         }
@@ -53,7 +53,7 @@ class SearchAdapter(
                 subtitle.text = item.owner
 
                 root.setOnClickListener {
-                    onPlaylistClicked(item)
+                    onPlaylistClicked?.invoke(item)
                 }
             }
         }
@@ -72,11 +72,11 @@ class SearchAdapter(
                 supportingText.text = item.artists?.joinToString { it.name.orEmpty() }
 
                 root.setOnClickListener {
-                    onTrackClicked(item)
+                    onTrackClicked?.invoke(item)
                 }
 
                 menuButton.setOnClickListener {
-                    onTrackMoreClicked(item)
+                    onTrackMoreClicked?.invoke(item)
                 }
             }
         }
@@ -120,23 +120,39 @@ class SearchAdapter(
             else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
-    override fun getItemCount(): Int = items.count()
-
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
-        when (val item = items[position]) {
-            is SearchListItem.ArtistItem -> (holder as ArtistsViewHolder).bind(item.artist)
-            is SearchListItem.PlaylistItem -> (holder as PlaylistsViewHolder).bind(item.playlist)
-            is SearchListItem.TrackItem -> (holder as TracksViewHolder).bind(item.track)
+        getItem(position).let { item ->
+            when (item) {
+                is SearchListItem.ArtistItem -> (holder as ArtistsViewHolder).bind(item.artist)
+                is SearchListItem.PlaylistItem -> (holder as PlaylistsViewHolder).bind(item.playlist)
+                is SearchListItem.TrackItem -> (holder as TracksViewHolder).bind(item.track)
+            }
         }
     }
 
     override fun getItemViewType(position: Int): Int =
-        when (items[position]) {
+        when (getItem(position)) {
             is SearchListItem.ArtistItem -> 0
             is SearchListItem.PlaylistItem -> 1
             is SearchListItem.TrackItem -> 2
+            null -> -1
         }
+
+    companion object {
+        val DIFF_CALLBACK =
+            object : DiffUtil.ItemCallback<SearchListItem>() {
+                override fun areItemsTheSame(
+                    oldItem: SearchListItem,
+                    newItem: SearchListItem,
+                ): Boolean = oldItem.id == newItem.id
+
+                override fun areContentsTheSame(
+                    oldItem: SearchListItem,
+                    newItem: SearchListItem,
+                ): Boolean = oldItem.id == newItem.id
+            }
+    }
 }

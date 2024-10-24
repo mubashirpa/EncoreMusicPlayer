@@ -19,6 +19,4 @@ sealed class SearchUiEvent {
     ) : SearchUiEvent()
 
     data object OnRetry : SearchUiEvent()
-
-    data object OnSearchOpened : SearchUiEvent()
 }

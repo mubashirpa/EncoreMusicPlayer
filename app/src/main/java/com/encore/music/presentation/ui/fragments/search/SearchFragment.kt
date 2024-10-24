@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -60,13 +59,13 @@ class SearchFragment : Fragment() {
 
         val searchAdapter = initSearchAdapter()
 
-        binding.chipGroup.check(
+        val chipCheckedId =
             when (viewModel.searchType) {
                 SearchType.ARTIST -> binding.artistsFilter.id
                 SearchType.PLAYLIST -> binding.playlistsFilter.id
                 SearchType.TRACK -> binding.songsFilter.id
-            },
-        )
+            }
+        binding.chipGroup.check(chipCheckedId)
 
         binding.searchErrorView.root.setBackgroundColor(requireContext().getColor(android.R.color.transparent))
 
@@ -86,27 +85,28 @@ class SearchFragment : Fragment() {
             )
         }
 
-        viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
+        viewModel.categoriesUiState.observe(viewLifecycleOwner) { uiState ->
             when (uiState) {
                 is CategoriesUiState.Error -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.errorView.apply {
-                        root.visibility = View.VISIBLE
-                        errorText.text = uiState.message.asString(requireContext())
-                        retryButton.visibility = View.VISIBLE
-                        retryButton.setOnClickListener {
-                            viewModel.onEvent(SearchUiEvent.OnRetry)
+                    binding.apply {
+                        progressCircular.visibility = View.GONE
+                        errorView.apply {
+                            root.visibility = View.VISIBLE
+                            errorText.text = uiState.message.asString(requireContext())
+                            retryButton.apply {
+                                visibility = View.VISIBLE
+                                setOnClickListener {
+                                    viewModel.onEvent(SearchUiEvent.OnRetry)
+                                }
+                            }
                         }
                     }
                 }
 
                 is CategoriesUiState.Success -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.nestedScrollView.visibility = View.VISIBLE
-
                     val categoriesAdapter =
                         CategoriesAdapter(
-                            uiState.categories,
+                            items = uiState.categories,
                             onItemClick = { category ->
                                 category.id?.let { categoryId ->
                                     navController.navigateToCategory(
@@ -116,92 +116,83 @@ class SearchFragment : Fragment() {
                                 }
                             },
                         )
-                    binding.recyclerView.apply {
-                        layoutManager =
-                            GridLayoutManager(
-                                requireContext(),
-                                SpanCount.adaptive(requireContext(), 120),
+
+                    binding.apply {
+                        progressCircular.visibility = View.GONE
+                        nestedScrollView.visibility = View.VISIBLE
+
+                        recyclerView.apply {
+                            layoutManager =
+                                GridLayoutManager(
+                                    requireContext(),
+                                    SpanCount.adaptive(requireContext(), 120),
+                                )
+                            addItemDecoration(
+                                AdaptiveSpacingItemDecoration(
+                                    size = 12.dpToPx(requireContext()),
+                                    edgeEnabled = true,
+                                ),
                             )
-                        addItemDecoration(
-                            AdaptiveSpacingItemDecoration(
-                                size = 12.dpToPx(requireContext()),
-                                edgeEnabled = true,
-                            ),
-                        )
-                        adapter = categoriesAdapter
+                            adapter = categoriesAdapter
+                        }
                     }
                 }
 
                 CategoriesUiState.Loading -> {
-                    binding.errorView.root.visibility = View.GONE
-                    binding.progressCircular.visibility = View.VISIBLE
+                    binding.apply {
+                        errorView.root.visibility = View.GONE
+                        progressCircular.visibility = View.VISIBLE
+                    }
                 }
             }
         }
 
-        viewModel.searchState.observe(viewLifecycleOwner) { uiState ->
+        viewModel.searchUiState.observe(viewLifecycleOwner) { uiState ->
             when (uiState) {
                 is SearchUiState.Empty -> {
-                    binding.searchProgressCircular.visibility = View.GONE
-                    binding.searchRecyclerView.visibility = View.GONE
-
-                    binding.searchErrorView.apply {
-                        root.isVisible = uiState.message != null
-                        uiState.message?.let { errorText.text = it.asString(requireContext()) }
+                    binding.apply {
+                        searchProgressCircular.visibility = View.GONE
+                        searchRecyclerView.visibility = View.GONE
+                        searchErrorView.apply {
+                            errorText.text = uiState.message.asString(requireContext())
+                            root.visibility = View.VISIBLE
+                        }
                     }
                 }
 
                 is SearchUiState.Error -> {
-                    binding.searchProgressCircular.visibility = View.GONE
+                    binding.apply {
+                        searchProgressCircular.visibility = View.GONE
+                        searchRecyclerView.visibility = View.GONE
+                        searchErrorView.apply {
+                            errorText.text = uiState.message.asString(requireContext())
+                            retryButton.visibility = View.VISIBLE
+                            root.visibility = View.VISIBLE
 
-                    binding.searchErrorView.apply {
-                        root.visibility = View.VISIBLE
-                        errorText.text = uiState.message.asString(requireContext())
-                        retryButton.visibility = View.VISIBLE
-
-                        retryButton.setOnClickListener {
-                            viewModel.onEvent(
-                                SearchUiEvent.OnSearch(
-                                    binding.searchView.text.toString(),
-                                    viewModel.searchType,
-                                ),
-                            )
+                            retryButton.setOnClickListener {
+                                viewModel.onEvent(
+                                    SearchUiEvent.OnSearch(
+                                        query = binding.searchView.text.toString(),
+                                        searchType = viewModel.searchType,
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
 
                 SearchUiState.Loading -> {
-                    binding.searchRecyclerView.visibility = View.GONE
-                    binding.searchErrorView.root.visibility = View.GONE
-                    binding.searchProgressCircular.visibility = View.VISIBLE
+                    binding.apply {
+                        searchErrorView.root.visibility = View.GONE
+                        searchProgressCircular.visibility = View.VISIBLE
+                    }
                 }
 
                 is SearchUiState.Success -> {
-                    searchAdapter.items = uiState.items
-
-                    binding.searchRecyclerView.apply {
-                        if (uiState.isGridLayout) {
-                            layoutManager =
-                                GridLayoutManager(
-                                    requireContext(),
-                                    SpanCount.adaptive(requireContext(), 160),
-                                )
-                            if (itemDecorationCount == 0) {
-                                addItemDecoration(
-                                    AdaptiveSpacingItemDecoration(
-                                        size = 12.dpToPx(requireContext()),
-                                        edgeEnabled = true,
-                                    ),
-                                )
-                            }
-                        } else {
-                            layoutManager = LinearLayoutManager(requireContext())
-                            if (itemDecorationCount >= 1) removeItemDecorationAt(0)
-                        }
-                    }
-
                     binding.searchProgressCircular.visibility = View.GONE
                     binding.searchRecyclerView.visibility = View.VISIBLE
+                    searchAdapter.submitList(uiState.items)
+                    binding.searchRecyclerView.smoothScrollToPosition(0)
                 }
             }
         }
@@ -217,28 +208,65 @@ class SearchFragment : Fragment() {
                     binding.artistsFilter.id -> SearchType.ARTIST
                     else -> SearchType.TRACK
                 }
+
+            // Clear current items in the adapter
+            searchAdapter.submitList(emptyList())
+
+            // Change layout based on the selected chip
+            binding.searchRecyclerView.apply {
+                when (viewModel.searchType) {
+                    SearchType.PLAYLIST -> {
+                        layoutManager =
+                            GridLayoutManager(
+                                requireContext(),
+                                SpanCount.adaptive(requireContext(), 160),
+                            )
+                        if (itemDecorationCount == 0) {
+                            addItemDecoration(
+                                AdaptiveSpacingItemDecoration(
+                                    size = 12.dpToPx(requireContext()),
+                                    edgeEnabled = true,
+                                ),
+                            )
+                        }
+                    }
+
+                    else -> {
+                        layoutManager = LinearLayoutManager(requireContext())
+                        if (itemDecorationCount >= 1) removeItemDecorationAt(0)
+                    }
+                }
+            }
+
             viewModel.onEvent(
                 SearchUiEvent.OnSearch(
-                    binding.searchView.text.toString(),
-                    viewModel.searchType,
+                    query = binding.searchView.text.toString(),
+                    searchType = viewModel.searchType,
                 ),
             )
         }
 
         binding.searchView.addTransitionListener { _, _, newState ->
-            if (newState == SearchView.TransitionState.SHOWING) {
-                viewModel.onEvent(SearchUiEvent.OnSearchOpened)
+            if (newState == SearchView.TransitionState.HIDDEN) {
+                binding.searchView.editText.setText("")
             }
         }
 
         binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
-            viewModel.onEvent(
-                SearchUiEvent.OnSearch(
-                    text.toString(),
-                    viewModel.searchType,
-                    500,
-                ),
-            )
+            text?.let {
+                if (it.isBlank()) {
+                    // Clear current items in the adapter
+                    searchAdapter.submitList(emptyList())
+                }
+
+                viewModel.onEvent(
+                    SearchUiEvent.OnSearch(
+                        query = it.toString(),
+                        searchType = viewModel.searchType,
+                        delay = 500,
+                    ),
+                )
+            }
         }
 
         binding.searchView
@@ -247,10 +275,7 @@ class SearchFragment : Fragment() {
                 val query = binding.searchView.text.toString()
                 if (query.isNotBlank()) {
                     binding.searchView.setVisible(false)
-                    navController.navigateToSearchItems(
-                        binding.searchView.text.toString(),
-                        viewModel.searchType,
-                    )
+                    navController.navigateToSearchItems(query, viewModel.searchType)
                 }
                 true
             }
@@ -290,7 +315,29 @@ class SearchFragment : Fragment() {
                 },
             )
         binding.searchRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            // Change layout based on the selected chip
+            when (viewModel.searchType) {
+                SearchType.PLAYLIST -> {
+                    layoutManager =
+                        GridLayoutManager(
+                            requireContext(),
+                            SpanCount.adaptive(requireContext(), 160),
+                        )
+                    if (itemDecorationCount == 0) {
+                        addItemDecoration(
+                            AdaptiveSpacingItemDecoration(
+                                size = 12.dpToPx(requireContext()),
+                                edgeEnabled = true,
+                            ),
+                        )
+                    }
+                }
+
+                else -> {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    if (itemDecorationCount >= 1) removeItemDecorationAt(0)
+                }
+            }
             adapter = searchAdapter
         }
         return searchAdapter
