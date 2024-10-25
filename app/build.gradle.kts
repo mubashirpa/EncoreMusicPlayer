@@ -98,4 +98,5 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.paging.runtime)
+    implementation(libs.viewpager2)
 }
