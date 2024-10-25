@@ -18,147 +18,148 @@
             app:navigationIcon="@drawable/baseline_arrow_back_24" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="32dp"
+        android:orientation="vertical"
         android:paddingTop="12dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/media"
-            android:layout_width="0dp"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/bg_placeholder"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toTopOf="@+id/title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_default="spread"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium" />
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingHorizontal="32dp" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:ellipsize="marquee"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/media" />
+            android:paddingHorizontal="32dp">
 
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ellipsize="marquee"
-            android:maxLines="1"
-            android:textAppearance="?attr/textAppearanceLabelLarge"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/progress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:valueFrom="0.0"
-            android:valueTo="100.0"
-            app:labelBehavior="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle" />
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="marquee"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title" />
 
-        <TextView
-            android:id="@+id/elapsed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/timer_zero"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            app:layout_constraintStart_toStartOf="@+id/progress"
-            app:layout_constraintTop_toBottomOf="@+id/progress" />
+            <com.google.android.material.slider.Slider
+                android:id="@+id/progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:valueFrom="0.0"
+                android:valueTo="100.0"
+                app:labelBehavior="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/subtitle" />
 
-        <TextView
-            android:id="@+id/duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/timer_zero"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            app:layout_constraintEnd_toEndOf="@+id/progress"
-            app:layout_constraintTop_toBottomOf="@+id/progress" />
+            <TextView
+                android:id="@+id/elapsed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/timer_zero"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                app:layout_constraintStart_toStartOf="@+id/progress"
+                app:layout_constraintTop_toBottomOf="@+id/progress" />
 
-        <Button
-            android:id="@+id/shuffle_button"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/shuffle"
-            app:icon="@drawable/baseline_shuffle_24"
-            app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/previous_button" />
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/timer_zero"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                app:layout_constraintEnd_toEndOf="@+id/progress"
+                app:layout_constraintTop_toBottomOf="@+id/progress" />
 
-        <Button
-            android:id="@+id/previous_button"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/previous"
-            app:icon="@drawable/baseline_fast_rewind_24"
-            app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintBottom_toBottomOf="@+id/play_button"
-            app:layout_constraintEnd_toStartOf="@+id/play_button"
-            app:layout_constraintStart_toEndOf="@+id/shuffle_button"
-            app:layout_constraintTop_toTopOf="@+id/play_button" />
+            <Button
+                android:id="@+id/shuffle_button"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/shuffle"
+                app:icon="@drawable/baseline_shuffle_24"
+                app:iconTint="?attr/colorOnSurface"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/previous_button" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/play_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="36dp"
-            android:contentDescription="@string/play"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/next_button"
-            app:layout_constraintStart_toEndOf="@+id/previous_button"
-            app:layout_constraintTop_toBottomOf="@+id/duration"
-            app:srcCompat="@drawable/baseline_play_arrow_24" />
+            <Button
+                android:id="@+id/previous_button"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/previous"
+                app:icon="@drawable/baseline_fast_rewind_24"
+                app:iconTint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="@+id/play_button"
+                app:layout_constraintEnd_toStartOf="@+id/play_button"
+                app:layout_constraintStart_toEndOf="@+id/shuffle_button"
+                app:layout_constraintTop_toTopOf="@+id/play_button" />
 
-        <Button
-            android:id="@+id/next_button"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/next"
-            app:icon="@drawable/baseline_fast_forward_24"
-            app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintBottom_toBottomOf="@+id/play_button"
-            app:layout_constraintEnd_toStartOf="@+id/repeat_button"
-            app:layout_constraintStart_toEndOf="@+id/play_button"
-            app:layout_constraintTop_toTopOf="@+id/play_button" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:layout_marginBottom="36dp"
+                android:contentDescription="@string/play"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/next_button"
+                app:layout_constraintStart_toEndOf="@+id/previous_button"
+                app:layout_constraintTop_toBottomOf="@+id/duration"
+                app:srcCompat="@drawable/baseline_play_arrow_24" />
 
-        <Button
-            android:id="@+id/repeat_button"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/restart"
-            app:icon="@drawable/baseline_repeat_24"
-            app:iconTint="?attr/colorOnSurface"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/next_button" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/next_button"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/next"
+                app:icon="@drawable/baseline_fast_forward_24"
+                app:iconTint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="@+id/play_button"
+                app:layout_constraintEnd_toStartOf="@+id/repeat_button"
+                app:layout_constraintStart_toEndOf="@+id/play_button"
+                app:layout_constraintTop_toTopOf="@+id/play_button" />
+
+            <Button
+                android:id="@+id/repeat_button"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/restart"
+                app:icon="@drawable/baseline_repeat_24"
+                app:iconTint="?attr/colorOnSurface"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/next_button" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -10,8 +10,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import coil.load
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
 import com.encore.music.R
+import com.encore.music.core.ext.dpToPx
 import com.encore.music.databinding.FragmentPlayerBinding
 import com.encore.music.player.RepeatMode
 import com.encore.music.presentation.ui.activities.MainUiEvent
@@ -19,6 +21,7 @@ import com.encore.music.presentation.ui.activities.MainViewModel
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
+import kotlin.math.abs
 
 class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
@@ -41,6 +44,12 @@ class PlayerFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        val carouselAdapter = initCarousel()
+
+        mainViewModel.trackList.observe(viewLifecycleOwner) { trackList ->
+            carouselAdapter.submitList(trackList)
+        }
+
         mainViewModel.progress.observe(viewLifecycleOwner) { progress ->
             binding.progress.value =
                 if (progress <= 100.0) {
@@ -61,13 +70,14 @@ class PlayerFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.playerUiState.collect { uiState ->
+                    if (binding.pager.currentItem != uiState.currentTrackIndex) {
+                        binding.pager.post {
+                            binding.pager.setCurrentItem(uiState.currentTrackIndex, true)
+                        }
+                    }
+
                     uiState.currentPlayingTrack?.let { track ->
                         binding.apply {
-                            media.load(track.image) {
-                                crossfade(true)
-                                placeholder(R.drawable.bg_placeholder)
-                            }
-
                             title.text = track.name
                             title.setSelected(true)
                             subtitle.text = track.artists?.joinToString { it.name.orEmpty() }
@@ -135,11 +145,32 @@ class PlayerFragment : Fragment() {
 
     private fun timeStampToDuration(position: Long): String =
         if (position < 0) {
-            "--:--"
+            "00:00"
         } else {
             val totalSeconds = (position / 1000).toInt()
             val minutes = totalSeconds / 60
             val remainingSeconds = totalSeconds % 60
             "%d:%02d".format(minutes, remainingSeconds)
         }
+
+    private fun initCarousel(): TrackCarouselAdapter {
+        val trackCarouselAdapter = TrackCarouselAdapter()
+        binding.pager.apply {
+            offscreenPageLimit = 3
+            clipToPadding = false
+            clipChildren = false
+            isUserInputEnabled = false
+
+            val transformer = CompositePageTransformer()
+            transformer.addTransformer(MarginPageTransformer(16.dpToPx(requireContext())))
+            transformer.addTransformer { page, position ->
+                val r = 1 - abs(position)
+                page.scaleY = 0.85f + r * 0.14f
+            }
+            setPageTransformer(transformer)
+
+            adapter = trackCarouselAdapter
+        }
+        return trackCarouselAdapter
+    }
 }
