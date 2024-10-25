@@ -44,7 +44,7 @@ class MainViewModel(
     val duration: MutableLiveData<Long> by lazy { MutableLiveData<Long>(0L) }
     val progress: MutableLiveData<Float> by lazy { MutableLiveData<Float>(0f) }
     val progressString: MutableLiveData<String> by lazy { MutableLiveData<String>("00:00") }
-    private val trackList: MutableLiveData<MutableList<Track>> by lazy {
+    val trackList: MutableLiveData<MutableList<Track>> by lazy {
         MutableLiveData<MutableList<Track>>(mutableListOf())
     }
 
