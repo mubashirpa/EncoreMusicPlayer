@@ -118,7 +118,8 @@ class PlayerFragment : Fragment() {
         }
 
         binding.shuffleButton.setOnClickListener {
-            mainViewModel.onEvent(MainUiEvent.ChangeShuffleModeEnabled(true))
+            val enable = !mainViewModel.playerUiState.value.shuffleModeEnabled
+            mainViewModel.onEvent(MainUiEvent.ChangeShuffleModeEnabled(enable))
         }
 
         binding.previousButton.setOnClickListener {
