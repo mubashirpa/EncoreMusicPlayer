@@ -55,8 +55,8 @@ class ArtistFragment : Fragment() {
                     binding.progressCircular.visibility = View.GONE
                     binding.errorView.apply {
                         errorText.text = uiState.message.asString(requireContext())
-                        root.visibility = View.VISIBLE
                         retryButton.visibility = View.VISIBLE
+                        root.visibility = View.VISIBLE
 
                         retryButton.setOnClickListener {
                             viewModel.retry()
