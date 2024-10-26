@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -150,6 +152,18 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             isPlayerVisible = destination.hierarchy.any { it.hasRoute(Screen.Player::class) }
             binding.playerControls.root.isVisible = !isPlayerVisible && isTrackNotNull
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.playerControls.root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.playerControls.rootLayout.setPadding(
+                0,
+                0,
+                0,
+                if (binding.bottomNavigation.isVisible) 0 else insets.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
         }
     }
 

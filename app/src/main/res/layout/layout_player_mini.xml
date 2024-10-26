@@ -7,74 +7,80 @@
     app:cardBackgroundColor="?attr/colorTertiaryContainer"
     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Encore.PlayerMini">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/media"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_placeholder"
-            android:contentDescription="@string/media"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/progress_circular"
-            app:layout_constraintEnd_toEndOf="@+id/progress_circular"
-            app:layout_constraintStart_toStartOf="@+id/progress_circular"
-            app:layout_constraintTop_toTopOf="@+id/progress_circular"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progress_circular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:indicatorSize="42dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:trackThickness="2dp" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/media"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_placeholder"
+                android:contentDescription="@string/media"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="@+id/progress_circular"
+                app:layout_constraintEnd_toEndOf="@+id/progress_circular"
+                app:layout_constraintStart_toStartOf="@+id/progress_circular"
+                app:layout_constraintTop_toTopOf="@+id/progress_circular"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:ellipsize="marquee"
-            android:maxLines="1"
-            android:text="@string/title"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textColor="?attr/colorOnTertiaryContainer"
-            app:layout_constraintBottom_toTopOf="@+id/subtitle"
-            app:layout_constraintEnd_toStartOf="@+id/play_button"
-            app:layout_constraintStart_toEndOf="@+id/progress_circular"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_circular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:indicatorSize="42dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackThickness="2dp" />
 
-        <TextView
-            android:id="@+id/subtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="marquee"
-            android:maxLines="1"
-            android:text="@string/subtitle"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?attr/colorOnTertiaryContainer"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/title"
-            app:layout_constraintStart_toStartOf="@+id/title"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:ellipsize="marquee"
+                android:maxLines="1"
+                android:text="@string/title"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnTertiaryContainer"
+                app:layout_constraintBottom_toTopOf="@+id/subtitle"
+                app:layout_constraintEnd_toStartOf="@+id/play_button"
+                app:layout_constraintStart_toEndOf="@+id/progress_circular"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
-        <Button
-            android:id="@+id/play_button"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:contentDescription="@string/play"
-            app:icon="@drawable/baseline_play_arrow_24"
-            app:iconTint="?attr/colorOnTertiaryContainer"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:maxLines="1"
+                android:text="@string/subtitle"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnTertiaryContainer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/title"
+                app:layout_constraintStart_toStartOf="@+id/title"
+                app:layout_constraintTop_toBottomOf="@+id/title" />
+
+            <Button
+                android:id="@+id/play_button"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:contentDescription="@string/play"
+                app:icon="@drawable/baseline_play_arrow_24"
+                app:iconTint="?attr/colorOnTertiaryContainer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
