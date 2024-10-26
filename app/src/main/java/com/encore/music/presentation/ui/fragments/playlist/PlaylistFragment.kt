@@ -65,9 +65,10 @@ class PlaylistFragment : Fragment() {
                 is PlaylistUiState.Error -> {
                     binding.progressCircular.visibility = View.GONE
                     binding.errorView.apply {
-                        root.visibility = View.VISIBLE
                         errorText.text = uiState.message.asString(requireContext())
                         retryButton.visibility = View.VISIBLE
+                        root.visibility = View.VISIBLE
+
                         retryButton.setOnClickListener {
                             viewModel.onEvent(PlaylistUiEvent.OnRetry)
                         }
@@ -75,21 +76,19 @@ class PlaylistFragment : Fragment() {
                 }
 
                 is PlaylistUiState.Success -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-
                     val items =
                         buildList {
                             add(PlaylistListItem.HeaderItem(uiState.playlist))
-                            uiState.playlist.tracks?.let { tracks ->
-                                if (tracks.isEmpty()) {
-                                    add(PlaylistListItem.EmptyTracksItem)
-                                } else {
-                                    addAll(tracks.map { PlaylistListItem.TracksItem(it) })
-                                }
+                            if (uiState.playlist.tracks.isNullOrEmpty()) {
+                                add(PlaylistListItem.EmptyTracksItem)
+                            } else {
+                                addAll(uiState.playlist.tracks.map { PlaylistListItem.TracksItem(it) })
                             }
                         }
-                    playlistAdapter.items = items
+                    playlistAdapter.submitList(items) {
+                        binding.progressCircular.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+                    }
                 }
 
                 PlaylistUiState.Loading -> {

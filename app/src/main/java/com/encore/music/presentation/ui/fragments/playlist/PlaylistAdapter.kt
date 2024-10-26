@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -17,16 +17,11 @@ import com.encore.music.domain.model.tracks.Track
 
 class PlaylistAdapter(
     private val context: Context,
-    private val onShuffleClicked: () -> Unit,
-    private val onPlayClicked: () -> Unit,
-    private val onTrackClicked: (Track) -> Unit,
-    private val onTrackMoreClicked: (Track) -> Unit,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val differ: AsyncListDiffer<PlaylistListItem> = AsyncListDiffer(this, DIFF_CALLBACK)
-    var items: List<PlaylistListItem>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
-
+    private val onShuffleClicked: (() -> Unit)? = null,
+    private val onPlayClicked: (() -> Unit)? = null,
+    private val onTrackClicked: ((Track) -> Unit)? = null,
+    private val onTrackMoreClicked: ((Track) -> Unit)? = null,
+) : ListAdapter<PlaylistListItem, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
     inner class HeaderViewHolder(
         private val binding: LayoutPlaylistHeaderBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -42,11 +37,11 @@ class PlaylistAdapter(
                 subtitle.isVisible = description.isNotBlank()
 
                 shuffleButton.setOnClickListener {
-                    onShuffleClicked()
+                    onShuffleClicked?.invoke()
                 }
 
                 playButton.setOnClickListener {
-                    onPlayClicked()
+                    onPlayClicked?.invoke()
                 }
             }
         }
@@ -65,11 +60,11 @@ class PlaylistAdapter(
                 supportingText.text = item.track.artists?.joinToString { it.name.orEmpty() }
 
                 root.setOnClickListener {
-                    onTrackClicked(item.track)
+                    onTrackClicked?.invoke(item.track)
                 }
 
                 menuButton.setOnClickListener {
-                    onTrackMoreClicked(item.track)
+                    onTrackMoreClicked?.invoke(item.track)
                 }
             }
         }
@@ -129,21 +124,21 @@ class PlaylistAdapter(
             else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
-    override fun getItemCount(): Int = items.count()
-
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
-        when (val item = items[position]) {
-            is PlaylistListItem.HeaderItem -> (holder as HeaderViewHolder).bind(item)
-            is PlaylistListItem.TracksItem -> (holder as TracksViewHolder).bind(item)
-            PlaylistListItem.EmptyTracksItem -> (holder as EmptyTracksViewHolder).bind()
+        getItem(position)?.let { item ->
+            when (item) {
+                is PlaylistListItem.HeaderItem -> (holder as HeaderViewHolder).bind(item)
+                is PlaylistListItem.TracksItem -> (holder as TracksViewHolder).bind(item)
+                PlaylistListItem.EmptyTracksItem -> (holder as EmptyTracksViewHolder).bind()
+            }
         }
     }
 
     override fun getItemViewType(position: Int): Int =
-        when (items[position]) {
+        when (getItem(position)) {
             is PlaylistListItem.HeaderItem -> 0
             is PlaylistListItem.TracksItem -> 1
             is PlaylistListItem.EmptyTracksItem -> 2
