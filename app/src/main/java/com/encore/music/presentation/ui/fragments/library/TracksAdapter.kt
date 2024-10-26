@@ -2,8 +2,8 @@ package com.encore.music.presentation.ui.fragments.library
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -11,14 +11,9 @@ import com.encore.music.databinding.ListItemTracksDetailedBinding
 import com.encore.music.domain.model.tracks.Track
 
 class TracksAdapter(
-    private val onTrackClicked: (Track) -> Unit = {},
-    private val onTrackMoreClicked: (Track) -> Unit = {},
-) : RecyclerView.Adapter<TracksAdapter.ViewHolder>() {
-    private val differ: AsyncListDiffer<Track> = AsyncListDiffer(this, DIFF_CALLBACK)
-    var items: List<Track>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
-
+    private val onTrackClicked: ((Track) -> Unit)? = null,
+    private val onTrackMoreClicked: ((Track) -> Unit)? = null,
+) : ListAdapter<Track, TracksAdapter.ViewHolder>(DIFF_CALLBACK) {
     inner class ViewHolder(
         val binding: ListItemTracksDetailedBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -32,11 +27,11 @@ class TracksAdapter(
                 supportingText.text = item.artists?.joinToString { it.name.orEmpty() }
 
                 menuButton.setOnClickListener {
-                    onTrackMoreClicked(item)
+                    onTrackMoreClicked?.invoke(item)
                 }
 
                 root.setOnClickListener {
-                    onTrackClicked(item)
+                    onTrackClicked?.invoke(item)
                 }
             }
         }
@@ -55,13 +50,11 @@ class TracksAdapter(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = items.count()
-
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.bind(items[position])
+        getItem(position)?.let { holder.bind(it) }
     }
 
     companion object {

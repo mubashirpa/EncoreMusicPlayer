@@ -2,8 +2,8 @@ package com.encore.music.presentation.ui.fragments.library
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -11,13 +11,8 @@ import com.encore.music.databinding.ListItemArtistsBinding
 import com.encore.music.domain.model.artists.Artist
 
 class ArtistsAdapter(
-    private val onArtistClicked: (Artist) -> Unit = {},
-) : RecyclerView.Adapter<ArtistsAdapter.ViewHolder>() {
-    private val differ: AsyncListDiffer<Artist> = AsyncListDiffer(this, DIFF_CALLBACK)
-    var items: List<Artist>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
-
+    private val onArtistClicked: ((Artist) -> Unit)? = null,
+) : ListAdapter<Artist, ArtistsAdapter.ViewHolder>(DIFF_CALLBACK) {
     inner class ViewHolder(
         val binding: ListItemArtistsBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -30,7 +25,7 @@ class ArtistsAdapter(
                 title.text = item.name
 
                 root.setOnClickListener {
-                    onArtistClicked(item)
+                    onArtistClicked?.invoke(item)
                 }
             }
         }
@@ -45,13 +40,11 @@ class ArtistsAdapter(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = items.count()
-
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int,
     ) {
-        holder.bind(items[position])
+        getItem(position)?.let { holder.bind(it) }
     }
 
     companion object {

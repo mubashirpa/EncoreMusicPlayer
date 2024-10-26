@@ -18,10 +18,10 @@ import com.encore.music.presentation.utils.PaddingValues
 class LibraryAdapter(
     private val context: Context,
     var items: MutableList<LibraryListItem>,
-    private val onArtistClicked: (Artist) -> Unit,
-    private val onPlaylistClicked: (Playlist) -> Unit,
-    private val onTrackClicked: (Track) -> Unit,
-    private val onTrackMoreClicked: (Track) -> Unit,
+    private val onArtistClicked: ((Artist) -> Unit)? = null,
+    private val onPlaylistClicked: ((Playlist) -> Unit)? = null,
+    private val onTrackClicked: ((Track) -> Unit)? = null,
+    private val onTrackMoreClicked: ((Track) -> Unit)? = null,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val horizontalItemDecoration =
         HorizontalItemDecoration(
@@ -40,22 +40,27 @@ class LibraryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private val artistsAdapter = ArtistsAdapter(onArtistClicked)
 
+        init {
+            binding.recyclerView.apply {
+                adapter = artistsAdapter
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(horizontalItemDecoration)
+                }
+            }
+        }
+
         fun bind(item: LibraryListItem.ArtistsItem) {
-            artistsAdapter.items = item.artists
+            artistsAdapter.submitList(item.artists)
+
+            val hasArtists = item.artists.isNotEmpty()
             binding.apply {
                 title.text = item.title
-                val hasArtists = item.artists.isNotEmpty()
                 recyclerView.isVisible = hasArtists
                 errorView.root.isVisible = !hasArtists
 
                 if (!hasArtists) {
                     errorView.errorText.text =
                         context.getString(R.string.you_are_not_following_any_artists)
-                } else {
-                    recyclerView.apply {
-                        if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
-                        adapter = artistsAdapter
-                    }
                 }
             }
         }
@@ -66,22 +71,25 @@ class LibraryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private val playlistsAdapter = PlaylistsAdapter(onPlaylistClicked)
 
+        init {
+            binding.recyclerView.apply {
+                if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
+                adapter = playlistsAdapter
+            }
+        }
+
         fun bind(item: LibraryListItem.PlaylistsItem) {
-            playlistsAdapter.items = item.playlists
+            playlistsAdapter.submitList(item.playlists)
+
+            val hasPlaylists = item.playlists.isNotEmpty()
             binding.apply {
                 title.text = item.title
-                val hasPlaylists = item.playlists.isNotEmpty()
                 recyclerView.isVisible = hasPlaylists
                 errorView.root.isVisible = !hasPlaylists
 
                 if (!hasPlaylists) {
                     errorView.errorText.text =
                         context.getString(R.string.you_don_t_have_any_playlists)
-                } else {
-                    recyclerView.apply {
-                        if (itemDecorationCount == 0) addItemDecoration(horizontalItemDecoration)
-                        adapter = playlistsAdapter
-                    }
                 }
             }
         }
@@ -96,19 +104,22 @@ class LibraryAdapter(
                 onTrackMoreClicked = onTrackMoreClicked,
             )
 
+        init {
+            binding.recyclerView.adapter = tracksAdapter
+        }
+
         fun bind(item: LibraryListItem.TracksItem) {
-            tracksAdapter.items = item.tracks
+            tracksAdapter.submitList(item.tracks)
+
+            val hasTracks = item.tracks.isNotEmpty()
             binding.apply {
                 title.text = item.title
-                val hasTracks = item.tracks.isNotEmpty()
                 recyclerView.isVisible = hasTracks
                 errorView.root.isVisible = !hasTracks
 
                 if (!hasTracks) {
                     errorView.errorText.text =
                         context.getString(R.string.no_recent_activity)
-                } else {
-                    recyclerView.adapter = tracksAdapter
                 }
             }
         }
@@ -153,7 +164,7 @@ class LibraryAdapter(
         }
     }
 
-    override fun getItemCount(): Int = items.count()
+    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
