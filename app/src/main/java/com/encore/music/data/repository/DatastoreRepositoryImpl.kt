@@ -45,12 +45,11 @@ class DatastoreRepositoryImpl(
         }
     }
 
-    override suspend fun clearLoginPreferences(): Boolean {
+    override suspend fun clearLoginPreferences() {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.USER_EMAIL] = ""
             settings[PreferencesKeys.USER_PASSWORD] = ""
             settings[PreferencesKeys.REMEMBER_LOGIN_DATA] = false
         }
-        return true
     }
 }

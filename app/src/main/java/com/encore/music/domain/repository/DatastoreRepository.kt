@@ -8,5 +8,5 @@ interface DatastoreRepository {
 
     suspend fun saveLoginPreferences(loginPreferences: LoginPreferences)
 
-    suspend fun clearLoginPreferences(): Boolean
+    suspend fun clearLoginPreferences()
 }

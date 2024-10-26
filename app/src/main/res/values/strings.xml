@@ -34,10 +34,6 @@
     <string name="playlists">Playlists</string>
     <string name="songs">Songs</string>
     <string name="invalid_view_type">Invalid view type</string>
-    <string name="popular">Popular</string>
-    <string name="trending">Trending</string>
-    <string name="top_charts_title_case">Top Charts</string>
-    <string name="new_releases_title_case">New Releases</string>
     <string name="what_will_you_listen_to">What will you listen to?</string>
     <string name="browse_all_title_case">Browse All</string>
     <string name="save_playlist">Save playlist</string>
@@ -70,7 +66,6 @@
     <string name="add_to_another_playlist">Add to another playlist</string>
     <string name="more_from_">More from %1$s</string>
     <string name="start_building_your_playlist_by_adding_some_songs">Start building your playlist by adding some songs</string>
-    <string name="remove_playlist">Remove playlist</string>
     <string name="edit_playlist">Edit playlist</string>
     <string name="delete_playlist">Delete playlist</string>
     <string name="edit">Edit</string>
@@ -157,4 +152,5 @@
     <string name="error_invalid_email">Please enter a valid email.</string>
     <string name="error_invalid_password">Use a mix of letters and numbers that you can remember.</string>
     <string name="error_invalid_repeated_password">You must enter the same password twice in order to confirm it.</string>
+    <string name="browse_all">Browse All</string>
 </resources>
