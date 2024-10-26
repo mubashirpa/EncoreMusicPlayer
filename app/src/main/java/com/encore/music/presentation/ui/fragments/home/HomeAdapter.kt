@@ -23,12 +23,11 @@ class HomeAdapter(
     var items: MutableList<HomeListItem> = mutableListOf()
 
     inner class TopTracksViewHolder(
-        private val binding: LayoutHomeTopTracksBinding,
+        binding: LayoutHomeTopTracksBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HomeListItem.TopTracksItem) {
-            val topTracksAdapter = TopTracksAdapter(onTrackClicked)
-            topTracksAdapter.submitList(item.tracks)
+        private val topTracksAdapter = TopTracksAdapter(onTrackClicked)
 
+        init {
             binding.recyclerView.apply {
                 if (itemDecorationCount == 0) {
                     addItemDecoration(AdaptiveSpacingItemDecoration(10.dpToPx(context), false))
@@ -36,35 +35,40 @@ class HomeAdapter(
                 adapter = topTracksAdapter
             }
         }
+
+        fun bind(item: HomeListItem.TopTracksItem) {
+            topTracksAdapter.submitList(item.tracks)
+        }
     }
 
     inner class PlaylistsViewHolder(
         private val binding: LayoutHomePlaylistsBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HomeListItem.PlaylistsItem) {
-            val playlistsAdapter = PlaylistsAdapter(onPlaylistClicked)
-            playlistsAdapter.submitList(item.playlists)
+        private val playlistsAdapter = PlaylistsAdapter(onPlaylistClicked)
 
-            binding.apply {
-                title.text = item.title
-                recyclerView.apply {
-                    if (itemDecorationCount == 0) {
-                        addItemDecoration(
-                            HorizontalItemDecoration(
-                                contentPadding =
-                                    PaddingValues(
-                                        start = 16,
-                                        top = 0,
-                                        end = 16,
-                                        bottom = 0,
-                                    ),
-                                horizontalSpacing = 10,
-                            ),
-                        )
-                    }
-                    adapter = playlistsAdapter
+        init {
+            binding.recyclerView.apply {
+                if (itemDecorationCount == 0) {
+                    addItemDecoration(
+                        HorizontalItemDecoration(
+                            contentPadding =
+                                PaddingValues(
+                                    start = 16,
+                                    top = 0,
+                                    end = 16,
+                                    bottom = 0,
+                                ),
+                            horizontalSpacing = 10,
+                        ),
+                    )
                 }
+                adapter = playlistsAdapter
             }
+        }
+
+        fun bind(item: HomeListItem.PlaylistsItem) {
+            playlistsAdapter.submitList(item.playlists)
+            binding.title.text = item.title
         }
     }
 
