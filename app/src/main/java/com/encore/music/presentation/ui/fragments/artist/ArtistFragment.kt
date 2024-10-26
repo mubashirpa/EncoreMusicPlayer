@@ -54,9 +54,10 @@ class ArtistFragment : Fragment() {
                 is ArtistUiState.Error -> {
                     binding.progressCircular.visibility = View.GONE
                     binding.errorView.apply {
-                        root.visibility = View.VISIBLE
                         errorText.text = uiState.message.asString(requireContext())
+                        root.visibility = View.VISIBLE
                         retryButton.visibility = View.VISIBLE
+
                         retryButton.setOnClickListener {
                             viewModel.retry()
                         }
@@ -64,9 +65,6 @@ class ArtistFragment : Fragment() {
                 }
 
                 is ArtistUiState.Success -> {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-
                     val items =
                         buildList {
                             add(
@@ -75,15 +73,16 @@ class ArtistFragment : Fragment() {
                                     isFollowed = uiState.isFollowed,
                                 ),
                             )
-                            uiState.artist.tracks?.let { tracks ->
-                                if (tracks.isEmpty()) {
-                                    add(ArtistListItem.EmptyTracksItem)
-                                } else {
-                                    addAll(tracks.map { ArtistListItem.TracksItem(it) })
-                                }
+                            if (uiState.artist.tracks.isNullOrEmpty()) {
+                                add(ArtistListItem.EmptyTracksItem)
+                            } else {
+                                addAll(uiState.artist.tracks.map { ArtistListItem.TracksItem(it) })
                             }
                         }
-                    artistAdapter.items = items
+                    artistAdapter.submitList(items) {
+                        binding.progressCircular.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+                    }
                 }
 
                 ArtistUiState.Loading -> {
@@ -94,7 +93,7 @@ class ArtistFragment : Fragment() {
         }
 
         viewModel.isFollowed.observe(viewLifecycleOwner) { isFollowed ->
-            artistAdapter.items.firstOrNull()?.let {
+            artistAdapter.currentList.firstOrNull()?.let {
                 if (it is ArtistListItem.HeaderItem) {
                     it.isFollowed = isFollowed
                     artistAdapter.notifyItemChanged(0)
@@ -137,21 +136,19 @@ class ArtistFragment : Fragment() {
         binding.recyclerView.apply {
             ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
                 val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        VerticalItemDecoration(
-                            contentPadding =
-                                PaddingValues(
-                                    start = insets.left,
-                                    top = 0,
-                                    end = insets.right,
-                                    bottom = insets.bottom,
-                                    convertToDp = false,
-                                ),
-                            verticalSpacing = 0,
-                        ),
-                    )
-                }
+                addItemDecoration(
+                    VerticalItemDecoration(
+                        contentPadding =
+                            PaddingValues(
+                                start = insets.left,
+                                top = 0,
+                                end = insets.right,
+                                bottom = insets.bottom,
+                                convertToDp = false,
+                            ),
+                        verticalSpacing = 0,
+                    ),
+                )
                 WindowInsetsCompat.CONSUMED
             }
             adapter = artistAdapter

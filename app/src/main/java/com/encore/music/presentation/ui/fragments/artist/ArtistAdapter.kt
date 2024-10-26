@@ -4,8 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.encore.music.R
@@ -17,16 +17,11 @@ import com.encore.music.domain.model.tracks.Track
 
 class ArtistAdapter(
     private val context: Context,
-    private val onFollowArtistClicked: (artist: Artist, isFollowed: Boolean) -> Unit,
-    private val onPlayClicked: () -> Unit,
-    private val onTrackClicked: (Track) -> Unit,
-    private val onTrackMoreClicked: (Track) -> Unit,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val differ: AsyncListDiffer<ArtistListItem> = AsyncListDiffer(this, DIFF_CALLBACK)
-    var items: List<ArtistListItem>
-        get() = differ.currentList
-        set(value) = differ.submitList(value)
-
+    private val onFollowArtistClicked: ((artist: Artist, isFollowed: Boolean) -> Unit)? = null,
+    private val onPlayClicked: (() -> Unit)? = null,
+    private val onTrackClicked: ((Track) -> Unit)? = null,
+    private val onTrackMoreClicked: ((Track) -> Unit)? = null,
+) : ListAdapter<ArtistListItem, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
     inner class HeaderViewHolder(
         private val binding: LayoutArtistHeaderBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -43,11 +38,11 @@ class ArtistAdapter(
                 followButton.isSelected = item.isFollowed
 
                 followButton.setOnClickListener {
-                    onFollowArtistClicked(item.artist, item.isFollowed)
+                    onFollowArtistClicked?.invoke(item.artist, item.isFollowed)
                 }
 
                 playButton.setOnClickListener {
-                    onPlayClicked()
+                    onPlayClicked?.invoke()
                 }
             }
         }
@@ -66,11 +61,11 @@ class ArtistAdapter(
                 supportingText.text = item.track.artists?.joinToString { it.name.orEmpty() }
 
                 root.setOnClickListener {
-                    onTrackClicked(item.track)
+                    onTrackClicked?.invoke(item.track)
                 }
 
                 menuButton.setOnClickListener {
-                    onTrackMoreClicked(item.track)
+                    onTrackMoreClicked?.invoke(item.track)
                 }
             }
         }
@@ -130,21 +125,21 @@ class ArtistAdapter(
             else -> throw IllegalArgumentException(context.getString(R.string.invalid_view_type))
         }
 
-    override fun getItemCount(): Int = items.count()
-
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
-        when (val item = items[position]) {
-            is ArtistListItem.HeaderItem -> (holder as HeaderViewHolder).bind(item)
-            is ArtistListItem.TracksItem -> (holder as TracksViewHolder).bind(item)
-            ArtistListItem.EmptyTracksItem -> (holder as EmptyTracksViewHolder).bind()
+        getItem(position)?.let { item ->
+            when (item) {
+                is ArtistListItem.HeaderItem -> (holder as HeaderViewHolder).bind(item)
+                is ArtistListItem.TracksItem -> (holder as TracksViewHolder).bind(item)
+                ArtistListItem.EmptyTracksItem -> (holder as EmptyTracksViewHolder).bind()
+            }
         }
     }
 
     override fun getItemViewType(position: Int): Int =
-        when (items[position]) {
+        when (getItem(position)) {
             is ArtistListItem.HeaderItem -> 0
             is ArtistListItem.TracksItem -> 1
             ArtistListItem.EmptyTracksItem -> 2
