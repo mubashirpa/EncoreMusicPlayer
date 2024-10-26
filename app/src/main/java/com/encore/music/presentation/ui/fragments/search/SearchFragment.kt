@@ -153,9 +153,14 @@ class SearchFragment : Fragment() {
                     binding.apply {
                         searchProgressCircular.visibility = View.GONE
                         searchRecyclerView.visibility = View.GONE
+
                         searchErrorView.apply {
-                            errorText.text = uiState.message.asString(requireContext())
-                            root.visibility = View.VISIBLE
+                            uiState.message?.let {
+                                errorText.text = uiState.message.asString(requireContext())
+                                root.visibility = View.VISIBLE
+                            } ?: run {
+                                root.visibility = View.GONE
+                            }
                         }
                     }
                 }
@@ -192,7 +197,9 @@ class SearchFragment : Fragment() {
                     binding.searchProgressCircular.visibility = View.GONE
                     binding.searchRecyclerView.visibility = View.VISIBLE
                     searchAdapter.submitList(uiState.items)
-                    binding.searchRecyclerView.smoothScrollToPosition(0)
+                    binding.searchRecyclerView.post {
+                        binding.searchRecyclerView.smoothScrollToPosition(0)
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ import com.encore.music.core.UiText
 
 sealed class SearchUiState {
     data class Empty(
-        val message: UiText,
+        val message: UiText?,
     ) : SearchUiState()
 
     data class Error(

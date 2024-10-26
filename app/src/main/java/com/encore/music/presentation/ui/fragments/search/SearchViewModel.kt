@@ -111,6 +111,7 @@ class SearchViewModel(
         searchItemUseCaseJob?.cancel()
         searchItemUseCaseJob = null
         if (query.isBlank()) {
+            _searchUiState.value = SearchUiState.Empty(null)
             return
         }
         searchItemUseCaseJob =
