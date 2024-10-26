@@ -16,7 +16,7 @@ object PreferencesKeys {
 }
 
 object Encore {
-    const val API_BASE_URL = "http://192.168.24.166:8080/v1"
+    const val API_BASE_URL = "http://encore.casacam.net:8080/v1"
     const val ENDPOINT_GET_ARTIST_TOP_TRACKS = "artists/{artist_id}/top-tracks"
     const val ENDPOINT_GET_CATEGORIES = "categories"
     const val ENDPOINT_GET_CATEGORY_PLAYLISTS = "categories/{category_id}/playlists"
