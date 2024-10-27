@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import com.encore.music.core.UiText
 import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.usecase.authentication.GetCurrentUserUseCase
 import com.encore.music.domain.usecase.authentication.HasUserUseCase
@@ -44,8 +45,8 @@ class MainViewModel(
     val duration: MutableLiveData<Long> by lazy { MutableLiveData<Long>(0L) }
     val progress: MutableLiveData<Float> by lazy { MutableLiveData<Float>(0f) }
     val progressString: MutableLiveData<String> by lazy { MutableLiveData<String>("00:00") }
-    val trackList: MutableLiveData<MutableList<Track>> by lazy {
-        MutableLiveData<MutableList<Track>>(mutableListOf())
+    val trackList: MutableLiveData<List<Track>> by lazy {
+        MutableLiveData<List<Track>>(mutableListOf())
     }
 
     init {
@@ -232,76 +233,45 @@ class MainViewModel(
         )
     }
 
-    // Add a media item to the end of the playlist (for "Add to Queue")
     private fun addToPlaylist(track: Track) {
-        if (track.mediaUrl == null) return
+        track.mediaUrl ?: return
+        val tracks = trackList.value ?: return
 
-        if (trackList.value!!.isEmpty()) {
+        if (tracks.isEmpty()) {
             addPlaylist(listOf(track), track.id)
             return
         }
 
-        val songIndex = findTrackItemIndex(track)
-
-        if (songIndex != -1) {
-            if (songIndex <= playerUiState.value.currentTrackIndex) return
-
-            // If the song is already in the playlist, move it to the end
-            moveTrackItem(songIndex, trackList.value!!.size)
+        if (playbackServiceHandler.addMediaItem(track.toMediaItem())) {
+            trackList.value?.apply {
+                trackList.value = plus(track)
+            }
         } else {
-            // Add the media item to the end
-            trackList.value?.add(track)
-            // Trigger LiveData update
-            trackList.value = trackList.value
+            viewModelScope.launch {
+                _uiEvent.emit(MainEvent.ShowMessage(UiText.DynamicString("This song is already in your queue")))
+            }
         }
-
-        playbackServiceHandler.addMediaItem(track.toMediaItem())
     }
 
-    // Add a media item to play next (for "Play Next")
     private fun addNextInPlaylist(track: Track) {
-        if (track.mediaUrl == null) return
+        track.mediaUrl ?: return
+        val tracks = trackList.value ?: return
 
-        if (trackList.value!!.isEmpty()) {
+        if (tracks.isEmpty()) {
             addPlaylist(listOf(track), track.id)
             return
         }
 
-        val songIndex = findTrackItemIndex(track)
-        val currentTrackIndex = playerUiState.value.currentTrackIndex
-
-        if (songIndex != -1) {
-            if (songIndex <= currentTrackIndex) return
-
-            // If the song is already in the playlist, move it to the next position
-            moveTrackItem(songIndex, currentTrackIndex + 1)
+        if (playbackServiceHandler.addMediaItemNext(track.toMediaItem())) {
+            trackList.value =
+                tracks.toMutableList().apply {
+                    add(playerUiState.value.currentTrackIndex + 1, track)
+                }
         } else {
-            // Add the media item right after the currently playing song
-            trackList.value?.add(currentTrackIndex + 1, track)
-            // Trigger LiveData update
-            trackList.value = trackList.value
+            viewModelScope.launch {
+                _uiEvent.emit(MainEvent.ShowMessage(UiText.DynamicString("This song is already in your queue")))
+            }
         }
-
-        playbackServiceHandler.addMediaItemNext(track.toMediaItem())
-    }
-
-    private fun findTrackItemIndex(track: Track): Int = trackList.value?.indexOfFirst { it.id == track.id } ?: -1
-
-    private fun moveTrackItem(
-        fromIndex: Int,
-        toIndex: Int,
-    ) {
-        trackList.value?.let {
-            val item = it[fromIndex]
-            it.add(toIndex, item)
-            it.removeAt(fromIndex)
-            // Trigger LiveData update
-            trackList.value = it
-        }
-    }
-
-    private fun insertRecentTrack(track: Track) {
-        insertRecentTrackUseCase(track).launchIn(viewModelScope)
     }
 
     private fun clearPlayerData() {
@@ -325,4 +295,8 @@ class MainViewModel(
                     .setArtworkUri(Uri.parse(image.orEmpty()))
                     .build(),
             ).build()
+
+    private fun insertRecentTrack(track: Track) {
+        insertRecentTrackUseCase(track).launchIn(viewModelScope)
+    }
 }

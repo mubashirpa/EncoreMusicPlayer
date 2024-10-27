@@ -141,25 +141,26 @@ class PlaybackServiceHandler(
         exoPlayer.prepare()
     }
 
-    fun addMediaItem(mediaItem: MediaItem) {
+    fun addMediaItem(mediaItem: MediaItem): Boolean {
         val songIndex = findMediaItemIndex(mediaItem)
 
-        if (songIndex != -1) {
-            val lastIndex = exoPlayer.mediaItemCount - 1
-            exoPlayer.moveMediaItem(songIndex, lastIndex + 1)
-        } else {
+        return if (songIndex == -1) {
             exoPlayer.addMediaItem(mediaItem)
+            true
+        } else {
+            false
         }
     }
 
-    fun addMediaItemNext(mediaItem: MediaItem) {
+    fun addMediaItemNext(mediaItem: MediaItem): Boolean {
         val currentIndex = exoPlayer.currentMediaItemIndex
         val songIndex = findMediaItemIndex(mediaItem)
 
-        if (songIndex != -1) {
-            exoPlayer.moveMediaItem(songIndex, currentIndex + 1)
-        } else {
+        return if (songIndex == -1) {
             exoPlayer.addMediaItem(currentIndex + 1, mediaItem)
+            true
+        } else {
+            false
         }
     }
 

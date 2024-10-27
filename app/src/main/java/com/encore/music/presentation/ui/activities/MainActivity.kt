@@ -104,6 +104,10 @@ class MainActivity : AppCompatActivity() {
                 launch {
                     viewModel.uiEvent.collect { event ->
                         when (event) {
+                            is MainEvent.ShowMessage -> {
+                                showMessage(event.message.asString(this@MainActivity))
+                            }
+
                             MainEvent.StartService -> {
                                 startPlaybackService()
                             }
