@@ -217,30 +217,30 @@ class SearchFragment : Fragment() {
                 }
 
             // Clear current items in the adapter
-            searchAdapter.submitList(emptyList())
-
-            // Change layout based on the selected chip
-            binding.searchRecyclerView.apply {
-                when (viewModel.searchType) {
-                    SearchType.PLAYLIST -> {
-                        layoutManager =
-                            GridLayoutManager(
-                                requireContext(),
-                                SpanCount.adaptive(requireContext(), 160),
-                            )
-                        if (itemDecorationCount == 0) {
-                            addItemDecoration(
-                                AdaptiveSpacingItemDecoration(
-                                    size = 12.dpToPx(requireContext()),
-                                    edgeEnabled = true,
-                                ),
-                            )
+            searchAdapter.submitList(emptyList()) {
+                // Change layout based on the selected chip
+                binding.searchRecyclerView.apply {
+                    when (viewModel.searchType) {
+                        SearchType.PLAYLIST -> {
+                            layoutManager =
+                                GridLayoutManager(
+                                    requireContext(),
+                                    SpanCount.adaptive(requireContext(), 160),
+                                )
+                            if (itemDecorationCount == 0) {
+                                addItemDecoration(
+                                    AdaptiveSpacingItemDecoration(
+                                        size = 12.dpToPx(requireContext()),
+                                        edgeEnabled = true,
+                                    ),
+                                )
+                            }
                         }
-                    }
 
-                    else -> {
-                        layoutManager = LinearLayoutManager(requireContext())
-                        if (itemDecorationCount >= 1) removeItemDecorationAt(0)
+                        else -> {
+                            layoutManager = LinearLayoutManager(requireContext())
+                            if (itemDecorationCount >= 1) removeItemDecorationAt(0)
+                        }
                     }
                 }
             }
