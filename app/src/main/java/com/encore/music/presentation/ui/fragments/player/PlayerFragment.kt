@@ -32,6 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.round
 
 private const val SWIPE_THRESHOLD = 50f
 private const val VOLUME_INCREMENT = 0.1f
@@ -87,8 +88,9 @@ class PlayerFragment : Fragment() {
                                     else -> max(currentVolume - VOLUME_INCREMENT, 0.0f)
                                 }
                             mainViewModel.onEvent(MainUiEvent.SetVolume(newVolume))
-                            binding.volumeIndicator.progress = (newVolume * 100).toInt()
-                            binding.volumeText.text = "${(newVolume * 10).toInt()}"
+                            val progress = round(newVolume * 10).toInt()
+                            binding.volumeIndicator.progress = progress
+                            binding.volumeText.text = "$progress"
                             binding.volumeController.resetAutoHide()
                             minSwipeY = 0f
                         }
