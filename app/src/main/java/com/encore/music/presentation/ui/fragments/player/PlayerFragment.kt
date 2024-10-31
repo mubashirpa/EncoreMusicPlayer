@@ -1,7 +1,10 @@
 package com.encore.music.presentation.ui.fragments.player
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
@@ -22,12 +25,18 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+
+private const val SWIPE_THRESHOLD = 50f
+private const val VOLUME_INCREMENT = 0.1f
 
 class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
 
     private val mainViewModel: MainViewModel by activityViewModel()
+    private var minSwipeY: Float = 0f
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +47,7 @@ class PlayerFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -45,6 +55,44 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val carouselAdapter = initCarousel()
+
+        val gestureDetector =
+            GestureDetector(
+                requireContext(),
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDown(e: MotionEvent): Boolean {
+                        minSwipeY = 0f
+                        return true
+                    }
+
+                    override fun onScroll(
+                        e1: MotionEvent?,
+                        e2: MotionEvent,
+                        distanceX: Float,
+                        distanceY: Float,
+                    ): Boolean {
+                        minSwipeY += distanceY
+                        if (abs(distanceX) < abs(distanceY) && abs(minSwipeY) > SWIPE_THRESHOLD) {
+                            val currentVolume = mainViewModel.playerUiState.value.volume
+                            val newVolume =
+                                when {
+                                    distanceY > 0 -> min(currentVolume + VOLUME_INCREMENT, 1.0f)
+                                    else -> max(currentVolume - VOLUME_INCREMENT, 0.0f)
+                                }
+                            mainViewModel.onEvent(MainUiEvent.SetVolume(newVolume))
+                            binding.volumeIndicator.progress = (newVolume * 100).toInt()
+                            binding.volumeText.text = "${(newVolume * 10).toInt()}"
+                            binding.volumeController.resetAutoHide()
+                            minSwipeY = 0f
+                        }
+                        return true
+                    }
+                },
+            )
+        binding.pager.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            true
+        }
 
         mainViewModel.trackList.observe(viewLifecycleOwner) { trackList ->
             carouselAdapter.submitList(trackList)

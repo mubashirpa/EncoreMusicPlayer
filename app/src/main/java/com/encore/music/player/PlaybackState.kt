@@ -31,5 +31,9 @@ sealed class PlaybackState {
         val isEnabled: Boolean,
     ) : PlaybackState()
 
+    data class Volume(
+        val volume: Float,
+    ) : PlaybackState()
+
     data object Initial : PlaybackState()
 }

@@ -9,6 +9,10 @@ sealed class PlayerEvent {
         val shuffleModeEnabled: Boolean,
     ) : PlayerEvent()
 
+    data class SetVolume(
+        val volume: Float,
+    ) : PlayerEvent()
+
     data class UpdateProgress(
         val newProgress: Float,
     ) : PlayerEvent()

@@ -25,13 +25,48 @@
         android:paddingTop="12dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/pager"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:paddingHorizontal="32dp" />
+            android:layout_weight="1">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingHorizontal="32dp" />
+
+            <com.encore.music.presentation.ui.widgets.AutoHideLinearLayout
+                android:id="@+id/volume_controller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_volume_control"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone"
+                app:hideDelay="1000">
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/volume_indicator"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    app:indicatorTrackGapSize="0dp"
+                    app:trackCornerRadius="28dp"
+                    app:trackThickness="8dp" />
+
+                <TextView
+                    android:id="@+id/volume_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="?attr/textAppearanceLabelLarge"
+                    android:textColor="@android:color/white" />
+            </com.encore.music.presentation.ui.widgets.AutoHideLinearLayout>
+        </FrameLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

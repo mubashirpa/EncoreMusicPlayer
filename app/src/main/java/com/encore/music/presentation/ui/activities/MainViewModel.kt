@@ -109,6 +109,10 @@ class MainViewModel(
                 )
             }
 
+            is MainUiEvent.SetVolume -> {
+                playbackServiceHandler.onPlayerEvents(PlayerEvent.SetVolume(event.volume))
+            }
+
             is MainUiEvent.UpdateProgress -> {
                 playbackServiceHandler.onPlayerEvents(PlayerEvent.UpdateProgress(event.newProgress))
                 progress.value = event.newProgress
@@ -185,6 +189,10 @@ class MainViewModel(
 
                     is PlaybackState.ShuffleMode -> {
                         _playerUiState.update { it.copy(shuffleModeEnabled = playbackState.isEnabled) }
+                    }
+
+                    is PlaybackState.Volume -> {
+                        _playerUiState.update { it.copy(volume = playbackState.volume) }
                     }
                 }
             }

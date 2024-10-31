@@ -9,4 +9,5 @@ data class PlayerUiState(
     val isPlaying: Boolean = false,
     val repeatMode: RepeatMode = RepeatMode.REPEAT_MODE_OFF,
     val shuffleModeEnabled: Boolean = false,
+    val volume: Float = 1.0f,
 )

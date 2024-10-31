@@ -28,6 +28,10 @@ sealed class MainUiEvent {
         val index: Int,
     ) : MainUiEvent()
 
+    data class SetVolume(
+        val volume: Float,
+    ) : MainUiEvent()
+
     data class UpdateProgress(
         val newProgress: Float,
     ) : MainUiEvent()

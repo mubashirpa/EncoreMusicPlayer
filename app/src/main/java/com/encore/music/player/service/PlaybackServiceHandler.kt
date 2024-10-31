@@ -81,6 +81,11 @@ class PlaybackServiceHandler(
         _playbackState.update { PlaybackState.RepeatMode(playerRepeatMode) }
     }
 
+    override fun onVolumeChanged(volume: Float) {
+        super.onVolumeChanged(volume)
+        _playbackState.update { PlaybackState.Volume(volume) }
+    }
+
     // Private methods
 
     private fun playOrPause() {
@@ -215,6 +220,10 @@ class PlaybackServiceHandler(
                     exoPlayer.seekToDefaultPosition(selectedAudioIndex)
                     exoPlayer.playWhenReady = true
                 }
+            }
+
+            is PlayerEvent.SetVolume -> {
+                exoPlayer.volume = event.volume
             }
 
             PlayerEvent.Stop -> {
