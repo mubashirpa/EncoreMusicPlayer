@@ -29,7 +29,7 @@ class SearchItemsViewModel(
 ) : ViewModel() {
     private val searchItemsRoute = savedStateHandle.toRoute<Screen.SearchItems>()
     val searchQuery = searchItemsRoute.query
-    val searchType = searchItemsRoute.type
+    val searchType = enumValueOf<SearchType>(searchItemsRoute.type)
 
     private val _searchItems = MutableLiveData<PagingData<SearchItem>>()
     val searchItems: LiveData<PagingData<SearchItem>> = _searchItems

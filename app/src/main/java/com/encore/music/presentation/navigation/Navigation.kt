@@ -12,7 +12,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
 import androidx.navigation.navigation
 import com.encore.music.R
-import com.encore.music.domain.model.search.SearchType
 import com.encore.music.presentation.ui.fragments.artist.ArtistFragment
 import com.encore.music.presentation.ui.fragments.category.CategoryFragment
 import com.encore.music.presentation.ui.fragments.home.HomeFragment
@@ -259,7 +258,7 @@ fun NavController.navigateToCategory(
 
 fun NavController.navigateToSearchItems(
     query: String,
-    type: SearchType,
+    type: String,
 ) {
     navigate(
         route = Screen.SearchItems(query = query, type = type),

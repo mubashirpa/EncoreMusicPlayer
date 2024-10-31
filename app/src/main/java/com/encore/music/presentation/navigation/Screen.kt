@@ -1,6 +1,5 @@
 package com.encore.music.presentation.navigation
 
-import com.encore.music.domain.model.search.SearchType
 import kotlinx.serialization.Serializable
 
 sealed class Screen {
@@ -53,6 +52,6 @@ sealed class Screen {
     @Serializable
     data class SearchItems(
         val query: String,
-        val type: SearchType,
+        val type: String,
     ) : Screen()
 }

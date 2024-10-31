@@ -282,7 +282,7 @@ class SearchFragment : Fragment() {
                 val query = binding.searchView.text.toString()
                 if (query.isNotBlank()) {
                     binding.searchView.setVisible(false)
-                    navController.navigateToSearchItems(query, viewModel.searchType)
+                    navController.navigateToSearchItems(query, viewModel.searchType.name)
                 }
                 true
             }
