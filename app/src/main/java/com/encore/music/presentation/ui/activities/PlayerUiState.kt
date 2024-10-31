@@ -4,6 +4,7 @@ import com.encore.music.domain.model.tracks.Track
 import com.encore.music.player.RepeatMode
 
 data class PlayerUiState(
+    val audioSessionId: Int = 0,
     val currentPlayingTrack: Track? = null,
     val currentTrackIndex: Int = 0,
     val isPlaying: Boolean = false,

@@ -52,6 +52,7 @@
     <string name="logout">Logout</string>
     <string name="retry">Retry</string>
     <string name="add_playlist">Add playlist</string>
+    <string name="equalizer">Equalizer</string>
     <string name="playlist_name">Playlist name</string>
     <string name="give_your_playlist_a_catchy_description">Give your playlist a catchy description</string>
     <string name="save">Save</string>
@@ -81,12 +82,15 @@
     <string name="decline">Decline</string>
     <string name="accept">Accept</string>
     <string name="notification_permission_denied">Notification permission denied</string>
+    <string name="browse_all">Browse All</string>
+    <string name="unable_to_open_equalizer">Unable to open equalizer</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
     <string name="title_search_screen">Let\'s search</string>
     <string name="title_library_screen">Your library</string>
     <string name="title_profile_screen">Profile</string>
+    <string name="title_player_screen">Now playing</string>
 
     <!-- Screen labels -->
     <string name="label_onboarding_screen">Onboarding</string>
@@ -152,5 +156,4 @@
     <string name="error_invalid_email">Please enter a valid email.</string>
     <string name="error_invalid_password">Use a mix of letters and numbers that you can remember.</string>
     <string name="error_invalid_repeated_password">You must enter the same password twice in order to confirm it.</string>
-    <string name="browse_all">Browse All</string>
 </resources>

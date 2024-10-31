@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/equalizer"
+        android:contentDescription="@string/add_playlist"
+        android:title="@string/equalizer" />
+</menu>

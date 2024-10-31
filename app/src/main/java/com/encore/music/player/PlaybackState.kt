@@ -3,6 +3,10 @@ package com.encore.music.player
 import com.encore.music.player.RepeatMode as PlayerRepeatMode
 
 sealed class PlaybackState {
+    data class AudioSessionId(
+        val audioSessionId: Int,
+    ) : PlaybackState()
+
     data class Buffering(
         val progress: Long,
     ) : PlaybackState()

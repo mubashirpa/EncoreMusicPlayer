@@ -135,6 +135,12 @@ class MainViewModel(
         viewModelScope.launch {
             playbackServiceHandler.playbackState.collectLatest { playbackState ->
                 when (playbackState) {
+                    is PlaybackState.AudioSessionId -> {
+                        _playerUiState.update {
+                            it.copy(audioSessionId = playbackState.audioSessionId)
+                        }
+                    }
+
                     is PlaybackState.Buffering -> {
                         calculateProgressValue(playbackState.progress)
                     }

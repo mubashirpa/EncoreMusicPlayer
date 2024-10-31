@@ -1,12 +1,16 @@
 package com.encore.music.presentation.ui.fragments.player
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.media.audiofx.AudioEffect
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -22,6 +26,7 @@ import com.encore.music.player.RepeatMode
 import com.encore.music.presentation.ui.activities.MainUiEvent
 import com.encore.music.presentation.ui.activities.MainViewModel
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import kotlin.math.abs
@@ -37,6 +42,8 @@ class PlayerFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModel()
     private var minSwipeY: Float = 0f
+    private val activityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -165,6 +172,17 @@ class PlayerFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.equalizer -> {
+                    openEqualizer()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
         binding.shuffleButton.setOnClickListener {
             val enable = !mainViewModel.playerUiState.value.shuffleModeEnabled
             mainViewModel.onEvent(MainUiEvent.ChangeShuffleModeEnabled(enable))
@@ -221,5 +239,28 @@ class PlayerFragment : Fragment() {
             adapter = trackCarouselAdapter
         }
         return trackCarouselAdapter
+    }
+
+    private fun openEqualizer() {
+        val intent =
+            Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
+                putExtra(
+                    AudioEffect.EXTRA_AUDIO_SESSION,
+                    mainViewModel.playerUiState.value.audioSessionId,
+                )
+                putExtra(AudioEffect.EXTRA_PACKAGE_NAME, requireContext().packageName)
+                putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
+            }
+
+        try {
+            activityResultLauncher.launch(intent)
+        } catch (e: ActivityNotFoundException) {
+            Snackbar
+                .make(
+                    binding.root,
+                    getString(R.string.unable_to_open_equalizer),
+                    Snackbar.LENGTH_SHORT,
+                ).show()
+        }
     }
 }

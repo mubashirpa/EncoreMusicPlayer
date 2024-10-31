@@ -1,7 +1,9 @@
 package com.encore.music.player.service
 
+import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.encore.music.player.PlaybackState
 import com.encore.music.player.PlayerEvent
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(UnstableApi::class)
 class PlaybackServiceHandler(
     private val exoPlayer: ExoPlayer,
     private val scope: CoroutineScope,
@@ -40,6 +43,7 @@ class PlaybackServiceHandler(
 
             ExoPlayer.STATE_READY -> {
                 _playbackState.update { PlaybackState.Ready(exoPlayer.duration) }
+                _playbackState.update { PlaybackState.AudioSessionId(exoPlayer.audioSessionId) }
             }
 
             else -> Unit
@@ -84,6 +88,11 @@ class PlaybackServiceHandler(
     override fun onVolumeChanged(volume: Float) {
         super.onVolumeChanged(volume)
         _playbackState.update { PlaybackState.Volume(volume) }
+    }
+
+    override fun onAudioSessionIdChanged(audioSessionId: Int) {
+        super.onAudioSessionIdChanged(audioSessionId)
+        _playbackState.update { PlaybackState.AudioSessionId(audioSessionId) }
     }
 
     // Private methods
