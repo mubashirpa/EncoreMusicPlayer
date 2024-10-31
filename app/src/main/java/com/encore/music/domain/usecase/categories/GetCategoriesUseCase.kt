@@ -11,13 +11,17 @@ import com.encore.music.domain.repository.CategoriesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.ConnectException
+import java.util.Locale
 
 class GetCategoriesUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val repository: CategoriesRepository,
 ) {
+    private val defaultLocale = Locale.getDefault()
+    private val languageCountryCode = "${defaultLocale.language}_${defaultLocale.country}"
+
     operator fun invoke(
-        locale: String? = null,
+        locale: String? = languageCountryCode,
         limit: Int = 20,
         offset: Int = 0,
     ): Flow<Result<List<Category>>> =

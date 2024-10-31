@@ -11,6 +11,7 @@ import com.encore.music.domain.repository.AuthenticationRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.ConnectException
+import java.util.Locale
 
 class GetArtistsTopTracksUseCase(
     private val authenticationRepository: AuthenticationRepository,
@@ -18,7 +19,7 @@ class GetArtistsTopTracksUseCase(
 ) {
     operator fun invoke(
         artistId: String,
-        market: String? = null,
+        market: String? = Locale.getDefault().country,
     ): Flow<Result<Artist>> =
         flow {
             try {

@@ -12,6 +12,7 @@ import com.encore.music.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.ConnectException
+import java.util.Locale
 
 class SearchForItemUseCase(
     private val authenticationRepository: AuthenticationRepository,
@@ -20,7 +21,7 @@ class SearchForItemUseCase(
     operator fun invoke(
         query: String,
         type: List<SearchType>,
-        market: String? = null,
+        market: String? = Locale.getDefault().country,
         limit: Int = 20,
         offset: Int = 0,
         includeExternal: String? = null,

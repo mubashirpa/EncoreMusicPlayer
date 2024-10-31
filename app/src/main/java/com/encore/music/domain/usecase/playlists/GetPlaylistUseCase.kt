@@ -11,6 +11,7 @@ import com.encore.music.domain.repository.PlaylistsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.ConnectException
+import java.util.Locale
 
 class GetPlaylistUseCase(
     private val authenticationRepository: AuthenticationRepository,
@@ -18,7 +19,7 @@ class GetPlaylistUseCase(
 ) {
     operator fun invoke(
         playlistId: String,
-        market: String? = null,
+        market: String? = Locale.getDefault().country,
         additionalTypes: String? = null,
     ): Flow<Result<Playlist>> =
         flow {

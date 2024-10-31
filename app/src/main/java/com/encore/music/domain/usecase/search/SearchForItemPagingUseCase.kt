@@ -8,6 +8,7 @@ import com.encore.music.domain.model.search.SearchType
 import com.encore.music.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 
 class SearchForItemPagingUseCase(
     private val searchRepository: SearchRepository,
@@ -15,7 +16,7 @@ class SearchForItemPagingUseCase(
     operator fun invoke(
         query: String,
         type: List<SearchType>,
-        market: String? = null,
+        market: String? = Locale.getDefault().country,
         limit: Int = 20,
         offset: Int = 0,
         includeExternal: String? = null,
