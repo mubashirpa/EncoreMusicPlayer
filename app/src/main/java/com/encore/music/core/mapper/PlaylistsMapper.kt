@@ -11,6 +11,7 @@ fun PlaylistsDto.toPlaylistList(): List<PlaylistDomainModel> = items?.map { it.t
 fun Playlist.toPlaylistDomainModel(): PlaylistDomainModel =
     PlaylistDomainModel(
         description = description,
+        externalUrl = externalUrl,
         id = id,
         image = image,
         isLocal = isLocal,
@@ -27,6 +28,7 @@ fun PlaylistDomainModel.toPlaylistEntity(addedAt: Long? = null): PlaylistEntity 
         playlistId = id!!,
         addedAt = addedAt,
         description = description,
+        externalUrl = externalUrl,
         image = image ?: tracks?.firstOrNull()?.image,
         isLocal = isLocal,
         name = name,
@@ -37,6 +39,7 @@ fun PlaylistDomainModel.toPlaylistEntity(addedAt: Long? = null): PlaylistEntity 
 fun PlaylistEntity.toPlaylistDomainModel(): PlaylistDomainModel =
     PlaylistDomainModel(
         description = description,
+        externalUrl = externalUrl,
         id = playlistId,
         image = image,
         isLocal = isLocal,
@@ -48,6 +51,7 @@ fun PlaylistEntity.toPlaylistDomainModel(): PlaylistDomainModel =
 fun PlaylistWithTracksAndArtists.toPlaylistDomainModel(): PlaylistDomainModel =
     PlaylistDomainModel(
         description = playlist.description,
+        externalUrl = playlist.externalUrl,
         id = playlist.playlistId,
         image = playlist.image,
         isLocal = playlist.isLocal,

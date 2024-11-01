@@ -9,6 +9,7 @@ fun ArtistsDto.toArtistList(): List<ArtistDomainModel> = items?.map { it.toArtis
 
 fun Artist.toArtistDomainModel(): ArtistDomainModel =
     ArtistDomainModel(
+        externalUrl = externalUrl,
         followers = followers,
         id = id,
         image = image,
@@ -21,6 +22,7 @@ fun Artist.toArtistDomainModel(): ArtistDomainModel =
 fun ArtistDomainModel.toArtistEntity(followedAt: Long? = null): ArtistEntity =
     ArtistEntity(
         artistId = id!!,
+        externalUrl = externalUrl,
         followedAt = followedAt,
         followers = followers,
         image = image,
@@ -29,6 +31,7 @@ fun ArtistDomainModel.toArtistEntity(followedAt: Long? = null): ArtistEntity =
 
 fun ArtistEntity.toArtistDomainModel(): ArtistDomainModel =
     ArtistDomainModel(
+        externalUrl = externalUrl,
         followers = followers,
         id = artistId,
         image = image,

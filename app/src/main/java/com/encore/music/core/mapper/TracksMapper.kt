@@ -11,6 +11,7 @@ fun TracksDto.toTrackList(): List<TrackDomainModel> = items?.map { it.toTrackDom
 fun Track.toTrackDomainModel(): TrackDomainModel =
     TrackDomainModel(
         artists = artists?.map { it.toArtistDomainModel() },
+        externalUrl = externalUrl,
         id = id,
         image = image,
         name = name,
@@ -22,6 +23,7 @@ fun Track.toTrackDomainModel(): TrackDomainModel =
 fun TrackDomainModel.toTrackEntity(lastPlayed: Long? = null): TrackEntity =
     TrackEntity(
         trackId = id!!,
+        externalUrl = externalUrl,
         image = image,
         lastPlayed = lastPlayed,
         mediaUrl = mediaUrl,
@@ -31,6 +33,7 @@ fun TrackDomainModel.toTrackEntity(lastPlayed: Long? = null): TrackEntity =
 fun TrackWithArtists.toTrackDomainModel(): TrackDomainModel =
     TrackDomainModel(
         artists = artists.map { it.toArtistDomainModel() },
+        externalUrl = track.externalUrl,
         id = track.trackId,
         image = track.image,
         name = track.name,

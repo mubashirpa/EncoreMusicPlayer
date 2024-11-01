@@ -4,6 +4,7 @@ import com.encore.music.domain.model.artists.Artist
 
 data class Track(
     val artists: List<Artist>? = null,
+    val externalUrl: String? = null,
     val id: String? = null,
     val image: String? = null,
     val name: String? = null,
