@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.media.audiofx.AudioEffect
+import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -181,6 +182,20 @@ class PlayerFragment : Fragment() {
                     true
                 }
 
+                R.id.open -> {
+                    mainViewModel.playerUiState.value.currentPlayingTrack?.externalUrl?.let {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                        try {
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            showMessage(getString(R.string.unable_to_open_url))
+                        }
+                    } ?: run {
+                        showMessage(getString(R.string.error_unexpected))
+                    }
+                    true
+                }
+
                 else -> false
             }
         }
@@ -257,12 +272,11 @@ class PlayerFragment : Fragment() {
         try {
             activityResultLauncher.launch(intent)
         } catch (e: ActivityNotFoundException) {
-            Snackbar
-                .make(
-                    binding.root,
-                    getString(R.string.unable_to_open_equalizer),
-                    Snackbar.LENGTH_SHORT,
-                ).show()
+            showMessage(getString(R.string.unable_to_open_equalizer))
         }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 }
