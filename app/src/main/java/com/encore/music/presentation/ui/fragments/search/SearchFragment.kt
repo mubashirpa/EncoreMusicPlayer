@@ -1,5 +1,7 @@
 package com.encore.music.presentation.ui.fragments.search
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -383,6 +385,11 @@ class SearchFragment : Fragment() {
                         ),
                     icon = R.drawable.baseline_person_search_24,
                 ),
+                MenuItem(
+                    id = 5,
+                    title = getString(R.string.open_in_spotify),
+                    icon = R.drawable.baseline_open_in_new_24,
+                ),
             )
         TrackMenuBottomSheet(track, items)
             .setOnMenuItemClickListener { _, id ->
@@ -407,6 +414,19 @@ class SearchFragment : Fragment() {
                         artist?.id?.let {
                             binding.searchView.setVisible(false)
                             navController.navigateToArtist(it)
+                        }
+                    }
+
+                    5 -> {
+                        track.externalUrl?.let {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                            try {
+                                startActivity(intent)
+                            } catch (e: Exception) {
+                                showMessage(getString(R.string.unable_to_open_url))
+                            }
+                        } ?: run {
+                            showMessage(getString(R.string.error_unexpected))
                         }
                     }
                 }
