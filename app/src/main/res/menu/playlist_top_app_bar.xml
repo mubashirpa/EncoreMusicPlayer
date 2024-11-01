@@ -2,13 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/save_playlist"
-        android:contentDescription="@string/save_playlist"
-        android:icon="@drawable/baseline_favorite_border_24"
-        android:title="@string/save_playlist"
-        android:visible="false"
-        app:showAsAction="ifRoom" />
+    <group
+        android:id="@+id/online_playlist"
+        android:visible="false">
+        <item
+            android:id="@+id/save_playlist"
+            android:contentDescription="@string/save_playlist"
+            android:icon="@drawable/baseline_favorite_border_24"
+            android:title="@string/save_playlist"
+            app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/open"
+            android:contentDescription="@string/open_in_spotify"
+            android:title="@string/open_in_spotify"
+            app:showAsAction="never" />
+    </group>
 
     <group
         android:id="@+id/local_playlist"

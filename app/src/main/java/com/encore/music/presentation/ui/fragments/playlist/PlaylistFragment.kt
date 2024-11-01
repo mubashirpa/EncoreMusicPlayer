@@ -1,5 +1,7 @@
 package com.encore.music.presentation.ui.fragments.playlist
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -58,6 +60,8 @@ class PlaylistFragment : Fragment() {
 
         if (viewModel.isLocal) {
             binding.topAppBar.menu.setGroupVisible(R.id.local_playlist, true)
+        } else {
+            binding.topAppBar.menu.setGroupVisible(R.id.online_playlist, true)
         }
 
         viewModel.uiState.observe(viewLifecycleOwner) { uiState ->
@@ -103,12 +107,10 @@ class PlaylistFragment : Fragment() {
                 binding.topAppBar.menu
                     .findItem(R.id.save_playlist)
                     .setIcon(R.drawable.baseline_favorite_24)
-                    .isVisible = true
             } else {
                 binding.topAppBar.menu
                     .findItem(R.id.save_playlist)
                     .setIcon(R.drawable.baseline_favorite_border_24)
-                    .isVisible = true
             }
         }
 
@@ -135,6 +137,25 @@ class PlaylistFragment : Fragment() {
                         viewModel.onEvent(PlaylistUiEvent.OnSavePlaylist)
                     }
                     true
+                }
+
+                R.id.open -> {
+                    if (viewModel.uiState.value is PlaylistUiState.Success) {
+                        val playlist = (viewModel.uiState.value as PlaylistUiState.Success).playlist
+                        playlist.externalUrl?.let {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                            try {
+                                startActivity(intent)
+                            } catch (e: Exception) {
+                                showMessage(getString(R.string.unable_to_open_url))
+                            }
+                        } ?: run {
+                            showMessage(getString(R.string.error_unexpected))
+                        }
+                        true
+                    } else {
+                        false
+                    }
                 }
 
                 R.id.edit_playlist -> {
@@ -265,6 +286,13 @@ class PlaylistFragment : Fragment() {
                         ),
                     )
                 }
+                add(
+                    MenuItem(
+                        id = 6,
+                        title = getString(R.string.open_in_spotify),
+                        icon = R.drawable.baseline_open_in_new_24,
+                    ),
+                )
             }
         TrackMenuBottomSheet(track, items)
             .setOnMenuItemClickListener { _, id ->
@@ -293,6 +321,19 @@ class PlaylistFragment : Fragment() {
 
                     5 -> {
                         artist?.id?.let { navController.navigateToArtist(it) }
+                    }
+
+                    6 -> {
+                        track.externalUrl?.let {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                            try {
+                                startActivity(intent)
+                            } catch (e: Exception) {
+                                showMessage(getString(R.string.unable_to_open_url))
+                            }
+                        } ?: run {
+                            showMessage(getString(R.string.error_unexpected))
+                        }
                     }
                 }
             }.show(
