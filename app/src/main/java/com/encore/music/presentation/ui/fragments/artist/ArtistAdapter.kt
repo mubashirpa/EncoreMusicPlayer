@@ -3,6 +3,7 @@ package com.encore.music.presentation.ui.fragments.artist
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -18,6 +19,7 @@ import com.encore.music.domain.model.tracks.Track
 class ArtistAdapter(
     private val context: Context,
     private val onFollowArtistClicked: ((artist: Artist, isFollowed: Boolean) -> Unit)? = null,
+    private val onOpenInClicked: ((String?) -> Unit)? = null,
     private val onPlayClicked: (() -> Unit)? = null,
     private val onTrackClicked: ((Track) -> Unit)? = null,
     private val onTrackMoreClicked: ((Track) -> Unit)? = null,
@@ -41,10 +43,31 @@ class ArtistAdapter(
                     onFollowArtistClicked?.invoke(item.artist, item.isFollowed)
                 }
 
+                menuButton.setOnClickListener {
+                    showArtistMenu(item.artist)
+                }
+
                 playButton.setOnClickListener {
                     onPlayClicked?.invoke()
                 }
             }
+        }
+
+        private fun showArtistMenu(artist: Artist) {
+            val popup = PopupMenu(context, binding.menuButton)
+            popup.menuInflater.inflate(R.menu.artist_context_menu, popup.menu)
+
+            popup.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.open -> {
+                        onOpenInClicked?.invoke(artist.externalUrl)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+            popup.show()
         }
     }
 

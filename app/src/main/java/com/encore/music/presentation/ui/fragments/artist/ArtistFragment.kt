@@ -1,5 +1,7 @@
 package com.encore.music.presentation.ui.fragments.artist
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -120,6 +122,18 @@ class ArtistFragment : Fragment() {
                         viewModel.unfollowArtist(artist)
                     } else {
                         viewModel.followArtist(artist)
+                    }
+                },
+                onOpenInClicked = { externalUrl ->
+                    externalUrl?.let {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                        try {
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            showMessage(getString(R.string.unable_to_open_url))
+                        }
+                    } ?: run {
+                        showMessage(getString(R.string.error_unexpected))
                     }
                 },
                 onPlayClicked = {

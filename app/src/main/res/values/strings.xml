@@ -84,6 +84,8 @@
     <string name="notification_permission_denied">Notification permission denied</string>
     <string name="browse_all">Browse All</string>
     <string name="unable_to_open_equalizer">Unable to open equalizer</string>
+    <string name="unable_to_open_url">Unable to open URL</string>
+    <string name="open_in_spotify">Open in Spotify</string>
 
     <!-- Screen titles -->
     <string name="title_home_screen">Go listen!</string>
