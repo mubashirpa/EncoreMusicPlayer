@@ -75,14 +75,14 @@ class SearchFragment : Fragment() {
             ImageUtils.loadProfile(
                 context = requireContext(),
                 url = user.photoUrl,
-                onStart = { placeholder ->
-                    binding.topAppBar.navigationIcon = placeholder
+                onStart = {
+                    binding.topAppBar.setNavigationIcon(R.drawable.baseline_account_circle_24)
                 },
                 onSuccess = { result ->
                     binding.topAppBar.navigationIcon = result
                 },
-                onError = { error ->
-                    binding.topAppBar.navigationIcon = error
+                onError = {
+                    binding.topAppBar.setNavigationIcon(R.drawable.baseline_account_circle_24)
                 },
             )
         }
