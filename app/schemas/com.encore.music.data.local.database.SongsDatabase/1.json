@@ -2,17 +2,23 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b29f233927fcbb8f7d57b819c21539f0",
+    "identityHash": "0d8113bafedf632d118a4e6382f84475",
     "entities": [
       {
         "tableName": "artists",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`artistId` TEXT NOT NULL, `followedAt` INTEGER, `followers` INTEGER, `image` TEXT, `name` TEXT, PRIMARY KEY(`artistId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`artistId` TEXT NOT NULL, `externalUrl` TEXT, `followedAt` INTEGER, `followers` INTEGER, `image` TEXT, `name` TEXT, PRIMARY KEY(`artistId`))",
         "fields": [
           {
             "fieldPath": "artistId",
             "columnName": "artistId",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "externalUrl",
+            "columnName": "externalUrl",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "followedAt",
@@ -50,7 +56,7 @@
       },
       {
         "tableName": "playlists",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlistId` TEXT NOT NULL, `addedAt` INTEGER, `description` TEXT, `image` TEXT, `isLocal` INTEGER, `name` TEXT, `owner` TEXT, `ownerId` TEXT, PRIMARY KEY(`playlistId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlistId` TEXT NOT NULL, `addedAt` INTEGER, `description` TEXT, `externalUrl` TEXT, `image` TEXT, `isLocal` INTEGER, `name` TEXT, `owner` TEXT, `ownerId` TEXT, PRIMARY KEY(`playlistId`))",
         "fields": [
           {
             "fieldPath": "playlistId",
@@ -67,6 +73,12 @@
           {
             "fieldPath": "description",
             "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "externalUrl",
+            "columnName": "externalUrl",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -186,13 +198,19 @@
       },
       {
         "tableName": "tracks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trackId` TEXT NOT NULL, `image` TEXT, `lastPlayed` INTEGER, `mediaUrl` TEXT, `name` TEXT, PRIMARY KEY(`trackId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trackId` TEXT NOT NULL, `externalUrl` TEXT, `image` TEXT, `lastPlayed` INTEGER, `mediaUrl` TEXT, `name` TEXT, PRIMARY KEY(`trackId`))",
         "fields": [
           {
             "fieldPath": "trackId",
             "columnName": "trackId",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "externalUrl",
+            "columnName": "externalUrl",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "image",
@@ -232,7 +250,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b29f233927fcbb8f7d57b819c21539f0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0d8113bafedf632d118a4e6382f84475')"
     ]
   }
 }
