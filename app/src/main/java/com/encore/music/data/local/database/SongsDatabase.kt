@@ -18,7 +18,6 @@ import com.encore.music.data.local.entity.tracks.TrackEntity
         TrackArtistCrossRef::class, TrackEntity::class,
     ],
     version = 1,
-    exportSchema = false,
 )
 abstract class SongsDatabase : RoomDatabase() {
     abstract fun playlistsDao(): PlaylistsDao
