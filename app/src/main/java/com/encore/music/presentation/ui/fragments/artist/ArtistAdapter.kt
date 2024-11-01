@@ -3,7 +3,7 @@ package com.encore.music.presentation.ui.fragments.artist
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
