@@ -64,7 +64,7 @@ class PlaybackNotificationManager(
             ).setSmallIconResourceId(R.drawable.ic_launcher_foreground)
             .build()
             .also {
-                it.setMediaSessionToken(mediaSession.sessionCompatToken)
+                it.setMediaSessionToken(mediaSession.platformToken)
                 it.setUseFastForwardActionInCompactView(true)
                 it.setUseRewindActionInCompactView(true)
                 it.setUseNextActionInCompactView(true)
