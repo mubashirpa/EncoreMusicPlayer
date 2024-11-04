@@ -10,7 +10,6 @@ import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
@@ -23,7 +22,6 @@ private const val NOTIFICATION_CHANNEL_ID = "playback"
 
 class PlaybackNotificationManager(
     private val context: Context,
-    private val player: ExoPlayer,
 ) {
     private val notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
@@ -34,7 +32,7 @@ class PlaybackNotificationManager(
 
     fun startNotificationService(
         mediaSessionService: MediaSessionService,
-        mediaSession: MediaSession,
+        mediaSession: MediaSession?,
     ) {
         buildNotification(mediaSession)
         startForeGroundNotificationService(mediaSessionService)
@@ -42,45 +40,50 @@ class PlaybackNotificationManager(
 
     private fun startForeGroundNotificationService(mediaSessionService: MediaSessionService) {
         val notification =
-            Notification
+            NotificationCompat
                 .Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setCategory(Notification.CATEGORY_SERVICE)
+                .setOngoing(true)
                 .build()
         mediaSessionService.startForeground(NOTIFICATION_ID, notification)
     }
 
     @OptIn(UnstableApi::class)
-    private fun buildNotification(mediaSession: MediaSession) {
-        PlayerNotificationManager
-            .Builder(
-                context,
-                NOTIFICATION_ID,
-                NOTIFICATION_CHANNEL_ID,
-            ).setMediaDescriptionAdapter(
-                PlaybackNotificationAdapter(
-                    context = context,
-                    pendingIntent = getPendingIntent(),
-                ),
-            ).setSmallIconResourceId(R.drawable.ic_launcher_foreground)
-            .build()
-            .also {
-                it.setMediaSessionToken(mediaSession.platformToken)
-                it.setUseFastForwardActionInCompactView(true)
-                it.setUseRewindActionInCompactView(true)
-                it.setUseNextActionInCompactView(true)
-                it.setPriority(NotificationCompat.PRIORITY_LOW)
-                it.setPlayer(player)
-            }
+    private fun buildNotification(mediaSession: MediaSession?) {
+        mediaSession?.let {
+            PlayerNotificationManager
+                .Builder(
+                    context,
+                    NOTIFICATION_ID,
+                    NOTIFICATION_CHANNEL_ID,
+                ).setMediaDescriptionAdapter(
+                    PlaybackNotificationAdapter(
+                        context = context,
+                        pendingIntent = getPendingIntent(),
+                    ),
+                ).setSmallIconResourceId(R.drawable.ic_launcher_foreground)
+                .build()
+                .also {
+                    it.setMediaSessionToken(mediaSession.platformToken)
+                    it.setUseFastForwardActionInCompactView(true)
+                    it.setUseRewindActionInCompactView(true)
+                    it.setUseNextActionInCompactView(true)
+                    it.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    it.setPlayer(mediaSession.player)
+                }
+        }
     }
 
     private fun createNotificationChannel() {
-        val channel =
-            NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW,
-            )
-        notificationManager.createNotificationChannel(channel)
+        if (notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
+            val channel =
+                NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_LOW,
+                )
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun getPendingIntent(): PendingIntent {

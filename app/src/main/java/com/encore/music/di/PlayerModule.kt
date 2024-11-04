@@ -3,10 +3,8 @@ package com.encore.music.di
 import android.annotation.SuppressLint
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.session.MediaSession
 import com.encore.music.player.notification.PlaybackNotificationManager
 import com.encore.music.player.service.PlaybackServiceHandler
 import kotlinx.coroutines.CoroutineScope
@@ -34,8 +32,6 @@ val playerModule =
                 .setTrackSelector(DefaultTrackSelector(androidContext()))
                 .build()
         }
-        single<Player> { get<ExoPlayer>() }
-        single<MediaSession> { MediaSession.Builder(androidContext(), get()).build() }
         singleOf(::PlaybackNotificationManager)
         singleOf(::PlaybackServiceHandler)
         single { CoroutineScope(SupervisorJob() + Dispatchers.Main) }
