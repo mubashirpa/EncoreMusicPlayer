@@ -109,12 +109,7 @@ class PlayerFragment : Fragment() {
         }
 
         mainViewModel.progress.observe(viewLifecycleOwner) { progress ->
-            binding.progress.value =
-                if (progress <= 100.0) {
-                    progress
-                } else {
-                    100.0f
-                }
+            binding.progress.value = progress.coerceIn(0.0f, 100.0f)
         }
 
         mainViewModel.progressString.observe(viewLifecycleOwner) { progressString ->
