@@ -29,6 +29,7 @@ coreSplashscreen = "1.1.0-rc01"
 firebaseCrashlytics = "3.0.2"
 paging = "3.3.2"
 viewpager2 = "1.1.0"
+truth = "1.4.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -70,6 +71,7 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 
 [bundles]
 fragment = [
