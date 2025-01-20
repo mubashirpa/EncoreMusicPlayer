@@ -68,7 +68,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
-androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "coreSplashscreen" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
 google-truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
