@@ -3,6 +3,7 @@ package com.encore.music.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.encore.music.data.local.ContentResolverHelper
 import com.encore.music.data.local.dao.ArtistsDao
 import com.encore.music.data.local.dao.PlaylistsDao
 import com.encore.music.data.local.dao.TracksDao
@@ -13,13 +14,17 @@ import com.encore.music.data.local.entity.playlists.PlaylistWithTracksAndArtists
 import com.encore.music.data.local.entity.tracks.TrackArtistCrossRef
 import com.encore.music.data.local.entity.tracks.TrackEntity
 import com.encore.music.data.local.entity.tracks.TrackWithArtists
+import com.encore.music.domain.model.tracks.Track
 import com.encore.music.domain.repository.SongsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class SongsRepositoryImpl(
     private val artistsDao: ArtistsDao,
     private val playlistsDao: PlaylistsDao,
     private val tracksDao: TracksDao,
+    private val contentResolver: ContentResolverHelper,
 ) : SongsRepository {
     /**
      * Artists
@@ -100,4 +105,9 @@ class SongsRepositoryImpl(
                 tracksDao.getRecentTracksPaging()
             },
         ).flow
+
+    override suspend fun getTrackFromStorage(): List<Track> =
+        withContext(Dispatchers.IO) {
+            contentResolver.getAudioData()
+        }
 }

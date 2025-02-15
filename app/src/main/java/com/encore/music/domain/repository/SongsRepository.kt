@@ -8,6 +8,7 @@ import com.encore.music.data.local.entity.playlists.PlaylistWithTracksAndArtists
 import com.encore.music.data.local.entity.tracks.TrackArtistCrossRef
 import com.encore.music.data.local.entity.tracks.TrackEntity
 import com.encore.music.data.local.entity.tracks.TrackWithArtists
+import com.encore.music.domain.model.tracks.Track
 import kotlinx.coroutines.flow.Flow
 
 interface SongsRepository {
@@ -63,4 +64,6 @@ interface SongsRepository {
     fun getRecentTracks(limit: Int = 20): Flow<List<TrackWithArtists>>
 
     fun getRecentTracksPaging(limit: Int = 20): Flow<PagingData<TrackWithArtists>>
+
+    suspend fun getTrackFromStorage(): List<Track>
 }

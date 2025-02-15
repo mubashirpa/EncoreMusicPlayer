@@ -32,6 +32,7 @@ import com.encore.music.domain.usecase.songs.playlists.GetSavedPlaylistsUseCase
 import com.encore.music.domain.usecase.songs.playlists.InsertPlaylistUseCase
 import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksPagingUseCase
 import com.encore.music.domain.usecase.songs.tracks.GetRecentTracksUseCase
+import com.encore.music.domain.usecase.songs.tracks.GetTracksFromStorageUseCase
 import com.encore.music.domain.usecase.songs.tracks.InsertRecentTrackUseCase
 import com.encore.music.domain.usecase.validation.ValidateEmail
 import com.encore.music.domain.usecase.validation.ValidateName
@@ -60,6 +61,7 @@ val useCaseModule =
         singleOf(::GetSavedPlaylistUseCase)
         singleOf(::GetSavedPlaylistWithTracksAndArtistsUseCase)
         singleOf(::GetSavedPlaylistsUseCase)
+        singleOf(::GetTracksFromStorageUseCase)
         single { InsertPlaylistUseCase(songsRepository = get()) }
         single { InsertRecentTrackUseCase(songsRepository = get()) }
         singleOf(::SearchForItemPagingUseCase)
