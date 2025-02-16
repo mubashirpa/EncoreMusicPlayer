@@ -59,11 +59,6 @@ class ArtistAdapter(
 
             popup.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.open -> {
-                        onOpenInClicked?.invoke(artist.externalUrl)
-                        true
-                    }
-
                     else -> false
                 }
             }

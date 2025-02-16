@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.media.audiofx.AudioEffect
-import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.LayoutInflater
@@ -174,20 +173,6 @@ class PlayerFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.equalizer -> {
                     openEqualizer()
-                    true
-                }
-
-                R.id.open -> {
-                    mainViewModel.playerUiState.value.currentPlayingTrack?.externalUrl?.let {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                        try {
-                            startActivity(intent)
-                        } catch (e: Exception) {
-                            showMessage(getString(R.string.unable_to_open_url))
-                        }
-                    } ?: run {
-                        showMessage(getString(R.string.error_unexpected))
-                    }
                     true
                 }
 

@@ -129,7 +129,7 @@ class ArtistFragment : Fragment() {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
                         try {
                             startActivity(intent)
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             showMessage(getString(R.string.unable_to_open_url))
                         }
                     } ?: run {
@@ -193,11 +193,6 @@ class ArtistFragment : Fragment() {
                     title = getString(R.string.add_to_playlist),
                     icon = R.drawable.baseline_playlist_add_24,
                 ),
-                MenuItem(
-                    id = 4,
-                    title = getString(R.string.open_in_spotify),
-                    icon = R.drawable.baseline_open_in_new_24,
-                ),
             )
         TrackMenuBottomSheet(track, items)
             .setOnMenuItemClickListener { _, id ->
@@ -216,19 +211,6 @@ class ArtistFragment : Fragment() {
 
                     3 -> {
                         showAddToPlaylistBottomSheet(track)
-                    }
-
-                    4 -> {
-                        track.externalUrl?.let {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                            try {
-                                startActivity(intent)
-                            } catch (e: Exception) {
-                                showMessage(getString(R.string.unable_to_open_url))
-                            }
-                        } ?: run {
-                            showMessage(getString(R.string.error_unexpected))
-                        }
                     }
                 }
             }.show(

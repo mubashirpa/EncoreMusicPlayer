@@ -5,8 +5,4 @@
         android:id="@+id/equalizer"
         android:contentDescription="@string/add_playlist"
         android:title="@string/equalizer" />
-    <item
-        android:id="@+id/open"
-        android:contentDescription="@string/open_in_spotify"
-        android:title="@string/open_in_spotify" />
 </menu>

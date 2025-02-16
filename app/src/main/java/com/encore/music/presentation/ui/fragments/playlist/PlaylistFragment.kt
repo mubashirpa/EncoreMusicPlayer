@@ -1,7 +1,5 @@
 package com.encore.music.presentation.ui.fragments.playlist
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -139,25 +137,6 @@ class PlaylistFragment : Fragment() {
                     true
                 }
 
-                R.id.open -> {
-                    if (viewModel.uiState.value is PlaylistUiState.Success) {
-                        val playlist = (viewModel.uiState.value as PlaylistUiState.Success).playlist
-                        playlist.externalUrl?.let {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                            try {
-                                startActivity(intent)
-                            } catch (e: Exception) {
-                                showMessage(getString(R.string.unable_to_open_url))
-                            }
-                        } ?: run {
-                            showMessage(getString(R.string.error_unexpected))
-                        }
-                        true
-                    } else {
-                        false
-                    }
-                }
-
                 R.id.edit_playlist -> {
                     if (viewModel.uiState.value is PlaylistUiState.Success) {
                         val playlist = (viewModel.uiState.value as PlaylistUiState.Success).playlist
@@ -286,13 +265,6 @@ class PlaylistFragment : Fragment() {
                         ),
                     )
                 }
-                add(
-                    MenuItem(
-                        id = 6,
-                        title = getString(R.string.open_in_spotify),
-                        icon = R.drawable.baseline_open_in_new_24,
-                    ),
-                )
             }
         TrackMenuBottomSheet(track, items)
             .setOnMenuItemClickListener { _, id ->
@@ -321,19 +293,6 @@ class PlaylistFragment : Fragment() {
 
                     5 -> {
                         artist?.id?.let { navController.navigateToArtist(it) }
-                    }
-
-                    6 -> {
-                        track.externalUrl?.let {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-                            try {
-                                startActivity(intent)
-                            } catch (e: Exception) {
-                                showMessage(getString(R.string.unable_to_open_url))
-                            }
-                        } ?: run {
-                            showMessage(getString(R.string.error_unexpected))
-                        }
                     }
                 }
             }.show(
