@@ -117,8 +117,8 @@ cd EncoreMusicPlayer
 2. **Firebase Admin Setup**:
 
     - Download the Firebase Admin SDK service account key (
-      `encore-music-player-firebase-adminsdk.json`) from your Firebase project.
-    - Place this file in the server's resources directory.
+      `service-account.json`) from your Firebase project.
+    - Place this file in the server's etc/secrets directory.
 
 3. **Run the Ktor Server**:
 
