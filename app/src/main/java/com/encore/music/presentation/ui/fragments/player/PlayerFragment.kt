@@ -251,7 +251,7 @@ class PlayerFragment : Fragment() {
 
         try {
             activityResultLauncher.launch(intent)
-        } catch (e: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             showMessage(getString(R.string.unable_to_open_equalizer))
         }
     }
