@@ -139,7 +139,7 @@ fun NavigationBarView.setupWithNavController(navController: NavController) {
         isVisible = matchingNavItemId?.let {
             selectNavigationItem(matchingNavItemId)
             true
-        } ?: false
+        } == true
     }
 }
 

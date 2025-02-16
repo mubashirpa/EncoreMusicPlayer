@@ -39,7 +39,7 @@ class CreatePlaylistUseCase(
                             addedAt = Clock.System.now().toEpochMilliseconds(),
                             description = playlist.description?.ifBlank { null },
                             externalUrl = playlist.externalUrl?.ifBlank { null },
-                            isLocal = playlist.isLocal ?: true,
+                            isLocal = playlist.isLocal == true,
                             image = playlist.image ?: playlist.tracks?.firstOrNull()?.image,
                             name = playlist.name,
                             owner = playlist.owner ?: user.name,

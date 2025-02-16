@@ -28,7 +28,7 @@ class DatastoreRepositoryImpl(
                     val userEmail: String = preferences[PreferencesKeys.USER_EMAIL].orEmpty()
                     val userPassword: String = preferences[PreferencesKeys.USER_PASSWORD].orEmpty()
                     val remember: Boolean =
-                        preferences[PreferencesKeys.REMEMBER_LOGIN_DATA] ?: false
+                        preferences[PreferencesKeys.REMEMBER_LOGIN_DATA] == true
 
                     LoginPreferences(
                         email = userEmail,
