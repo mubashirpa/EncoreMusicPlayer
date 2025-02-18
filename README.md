@@ -6,6 +6,20 @@ server to manage Spotify API data and leverages ExoPlayer (Media3) for high-qual
 The UI is designed using Material3 for a clean, intuitive experience, and user playlists and recent
 songs are stored locally using Room database.
 
+## 📷 Screenshots
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="screenshots/screenshot1-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="screenshots/screenshot1.png">
+  <img alt="App Screenshot" src="screenshots/screenshot1.png">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="screenshots/screenshot2-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="screenshots/screenshot2.png">
+  <img alt="App Screenshot" src="screenshots/screenshot2.png">
+</picture>
+
 ## 🛠️ Features
 
 - **Spotify Integration**: Fetch and play tracks, and playlists from Spotify using the Spotify API.
