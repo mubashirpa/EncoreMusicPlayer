@@ -6,6 +6,16 @@ server to manage Spotify API data and leverages ExoPlayer (Media3) for high-qual
 The UI is designed using Material3 for a clean, intuitive experience, and user playlists and recent
 songs are stored locally using Room database.
 
+Currently available on the Amazon Appstore.
+
+<a href='https://www.amazon.com/gp/product/B0DXCWYZZY'>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-white.png">
+  <img alt="Get it on Amazon Appstore" src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-white.png" height='66px'>
+</picture>
+</a>
+
 ## 📷 Screenshots
 
 <picture>
