@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.encore.music" />
+                  <option name="mobileSdkAppId" value="1:228051723605:android:6d40f607e1a9b00878bbdc" />
+                  <option name="projectId" value="encore-music-player" />
+                  <option name="projectNumber" value="228051723605" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
