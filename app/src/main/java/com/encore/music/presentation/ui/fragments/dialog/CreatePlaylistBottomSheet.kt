@@ -67,6 +67,7 @@ class CreatePlaylistBottomSheet : BottomSheetDialogFragment() {
                         description = description,
                         name = name,
                         tracks = tracks,
+                        isLocal = true,
                     )
                 onCreatePlaylistClickListener?.invoke(this, newPlaylist)
             }
