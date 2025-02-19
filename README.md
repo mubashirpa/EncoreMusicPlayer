@@ -1,4 +1,4 @@
-# 🎵 Encore Music Player
+# Encore Music Player
 
 **Encore** is a modern music player app built with Kotlin, featuring seamless Spotify API
 integration and user authentication via Firebase (Google Sign-In). The app communicates with a Ktor
@@ -6,7 +6,9 @@ server to manage Spotify API data and leverages ExoPlayer (Media3) for high-qual
 The UI is designed using Material3 for a clean, intuitive experience, and user playlists and recent
 songs are stored locally using Room database.
 
-Currently available on the Amazon Appstore.
+## **Download the App**
+
+Encore is currently available on the **Amazon Appstore**.
 
 <a href='https://www.amazon.com/gp/product/B0DXCWYZZY'>
 <picture>
@@ -16,7 +18,7 @@ Currently available on the Amazon Appstore.
 </picture>
 </a>
 
-## 📷 Screenshots
+## **Screenshots**
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="screenshots/screenshot1-dark.png">
@@ -30,7 +32,7 @@ Currently available on the Amazon Appstore.
   <img alt="App Screenshot" src="screenshots/screenshot2.png">
 </picture>
 
-## 🛠️ Features
+## **Features**
 
 - **Spotify Integration**: Fetch and play tracks, and playlists from Spotify using the Spotify API.
 - **Firebase Authentication**: Secure login with Google Sign-In using Firebase Authentication.
@@ -43,9 +45,9 @@ Currently available on the Amazon Appstore.
 - **Clean Architecture**: Follows the MVVM pattern with a clean architecture approach to ensure
   scalability and maintainability.
 
-## 🚀 Tech Stack
+## **Tech Stack**
 
-### Frontend (Mobile App)
+### **Frontend (Mobile App)**
 
 - **Kotlin**: The main programming language for Android development.
 - **Media3 ExoPlayer**: Used for media playback and supports features like background playback,
@@ -58,7 +60,7 @@ Currently available on the Amazon Appstore.
 - **Koin**: For dependency injection, allowing modular and testable architecture.
 - **Kotlinx Serialization**: For handling JSON serialization and deserialization of API responses.
 
-### Backend (Ktor Server)
+### **Backend (Ktor Server)**
 
 - **Ktor**: A Kotlin-based framework to handle API requests from the Android app and communicate
   with the Spotify Web API.
@@ -68,9 +70,9 @@ Currently available on the Amazon Appstore.
 - **Environment Variables**: Stores sensitive data such as Spotify API keys and Firebase service
   account credentials.
 
-## 🏗️ Architecture
+## **Architecture**
 
-### App Architecture
+### **App Architecture**
 
 Encore follows the **MVVM** (Model-View-ViewModel) pattern with **Clean Architecture**, ensuring
 separation of concerns and scalability:
@@ -83,15 +85,15 @@ separation of concerns and scalability:
 - **Data Sources**: Manages Spotify API requests through the Ktor Client and stores user data in the
   Room database.
 
-### Backend Architecture
+### **Backend Architecture**
 
 The Ktor server is the intermediary between the Encore mobile app and the Spotify API. It handles
 API key management, token refresh, and data processing, allowing the mobile client to remain
 lightweight. It also manages user authentication with Firebase Admin SDK.
 
-## 🔧 Project Setup
+## **Project Setup**
 
-### Prerequisites
+### **Prerequisites**
 
 1. **Spotify Developer Account**: Create a Spotify Developer account and set up an app to get your
    `CLIENT_ID` and `CLIENT_SECRET` for the Ktor server.
@@ -99,14 +101,14 @@ lightweight. It also manages user authentication with Firebase Admin SDK.
    Sign-In.
 3. **Android Studio**: Ensure you have the latest version of Android Studio installed.
 
-### Clone the Repository
+### **Clone the Repository**
 
 ```bash
 git clone https://github.com/mubashirpa/EncoreMusicPlayer.git
 cd EncoreMusicPlayer
 ```
 
-### Android App Configuration
+### **Android App Configuration**
 
 1. **Firebase Setup**:
 
@@ -156,7 +158,7 @@ cd EncoreMusicPlayer
 4. The Ktor server will handle API requests, manage Spotify tokens, and interact with Firebase for
    user authentication.
 
-## 🎨 UI/UX with Material3
+## **UI/UX with Material3**
 
 The app's user interface follows **Material3** guidelines for a consistent, modern, and intuitive
 design:
@@ -166,12 +168,27 @@ design:
 - **Dynamic Theming**: The app supports both light and dark themes, providing a responsive and
   visually appealing experience.
 
-## 🤝 Contributions
+## **Contributing**
 
-Contributions are welcome! If you'd like to contribute to **Encore**, feel free to submit a pull
-request or open an issue on GitHub to discuss changes or report bugs.
+We welcome contributions! To contribute:
 
-## 📄 License
+1. Fork the repository.
+2. Create a feature branch:
+   ```sh
+   git checkout -b feature-name
+   ```
+3. Make your changes and commit:
+   ```sh
+   git commit -m "Add feature-name"
+   ```
+4. Push to your branch and open a **Pull Request**.
+
+## **Support & Contact**
+
+For issues or suggestions, feel free to open
+an [issue](https://github.com/mubashirpa/Edumate/issues) or start a discussion.
+
+## **License**
 
 This project is licensed under the **GNU Affero General Public License v3.0**. You can find the full
 license text in the [LICENSE](LICENSE) file.
