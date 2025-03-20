@@ -165,6 +165,12 @@ class MainActivity : AppCompatActivity() {
             v.updatePadding(bottom = if (binding.bottomNavigation.isVisible) 0 else bars.bottom)
             WindowInsetsCompat.CONSUMED
         }
+
+        binding.bottomNavigation.addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
+            if (v.isVisible) {
+                binding.playerControls.rootLayout.updatePadding(bottom = 0)
+            }
+        }
     }
 
     @OptIn(UnstableApi::class)
