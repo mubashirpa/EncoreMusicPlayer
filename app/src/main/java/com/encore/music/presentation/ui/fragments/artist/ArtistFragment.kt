@@ -1,13 +1,14 @@
 package com.encore.music.presentation.ui.fragments.artist
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.encore.music.R
@@ -20,8 +21,7 @@ import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomShee
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
 import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
-import com.encore.music.presentation.utils.PaddingValues
-import com.encore.music.presentation.utils.VerticalItemDecoration
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -48,6 +48,20 @@ class ArtistFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.appBarLayout.statusBarForeground =
+            MaterialShapeDrawable.createWithElevationOverlay(requireContext())
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { v, insets ->
+            val bars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            v.updatePadding(
+                left = bars.left,
+                right = bars.right,
+                bottom = bars.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val artistAdapter = initRecyclerView()
 
@@ -126,7 +140,7 @@ class ArtistFragment : Fragment() {
                 },
                 onOpenInClicked = { externalUrl ->
                     externalUrl?.let {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                        val intent = Intent(Intent.ACTION_VIEW, it.toUri())
                         try {
                             startActivity(intent)
                         } catch (_: Exception) {
@@ -147,26 +161,7 @@ class ArtistFragment : Fragment() {
                 },
             )
 
-        binding.recyclerView.apply {
-            ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
-                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-                addItemDecoration(
-                    VerticalItemDecoration(
-                        contentPadding =
-                            PaddingValues(
-                                start = insets.left,
-                                top = 0,
-                                end = insets.right,
-                                bottom = insets.bottom,
-                                convertToDp = false,
-                            ),
-                        verticalSpacing = 0,
-                    ),
-                )
-                WindowInsetsCompat.CONSUMED
-            }
-            adapter = artistAdapter
-        }
+        binding.recyclerView.adapter = artistAdapter
         return artistAdapter
     }
 

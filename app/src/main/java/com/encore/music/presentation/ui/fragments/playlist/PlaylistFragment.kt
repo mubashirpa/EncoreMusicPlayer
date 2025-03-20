@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -23,9 +24,8 @@ import com.encore.music.presentation.ui.fragments.dialog.AddToPlaylistBottomShee
 import com.encore.music.presentation.ui.fragments.dialog.CreatePlaylistBottomSheet
 import com.encore.music.presentation.ui.fragments.dialog.MenuItem
 import com.encore.music.presentation.ui.fragments.dialog.TrackMenuBottomSheet
-import com.encore.music.presentation.utils.PaddingValues
-import com.encore.music.presentation.utils.VerticalItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
@@ -53,6 +53,20 @@ class PlaylistFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.appBarLayout.statusBarForeground =
+            MaterialShapeDrawable.createWithElevationOverlay(requireContext())
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { v, insets ->
+            val bars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            v.updatePadding(
+                left = bars.left,
+                right = bars.right,
+                bottom = bars.bottom,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val playlistAdapter = initRecyclerView()
 
@@ -185,29 +199,7 @@ class PlaylistFragment : Fragment() {
                     showTrackMenuBottomSheet(track)
                 },
             )
-        binding.recyclerView.apply {
-            ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
-                val insets =
-                    windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-                if (itemDecorationCount == 0) {
-                    addItemDecoration(
-                        VerticalItemDecoration(
-                            contentPadding =
-                                PaddingValues(
-                                    start = insets.left,
-                                    top = 0,
-                                    end = insets.right,
-                                    bottom = insets.bottom,
-                                    convertToDp = false,
-                                ),
-                            verticalSpacing = 0,
-                        ),
-                    )
-                }
-                WindowInsetsCompat.CONSUMED
-            }
-            adapter = playlistAdapter
-        }
+        binding.recyclerView.adapter = playlistAdapter
         return playlistAdapter
     }
 

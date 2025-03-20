@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -46,6 +49,20 @@ class CategoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.topAppBar.title = viewModel.title
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { v, insets ->
+            val bars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val horizontalPadding = 16.dpToPx(requireContext())
+            val verticalPadding = 12.dpToPx(requireContext())
+            v.updatePadding(
+                left = bars.left + horizontalPadding,
+                top = verticalPadding,
+                right = bars.right + horizontalPadding,
+                bottom = bars.bottom + verticalPadding,
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val adapter = initRecyclerView()
 
@@ -147,12 +164,7 @@ class CategoryFragment : Fragment() {
 
         binding.recyclerView.apply {
             layoutManager = gridLayoutManager
-            addItemDecoration(
-                AdaptiveSpacingItemDecoration(
-                    size = 12.dpToPx(requireContext()),
-                    edgeEnabled = true,
-                ),
-            )
+            addItemDecoration(AdaptiveSpacingItemDecoration(size = 10.dpToPx(requireContext())))
             adapter = concatAdapter
         }
         return categoryAdapter
