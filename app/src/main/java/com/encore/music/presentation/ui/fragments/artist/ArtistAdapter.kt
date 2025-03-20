@@ -19,7 +19,6 @@ import com.encore.music.domain.model.tracks.Track
 class ArtistAdapter(
     private val context: Context,
     private val onFollowArtistClicked: ((artist: Artist, isFollowed: Boolean) -> Unit)? = null,
-    private val onOpenInClicked: ((String?) -> Unit)? = null,
     private val onPlayClicked: (() -> Unit)? = null,
     private val onTrackClicked: ((Track) -> Unit)? = null,
     private val onTrackMoreClicked: ((Track) -> Unit)? = null,
