@@ -15,6 +15,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -158,15 +159,10 @@ class MainActivity : AppCompatActivity() {
             binding.playerControls.root.isVisible = !isPlayerVisible && isTrackNotNull
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.playerControls.root) { _, windowInsets ->
-            val insets =
-                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            binding.playerControls.rootLayout.setPadding(
-                0,
-                0,
-                0,
-                if (binding.bottomNavigation.isVisible) 0 else insets.bottom,
-            )
+        ViewCompat.setOnApplyWindowInsetsListener(binding.playerControls.rootLayout) { v, insets ->
+            val bars =
+                insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(bottom = if (binding.bottomNavigation.isVisible) 0 else bars.bottom)
             WindowInsetsCompat.CONSUMED
         }
     }
